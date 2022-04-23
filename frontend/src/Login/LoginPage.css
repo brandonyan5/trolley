@@ -1,0 +1,11 @@
+.login-page {
+    background: red;
+    height: 100%;
+}
+
+.login-box {
+    text-align: center;
+    margin: 0 auto;
+    background: pink;
+    width: 500px;
+}
