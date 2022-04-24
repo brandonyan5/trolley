@@ -1,17 +1,24 @@
 import React from 'react';
-import {Link, useNavigate} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
+
 import "./NavBar.css"
 interface NavBarProps {
     setLoggedIn: any
 }
 
 function NavBar(props: NavBarProps) {
-    const navigateTo = useNavigate()
 
-    const handleLogout = () => {
-        // TODO: make google authentication void
-        props.setLoggedIn(false)
-        navigateTo("/login")
+    function signOutUser() {
+        const auth = getAuth();
+        signOut(auth).then(() => {
+            // Sign-out successful.
+            console.log("signed out")
+            props.setLoggedIn(false)
+        }).catch((error) => {
+            // An error happened.
+            console.log("error")
+        });
     }
 
     return (
@@ -20,7 +27,7 @@ function NavBar(props: NavBarProps) {
             <Link to="/listings">My Listings</Link>
             <Link to="/claims">My Claims</Link>
             <Link to="/profile">Profile</Link>
-            <a onClick={() => handleLogout()}>Log out</a>
+            <a onClick={() => signOutUser()}>Log out</a>
         </div>
     );
 }
