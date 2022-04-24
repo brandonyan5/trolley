@@ -123,7 +123,6 @@ public final class Main {
             while (productIterator.hasNext()) {
                 String eachKey = productIterator.next();
                 JSONObject eachProductJSON = productJSON.getJSONObject(eachKey);
-                String listingName = eachKey;
                 String address = eachProductJSON.getString("Address");
                 String price = eachProductJSON.getString("Price");
                 String area = eachProductJSON.getString("Area");
@@ -133,7 +132,7 @@ public final class Main {
                 String userEmail = eachProductJSON.getString("User_email");
 
                 Listing newListing = new Listing(address, Double.parseDouble(price), Double.parseDouble(area),
-                        dateStart, dateEnd, ownerEmail, userEmail, listingName);
+                        dateStart, dateEnd, ownerEmail, userEmail, eachKey);
                 newListing.setDistance(userAddress);  //this method in Listing class updates the private distance var at the top of the Listing class
                 tempListings.add(newListing);
                 //then make ls object
