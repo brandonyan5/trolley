@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Filter {
-    public static List<Double> dates;
+    public static List<String> dates;
     public static List<Double> areas;
     public static List<Double> prices;
     public static Double distance;
@@ -18,11 +18,11 @@ public class Filter {
 //        this.distance = distance;
 //    }
 
-    public List<Listing> isValid(List<Listing> listingLIst) {
+    public static List<Listing> isValid(List<Listing> listingLIst) {
         List<Listing> finalList = new ArrayList<>();
         for (Listing ls: listingLIst) {
-            if(ls.price >= prices.get(0) && ls.price <= prices.get(1)
-                    && ls.area >= areas.get(0) && ls.area <= areas.get(1)
+            if(ls.getPrice() >= prices.get(0) && ls.getPrice() <= prices.get(1)
+                    && ls.getArea() >= areas.get(0) && ls.getArea() <= areas.get(1)
             ) {
                 finalList.add(ls);
             }

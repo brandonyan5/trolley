@@ -7,18 +7,14 @@ import edu.brown.cs.student.main.sorter.Filter;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import netscape.javascript.JSObject;
+import org.checkerframework.checker.units.qual.A;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.Spark;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The Main class of our project. This is where execution begins.
@@ -88,7 +84,6 @@ public final class Main {
 
     //how to convert list of listings back into a JSON
     //how to get lat long from address
-    //sort after filtering
     private static class FilterAndSortProducts implements Route {
         @Override
         public String handle(Request request, Response response) throws Exception {
@@ -100,7 +95,6 @@ public final class Main {
             JSONObject filterJSON = reqJSON.getJSONObject("Filters");
             Iterator<String> filterIterator = filterJSON.keys();
             String userAddress = "";
-            List<Listing> listings = new ArrayList<>();
 
             while (filterIterator.hasNext()) {
                 String eachKey = filterIterator.next();
@@ -110,13 +104,26 @@ public final class Main {
                 userAddress = filterJSON.getString("user_address");
                 String distance = filterJSON.getString("Distance");
                 Filter.dates = dates;
+                Filter.distance = Double.parseDouble(distance);
 
+                List<Double> newAreas = new ArrayList<>();
+                for (String eachArea : areaRange) {
+                    newAreas.add(Double.parseDouble(eachArea));
+                }
 
+                List<Double> newPrices = new ArrayList<>();
+                for (String eachPrice : priceRange) {
+                    newPrices.add(Double.parseDouble(eachPrice));
+                }
+                Filter.areas = newAreas;
+                Filter.prices = newPrices;
             }
 
+            List<Listing> tempListings = new ArrayList<>();
             while (productIterator.hasNext()) {
                 String eachKey = productIterator.next();
                 JSONObject eachProductJSON = productJSON.getJSONObject(eachKey);
+                String listingName = eachKey;
                 String address = eachProductJSON.getString("Address");
                 String price = eachProductJSON.getString("Price");
                 String area = eachProductJSON.getString("Area");
@@ -125,6 +132,10 @@ public final class Main {
                 String ownerEmail = eachProductJSON.getString("Owner_email");
                 String userEmail = eachProductJSON.getString("User_email");
 
+                Listing newListing = new Listing(address, Double.parseDouble(price), Double.parseDouble(area),
+                        dateStart, dateEnd, ownerEmail, userEmail, listingName);
+                newListing.setDistance(userAddress);  //this method in Listing class updates the private distance var at the top of the Listing class
+                tempListings.add(newListing);
                 //then make ls object
                 //then call ls.setDistance(user_address)
                 //setDistance method is in listing class
@@ -132,8 +143,35 @@ public final class Main {
                 //then pass list into isValid - which returns a new list of listings with bad listings dropped
                 //then pass that into sort(), which returns the sorted list of listings
                 //then i convert that list of listings into a JSON, and return that at the end of this handler
-                //continue here
             }
+            List<Listing> filteredListings = Filter.isValid(tempListings);
+            List<Listing> sortedListings = Listing.sortListings(filteredListings);
+
+            Map<String, Map<String, String>> returnListings = new HashMap<>();
+            for (Listing eachListing : sortedListings) {
+                String address = eachListing.getAddress();
+                Double price = eachListing.getPrice();
+                Double area = eachListing.getArea();
+                String dateStart = eachListing.getDate_start();
+                String dateEnd = eachListing.getDate_end();
+                String ownerEmail = eachListing.getOwnerEmail();
+                String userEmail = eachListing.getUserEmail();
+                String listingName = eachListing.getListingName();
+
+                Map<String, String> innerMap = new HashMap<>();
+                innerMap.put("Address", address);
+                innerMap.put("Price", String.valueOf(price));
+                innerMap.put("Area", String.valueOf(area));
+                innerMap.put("Date_start", dateStart);
+                innerMap.put("Date_end", dateEnd);
+                innerMap.put("Owner_email", ownerEmail);
+                innerMap.put("User_email", userEmail);
+
+                returnListings.put(listingName, innerMap);
+                //convert back to JSON/GSON somehow - continue here
+            }
+            Gson GSON = new Gson();
+            return GSON.toJson(returnListings);
 
         }
     }
@@ -142,12 +180,19 @@ public final class Main {
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
+            String ownerEmail = "";
 
-            JSONObject productJSON = reqJSON.getJSONObject("Products");
-            Iterator<String> productIterator = productJSON.keys();
-
-            JSONObject filterJSON = reqJSON.getJSONObject("Filters");
-            Iterator<String> filterIterator = filterJSON.keys();
+            Iterator<String> iterator = reqJSON.keys();
+            while (iterator.hasNext()) {
+                String eachKey = iterator.next();
+                JSONObject theValue = reqJSON.getJSONObject(eachKey);
+                ownerEmail = theValue.getString("Owner_email");
+            }
+            if (sendEmailToOwner(ownerEmail)) {
+                return "200 OK";
+            } else {
+                return "ERROR!";
+            }
         }
     }
 
@@ -155,26 +200,31 @@ public final class Main {
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
-            String tableName = reqJSON.getString("table");
-            JSONObject row = reqJSON.getJSONObject("row");
-            Iterator<String> iterator = row.keys();
-            Set<String> nameOfColumns = new HashSet<>();
-            List<String> colValues = new ArrayList<>();
+
+            String userEmail = "";
+            Iterator<String> iterator = reqJSON.keys();
             while (iterator.hasNext()) {
                 String eachKey = iterator.next();
-                nameOfColumns.add(eachKey);
-                colValues.add(row.getString(eachKey));
+                if (!eachKey.equals("Accepted")) {
+                    JSONObject theValue = reqJSON.getJSONObject(eachKey);
+                    userEmail = theValue.getString("User_email");
+                }
             }
-            try {
-                db.addRow(colValues, tableName);
-            } catch (DatabaseNotLoadedException e) {
-                return "ERROR: Database wasn't loaded";
-            } catch (SQLException e) {
-                return "ERROR: You are inserting incorrectly";
-            } catch (IndexOutOfBoundsException e) {
-                return "ERROR: You are adding incorrectly";
+
+            if (reqJSON.getString("Accepted").equals("true")) {
+                if (sendAcceptEmailToUser(userEmail)) {
+                    return "200 OK";
+                } else {
+                    return "ERROR!";
+                }
+            } else {
+                if (sendRejectEmailToUser(userEmail)) {
+                    return "200 OK";
+                } else {
+                    return "ERROR!";
+                }
             }
-            return "OK";
+
         }
     }
 
