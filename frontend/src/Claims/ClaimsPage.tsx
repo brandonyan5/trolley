@@ -1,22 +1,31 @@
 import React, {useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import NavBar from '../SharedComponents/NavBar' 
+
 interface ClaimsPageProps {
     isLoggedIn: boolean,
 }
 
-function ClaimsPage(props: ClaimsPageProps) {
-    let navigateTo = useNavigate()
+function ClaimsPage() {
 
+
+    const auth = getAuth()
     // redirect to login page if user is not already logged in
-    useEffect(() => {
-        if (!props.isLoggedIn) {
+    let navigateTo = useNavigate()
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
             navigateTo("/login")
         }
-    })
+
+    });
 
     return (
         <div>
-            <p>My claims page</p>
+            <NavBar />
+            <div className="claims-page">
+                Claims Page
+            </div>
         </div>
     )
 }

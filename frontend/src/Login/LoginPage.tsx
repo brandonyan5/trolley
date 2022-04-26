@@ -25,7 +25,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-function LoginPage(props: LoginPageProps) {
+function LoginPage() {
     
     const navigateTo = useNavigate()
 
@@ -40,8 +40,7 @@ function LoginPage(props: LoginPageProps) {
             // The signed-in user info.
             const user = result.user;
             
-            // set props to logged in
-            props.setLoggedIn(true)
+
             // redirect to marketplace using useNavigation hook (defined above)
             navigateTo("/home")
 
