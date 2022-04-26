@@ -1,11 +1,9 @@
 body {
-    justify-content: center;
-    align-items: center;
-    height: auto;
     background-size: cover;
     display: flex;
     flex-direction: column;
     background: #031C34;
+    justify-content: space-evenly;
 }
 
 .login {
@@ -13,13 +11,16 @@ body {
     justify-content: center;
     flex-direction: column;
     border: 2px solid #FFFFFF;
-    box-sizing: border-box;
     border-radius: 15px;
-    padding-right: 120px;
-    padding-left: 120px;
-    padding-bottom: 50px;
-    margin-top: 8pc;
+    padding-bottom: 7%;
+    padding-top: 7%;
+    
     background: #031C34;
+    box-sizing: border-box;
+    margin-left: 28%;
+    margin-right: 28%;
+    margin-top: 8pc;
+    
 
 }
 .login-header {
@@ -35,7 +36,6 @@ body {
 .dolly-icon {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 3em;
     margin-bottom: 2em;
 }
 
