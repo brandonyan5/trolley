@@ -1,4 +1,4 @@
-package edu.brown.cs.student.main.sorter;
+package edu.brown.cs.student.main.filter;
 
 import edu.brown.cs.student.main.listing.Listing;
 
