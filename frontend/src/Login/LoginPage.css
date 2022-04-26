@@ -2,7 +2,6 @@ body {
     background-size: cover;
     display: flex;
     flex-direction: column;
-    background: #031C34;
     justify-content: space-evenly;
 }
 
@@ -19,10 +18,24 @@ body {
     box-sizing: border-box;
     margin-left: 28%;
     margin-right: 28%;
-    margin-top: 8pc;
+    margin-bottom: 5%;
+}
+
+.login-body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    background: #031C34;
+    box-sizing: border-box;
+    /* margin-left: 28%;
+    margin-right: 28%;*/
     
 
 }
+
+
+
 .login-header {
     color: white;
     font-family: 'Helvetica';

@@ -58,10 +58,12 @@ function LoginPage() {
 
     return (     
         
-        <div className = "login">
-            <Icon icon="mdi:dolly" className = 'dolly-icon' color="white" width='100px'/>
-            <h2 className = "login-header">Trolley</h2>
-            <button className="login-button" onClick = {newLogin}>Login with Google</button>    
+        <div className = "login-body">
+            <div className = "login">
+                <Icon icon="mdi:dolly" className = 'dolly-icon' color="white" width='100px'/>
+                <h2 className = "login-header">Trolley</h2>
+                <button className="login-button" onClick = {newLogin}>Login with Google</button>    
+            </div>
         </div>
     );
 }
