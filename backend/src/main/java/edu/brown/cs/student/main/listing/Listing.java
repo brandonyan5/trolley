@@ -1,6 +1,9 @@
 package edu.brown.cs.student.main.listing;
 
-public class Listing {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Listing{
     public String getAddress() {
         return address;
     }
@@ -34,6 +37,9 @@ public class Listing {
     private String ownerEmail;
     private String userEmail;
     private String listingName;
+    private List<Double> numeric;
+    private List<Double> normalizedNumeric;
+    private Double euclideanDistance;
 
     public String getListingName() {
         return listingName;
@@ -56,5 +62,37 @@ public class Listing {
         this.ownerEmail = ownerEmail;
         this.userEmail = userEmail;
         this.listingName = listingName;
+    }
+
+    public List<Double> getNumeric() {
+        return this.numeric;
+    }
+
+    public Double geteuclideanDistance() {
+        return this.euclideanDistance;
+    }
+
+    public void seteuclideanDistance(Double dist) {
+        this.euclideanDistance = dist;
+    }
+
+    public List<Double> getNormalizedNumeric() {
+        return this.normalizedNumeric;
+    }
+
+    public void setNormalizedNumeric(List<Double> ls) {
+        this.normalizedNumeric = ls;
+    }
+
+    public void setDistance(Double dist) {
+        this.distance = dist;
+    }
+
+    public void setNumeric() {
+        List<Double> x = new ArrayList<>();
+        x.add(price);
+        x.add(area);
+        x.add(distance); // make sure to call setDistance before doing this
+        this.numeric = x;
     }
 }
