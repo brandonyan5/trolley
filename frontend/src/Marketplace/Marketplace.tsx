@@ -4,10 +4,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
 
 interface MarketplaceProps {
-    isLoggedIn: boolean
+    // isLoggedIn: boolean
 }
 
-function Marketplace() {
+function Marketplace(props: MarketplaceProps) {
     
 
     const auth = getAuth()

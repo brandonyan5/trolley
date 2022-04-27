@@ -8,10 +8,10 @@ import { Icon } from '@iconify/react';
 
 import "./NavBar.css"
 interface NavBarProps {
-    setLoggedIn: any
+    // setLoggedIn: any
 }
 
-function NavBar() {
+function NavBar(props: NavBarProps) {
 
     let navigateTo = useNavigate()
 

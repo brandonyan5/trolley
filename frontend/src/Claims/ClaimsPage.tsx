@@ -4,10 +4,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
 
 interface ClaimsPageProps {
-    isLoggedIn: boolean,
+    // isLoggedIn: boolean,
 }
 
-function ClaimsPage() {
+function ClaimsPage(props: ClaimsPageProps) {
 
 
     const auth = getAuth()
@@ -17,7 +17,6 @@ function ClaimsPage() {
         if (!user) {
             navigateTo("/login")
         }
-
     });
 
     return (
