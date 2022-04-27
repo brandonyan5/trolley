@@ -11,18 +11,19 @@ public class Filter {
     public static List<Double> prices;
     public static Double distance;
 
-//    public Filter(List<Double> dates, List<Double> areas, List<Double> prices, Double distance) {
+    public Filter(List<Double> dates, List<Double> prices, List<Double> areas, Double distance) {
 //        this.dates = dates;
-//        this.areas = areas;
-//        this.prices = prices;
-//        this.distance = distance;
-//    }
+        this.areas = areas;
+        this.prices = prices;
+        this.distance = distance;
+    }
 
     public static List<Listing> isValid(List<Listing> listingLIst) {
         List<Listing> finalList = new ArrayList<>();
         for (Listing ls: listingLIst) {
             if(ls.getPrice() >= prices.get(0) && ls.getPrice() <= prices.get(1)
                     && ls.getArea() >= areas.get(0) && ls.getArea() <= areas.get(1)
+                    && ls.getDistance() <= distance
             ) {
                 finalList.add(ls);
             }
