@@ -4,10 +4,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
 
 interface ProfilePageProps {
-    isLoggedIn: boolean
+    // isLoggedIn: boolean
 }
 
-function ProfilePage() {
+function ProfilePage(props: ProfilePageProps) {
 
     const auth = getAuth()
     // redirect to login page if user is not already logged in

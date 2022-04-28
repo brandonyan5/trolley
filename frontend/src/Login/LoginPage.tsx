@@ -8,7 +8,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 
 interface LoginPageProps {
-    setLoggedIn: any
+    // setLoggedIn: any
 }
 
 // Web app's Firebase configuration
@@ -25,7 +25,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-function LoginPage() {
+function LoginPage(props: LoginPageProps) {
     
     const navigateTo = useNavigate()
 
