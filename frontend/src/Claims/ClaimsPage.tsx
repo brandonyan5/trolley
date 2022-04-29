@@ -9,7 +9,6 @@ interface ClaimsPageProps {
 
 function ClaimsPage(props: ClaimsPageProps) {
 
-
     const auth = getAuth()
     // redirect to login page if user is not already logged in
     let navigateTo = useNavigate()

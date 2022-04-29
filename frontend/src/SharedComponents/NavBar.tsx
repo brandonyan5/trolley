@@ -13,7 +13,7 @@ interface NavBarProps {
 
 function NavBar(props: NavBarProps) {
 
-    let navigateTo = useNavigate()
+    const navigateTo = useNavigate()
 
     function signOutUser() {
         const auth = getAuth();

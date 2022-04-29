@@ -1,0 +1,30 @@
+.listing-wrapper {
+    border: 1px solid black;
+    overflow: hidden;
+    background: white;
+    flex-basis: 33%;
+    display: flex;
+    flex-direction: row;
+    max-height: 150px;
+}
+
+.listing-image {
+    flex-basis: 40%;
+    height: auto;
+    overflow:hidden;
+}
+
+.listing-image img {
+    height: 100%;
+    width: auto;
+    display: block;
+}
+.listing-info {
+    flex-basis: 60%;
+    padding: 16px
+}
+
+#address {
+    margin: 5px 0;
+    font-weight: 500;
+}

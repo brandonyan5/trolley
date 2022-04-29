@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { BrowserRouter as Router, Route, Routes, Link} from "react-router-dom";
 import "./App.css";
-import LoginPage from "./Login/LoginPage";
+import { LoginPage } from "./Login/LoginPage";
 import Marketplace from "./Marketplace/Marketplace";
 import Error from "./SharedComponents/Error";
 import ListingsPage from "./Listings/ListingsPage";
@@ -14,7 +14,6 @@ function App() {
 
     return (
         <Router>
-
             <Routes>
                 {/* Define all routes (pages) in the app here and declare what page component should be rendered */}
                 <Route path="/" element={<Marketplace />}/>

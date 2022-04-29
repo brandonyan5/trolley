@@ -12,7 +12,7 @@ interface LoginPageProps {
 }
 
 // Web app's Firebase configuration
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyCavqS3bFTn25JSvlJaiJm24DwvOHaCKzA",
   authDomain: "trolley-638e8.firebaseapp.com",
   databaseURL: "https://trolley-638e8-default-rtdb.firebaseio.com",
@@ -25,7 +25,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-function LoginPage(props: LoginPageProps) {
+export function LoginPage(props: LoginPageProps) {
     
     const navigateTo = useNavigate()
 
@@ -68,4 +68,3 @@ function LoginPage(props: LoginPageProps) {
     );
 }
 
-export default LoginPage;

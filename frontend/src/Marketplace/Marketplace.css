@@ -1,0 +1,20 @@
+.marketplace {
+    height: 100%;
+}
+.marketplace-content {
+    background: pink;
+    height: 100%;
+}
+
+.listings-wrapper {
+    width: 80%;
+    margin: 0 auto;
+    background: gray;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 30px;
+    row-gap: 30px;
+    padding: 50px 0;
+}
