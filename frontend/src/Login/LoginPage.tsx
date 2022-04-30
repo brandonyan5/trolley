@@ -2,7 +2,7 @@ import React from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import "./LoginPage.css"
 import { Icon } from '@iconify/react';
-
+import { getDatabase, ref, onValue, DataSnapshot, set} from "firebase/database";
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
@@ -29,6 +29,38 @@ export function LoginPage(props: LoginPageProps) {
     
     const navigateTo = useNavigate()
 
+    /**
+     * Checks the user id of the user and adds them to the database if
+     * their information isn't already stored 
+     */
+    function storeUser() {
+        const auth = getAuth();
+        const db = getDatabase();
+        const user  = auth.currentUser
+        const userRef = ref(db, 'users/' + user!.uid);
+
+        // Check if entry exists in database, if not, add them
+        onValue(userRef, (snapshot) => {
+          if(!snapshot.exists()) {
+            set(ref(db, 'users/'+user!.uid), {
+                claims : "",
+                email : user?.email,
+                listings : "",
+                name: user?.displayName,
+                address: "",
+                phone: "",
+                show_phone: true,
+                show_email: true
+
+            });
+          }
+        },
+        {
+            onlyOnce: true
+        });
+    
+      }
+
     const newLogin = () => {
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
@@ -39,7 +71,9 @@ export function LoginPage(props: LoginPageProps) {
             const token = credential!.accessToken;
             // The signed-in user info.
             const user = result.user;
-            
+
+            // Add user to the database if not already there
+            storeUser()
 
             // redirect to marketplace using useNavigation hook (defined above)
             navigateTo("/home")

@@ -7,6 +7,8 @@ import Error from "./SharedComponents/Error";
 import ListingsPage from "./Listings/ListingsPage";
 import ClaimsPage from "./Claims/ClaimsPage";
 import ProfilePage from "./Profile/ProfilePage";
+import UserView from "./ProductPages/UserView";
+
 
 function App() {
     // keep track of logged in state
