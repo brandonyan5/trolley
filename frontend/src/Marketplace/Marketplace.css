@@ -4,6 +4,7 @@
 .marketplace-content {
     background: pink;
     height: 100%;
+    padding: 50px 0;
 }
 
 .listings-wrapper {

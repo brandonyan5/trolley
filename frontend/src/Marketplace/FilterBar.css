@@ -1,9 +1,24 @@
 .filter-bar {
     width: 80%;
-    padding: 20px 0 20px 0;
+    padding: 20px 30px;
     background: red;
     margin: 20px auto;
-    display: flex
+    display: flex;
+    column-gap: 20px;
+}
+
+.date-range-wrapper {
+    height:0;
+
+    z-index: 100;
+}
+.rdrCalendarWrapper {
+    border-radius: 5px;
+}
+
+/* make sliders have dynamic width */
+.css-j8gyih-TwoThumbInputRange:nth-child(2) {
+    /*width: 100px !important;*/
 }
 
 /* hide left slide thumb for distance filter and restore slider color to fill left edge*/
@@ -12,4 +27,15 @@
 }
 .css-j8gyih-TwoThumbInputRange:nth-of-type(2) .css-105mnqz-InputRange:nth-of-type(1) {
     display: none;
+}
+
+/* add units to slider labels ($, sqft, mi.) */
+.css-j8gyih-TwoThumbInputRange:nth-of-type(1) small:before {
+    content: "$"
+}
+.css-j8gyih-TwoThumbInputRange:nth-of-type(2) small:after {
+    content: " mi."
+}
+.css-j8gyih-TwoThumbInputRange:nth-of-type(3) small:after {
+    content: " sqft"
 }

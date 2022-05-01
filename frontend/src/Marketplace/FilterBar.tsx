@@ -1,14 +1,19 @@
 import React from 'react';
 import {TwoThumbInputRange} from "react-two-thumb-input-range";
 import "./FilterBar.css";
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import { DateRange } from "react-date-range";
 
 interface FilterBarProps {
     priceFilterRange: [number, number]
     areaFilterRange: [number, number]
     distanceFilterRange: [number, number] // filter for distances below the max tolerable distance
+    dateFilterRange: any
     setPriceFilterRange: any
     setAreaFilterRange: any
     setDistanceFilterRange: any
+    setDateFilterRange: any
 }
 
 function FilterBar(props: FilterBarProps) {
@@ -33,6 +38,10 @@ function FilterBar(props: FilterBarProps) {
         if (range[1] > 0) {
             props.setDistanceFilterRange([0, range[1]])
         }
+    }
+
+    const handleDateSelect = (date: Date) => {
+        console.log(date); // native Date object
     }
 
     return (
@@ -61,6 +70,18 @@ function FilterBar(props: FilterBarProps) {
                 onChange={handleAreaFilterChange}
                 inputStyle={{width: "200px;"}}
             />
+
+
+            <div className="date-range-wrapper">
+                <DateRange
+                    editableDateInputs={true}
+                    onChange={item => props.setDateFilterRange([item.selection])}
+                    moveRangeOnFirstSelection={false}
+                    ranges={props.dateFilterRange}
+                    minDate={new Date()}
+                />
+            </div>
+
         </div>
     );
 }

@@ -12,9 +12,7 @@ import React from "react";
 //   }
 export const getImageSrc = async (relativeURL: string) => {
     const storage = getStorage()
-
     // return a promise once the image has been successfully retrieved
-    // TODO: replace second argument below with relativeURL when ready
     return await getDownloadURL(ref(storage, relativeURL))
 }
 
@@ -23,8 +21,7 @@ export const getImageSrc = async (relativeURL: string) => {
 export const uploadImage = (e: React.ChangeEvent<HTMLInputElement>, relativeSavePath: string) => {
     console.log("uploading")
 
-    // get array of files (should only be size 1 because <input type="file"> gives popup that
-    // only accepts 1 file
+    // get array of files (should only be size 1 because <input type="file"> gives popup that only accepts 1 file
     const files: File[] = Array.from(e.target.files!)
     console.log("files to upload: ", files)
 
@@ -41,4 +38,13 @@ export const uploadImage = (e: React.ChangeEvent<HTMLInputElement>, relativeSave
     } else {
         console.log("No image selected!")
     }
+}
+
+// converts raw Date objects to date strings of the format "MMM DD" (e.g. Jan 1, Dec 31)
+export const getMonthDate = (date: Date) => {
+    const options = {
+        month: 'short',
+        day: 'numeric'
+    } as const
+    return date.toLocaleDateString('en-us', options)
 }
