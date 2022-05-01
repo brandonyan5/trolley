@@ -2,8 +2,10 @@ package edu.brown.cs.student.main;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+//import edu.brown.cs.student.main.email.EmailOwner;
+import edu.brown.cs.student.main.filter.Filter;
 import edu.brown.cs.student.main.listing.Listing;
-import edu.brown.cs.student.main.sorter.Filter;
+import edu.brown.cs.student.main.sorter.Sorter;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import netscape.javascript.JSObject;
@@ -154,19 +156,33 @@ public final class Main {
 
                 Listing newListing = new Listing(address, Double.parseDouble(price), Double.parseDouble(area),
                         dateStart, dateEnd, ownerEmail, userEmail, eachKey);
-                newListing.setDistance(userAddress);  //this method in Listing class updates the private distance var at the top of the Listing class
+                newListing.setDistanceGoogleMaps(userAddress);  //this method in Listing class updates the private distance var at the top of the Listing class
+
+//                System.out.println(newListing.getListingName());
+////                System.out.println(newListing.getDistance());
+//                //System.out.println(newListing.geteuclideanDistance());
+//                System.out.println();
+
                 tempListings.add(newListing);
-                //then make ls object
-                //then call ls.setDistance(user_address)
-                //setDistance method is in listing class
-                //then add to a list
-                //then pass list into isValid - which returns a new list of listings with bad listings dropped
-                //then pass that into sort(), which returns the sorted list of listings
-                //then i convert that list of listings into a JSON, and return that at the end of this handler
             }
             List<Listing> filteredListings = Filter.isValid(tempListings);
-            //List<Listing> sortedListings = Listing.sortListings(filteredListings);
-            List<Listing> sortedListings = filteredListings;
+            Sorter theSorter = new Sorter();
+            List<Listing> sortedListings = theSorter.sortAll(filteredListings);
+
+            for (Listing eachSorted : sortedListings) {
+                System.out.println(eachSorted.getListingName());
+                System.out.println(eachSorted.getDistance());
+                System.out.println(eachSorted.geteuclideanDistance());
+                System.out.println();
+                System.out.println();
+                System.out.println();
+                System.out.println();
+                System.out.println();
+            }
+
+
+
+
 
             Map<String, Map<String, String>> returnListings = new HashMap<>();
             for (Listing eachListing : sortedListings) {
@@ -187,7 +203,6 @@ public final class Main {
                 innerMap.put("Date_end", dateEnd);
                 innerMap.put("Owner_email", ownerEmail);
                 innerMap.put("User_email", userEmail);
-                System.out.println(innerMap);
 
                 returnListings.put(listingName, innerMap);
             }
@@ -210,7 +225,7 @@ public final class Main {
 //                JSONObject theValue = reqJSON.getJSONObject(eachKey);
 //                ownerEmail = theValue.getString("Owner_email");
 //            }
-//            if (sendEmailToOwner(ownerEmail)) {
+//            if (EmailOwner.sendEmailToOwner(ownerEmail)) {
 //                return "200 OK";
 //            } else {
 //                return "ERROR!";

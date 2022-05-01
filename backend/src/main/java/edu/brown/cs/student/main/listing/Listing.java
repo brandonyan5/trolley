@@ -97,7 +97,7 @@ public class Listing {
         this.numeric = x;
     }
 
-    public void setDistanceForReal(String userAddress) {
+    public void setDistanceGoogleMaps(String userAddress) {
         Random rand = new Random();
         Double randomDouble = rand.nextDouble() * 10;
         this.distance = randomDouble;
