@@ -2,10 +2,13 @@
     border: 1px solid black;
     overflow: hidden;
     background: white;
-    flex-basis: 33%;
+    flex-basis: 40%;
     display: flex;
     flex-direction: row;
     max-height: 150px;
+}
+.listing-wrapper p {
+    margin: 0
 }
 
 .listing-image {

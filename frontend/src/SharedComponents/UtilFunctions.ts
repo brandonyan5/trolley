@@ -29,7 +29,7 @@ export const uploadImage = (e: React.ChangeEvent<HTMLInputElement>, relativeSave
     console.log("files to upload: ", files)
 
     // only upload if a file is selected
-    if (files.length == 1) {
+    if (files.length === 1) {
         // Get a reference to the storage
         const storage = getStorage();
         // Create a reference to the listing's image location (will create if doesn't already exist)

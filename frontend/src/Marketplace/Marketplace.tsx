@@ -1,16 +1,18 @@
+// @ts-ignore
+
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar'
 import "./Marketplace.css"
-import {firebaseConfig} from "../Login/LoginPage";
 import Listing, {ListingData} from "../SharedComponents/Listing";
 import {uploadImage} from "../SharedComponents/UtilFunctions"
 import { getDatabase, ref, onValue } from "firebase/database";
+import FilterBar from "./FilterBar";
 
 
 interface MarketplaceProps {
-    // isLoggedIn: boolean
+
 }
 
 type ListingsData = {
@@ -32,7 +34,10 @@ function Marketplace(props: MarketplaceProps) {
 
     // set state for all listings in marketplace (dictionary of dictionaries where each dictionary is for one listing)
     const [listingsData, setListingsData] = useState<ListingsData>({})
-
+    // state for filters
+    const [priceFilterRange, setPriceFilterRange] = useState<[number, number]>([0,20])
+    const [areaFilterRange, setAreaFilterRange] = useState<[number, number]>([50,300])
+    const [distanceFilterRange, setDistanceFilterRange] = useState<[number, number]>([0,3]) // distance in miles
 
     const getAllListings = () => {
         // get reference to db
@@ -47,29 +52,35 @@ function Marketplace(props: MarketplaceProps) {
         })
     }
 
-    // get all listings data and start listener once when marketplace is initially rendered
+
+
+    // get all listings data and start db listener once when marketplace is initially rendered
     useEffect(() => {
         getAllListings()
     }, [])
+
+    useEffect(() => {
+        console.log("price: " + priceFilterRange)
+        console.log("dist: " + distanceFilterRange)
+        console.log("area:" + areaFilterRange)
+    }, [priceFilterRange, areaFilterRange, distanceFilterRange])
 
     return (
         <div className="marketplace">
             <NavBar />
             <div className="marketplace-content">
-                <div className="filters-bar">
-
-                </div>
 
                 <p>upload img1</p>
                 <input onChange={(e) => uploadImage(e, "product1/img1")} type="file"/>
-                <p>upload img2</p>
-                <input onChange={(e) => uploadImage(e, "product2/img1")} type="file"/>
-                <p>upload img3</p>
-                <input onChange={(e) => uploadImage(e, "product3/img1")} type="file"/>
-                <p>upload img4</p>
-                <input onChange={(e) => uploadImage(e, "product4/img1")} type="file"/>
-                <p>upload img5</p>
-                <input onChange={(e) => uploadImage(e, "product5/img1")} type="file"/>
+
+                <FilterBar
+                    priceFilterRange={priceFilterRange}
+                    areaFilterRange={areaFilterRange}
+                    distanceFilterRange={distanceFilterRange}
+                    setPriceFilterRange={setPriceFilterRange}
+                    setAreaFilterRange={setAreaFilterRange}
+                    setDistanceFilterRange={setDistanceFilterRange}
+                />
 
                 <div className="listings-wrapper">
                     { Object.keys(listingsData).length > 0 &&

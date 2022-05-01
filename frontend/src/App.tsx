@@ -9,8 +9,8 @@ import ClaimsPage from "./Claims/ClaimsPage";
 import ProfilePage from "./Profile/ProfilePage";
 
 function App() {
-    // keep track of logged in state
-    const [isLoggedIn, setLoggedIn] = useState<boolean>(false)
+    // // keep track of logged in state
+    // const [isLoggedIn, setLoggedIn] = useState<boolean>(false)
 
     return (
         <Router>

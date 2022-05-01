@@ -32,7 +32,7 @@ function Listing(props: ListingProps) {
     useEffect(() => {
         // path to image is in the format "product<number>/img<number>"
         loadImg(`${props.listingName}/img1`)
-    }, [])
+    }, [props.listingName])
 
 
     // TODO: convert date to Jan 1 - Dec 31 instead of full dates?
@@ -41,10 +41,10 @@ function Listing(props: ListingProps) {
     return (
         <div className="listing-wrapper">
             <div className="listing-image">
-                <img src={img} className="listing-image"/>
+                <img src={img} className="listing-image" alt="Listing"/>
             </div>
             <div className="listing-info">
-                <h2 id="address">{props.data.address}</h2>
+                <h4 id="address">{props.data.address}</h4>
                 <p>{props.data.date_start} - {props.data.date_end}</p>
                 <p>{props.data.area} sqft.</p>
                 <p>${props.data.price}/day</p>
