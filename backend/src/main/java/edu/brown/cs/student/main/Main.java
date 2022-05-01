@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 //import edu.brown.cs.student.main.email.EmailOwner;
 //import edu.brown.cs.student.main.email.EmailOwner;
 //import edu.brown.cs.student.main.email.EmailOwner;
+import edu.brown.cs.student.main.email.EmailOwner;
 import edu.brown.cs.student.main.filter.Filter;
 import edu.brown.cs.student.main.listing.Listing;
 import edu.brown.cs.student.main.sorter.Sorter;
@@ -19,6 +20,23 @@ import spark.Route;
 import spark.Spark;
 import java.sql.SQLException;
 import java.util.*;
+
+// This is a method for calculating the distance between two locations
+
+//function haversine_distance(mk1, mk2) {
+//        var R = 3958.8; // Radius of the Earth in miles
+//        var rlat1 = mk1.position.lat() * (Math.PI/180); // Convert degrees to radians
+//        var rlat2 = mk2.position.lat() * (Math.PI/180); // Convert degrees to radians
+//        var difflat = rlat2-rlat1; // Radian difference (latitudes)
+//        var difflon = (mk2.position.lng()-mk1.position.lng()) * (Math.PI/180); // Radian difference (longitudes)
+//
+//        var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+//        return d;
+//        }
+
+
+// This is how you actually get the coordinates from the addresses
+// https://stackoverflow.com/questions/3490622/get-latitude-and-longitude-based-on-location-name-with-google-autocomplete-api
 
 /**
  * The Main class of our project. This is where execution begins.
@@ -80,7 +98,7 @@ public final class Main {
         
         // Put Routes Here
         Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
-//        Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
+        Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
 //        Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
         Spark.init();
     }
@@ -209,25 +227,25 @@ public final class Main {
     }
 
 
-//    private static class EmailOwnerOnClaim implements Route {
-//        @Override
-//        public String handle(Request request, Response response) throws Exception {
-//            JSONObject reqJSON = new JSONObject(request.body());
-//            String ownerEmail = "";
-//
-//            Iterator<String> iterator = reqJSON.keys();
-//            while (iterator.hasNext()) {
-//                String eachKey = iterator.next();
-//                JSONObject theValue = reqJSON.getJSONObject(eachKey);
-//                ownerEmail = theValue.getString("Owner_email");
-//            }
-//            if (EmailOwner.sendEmailToOwner(ownerEmail)) {
-//                return "200 OK";
-//            } else {
-//                return "ERROR!";
-//            }
-//        }
-//    }
+    private static class EmailOwnerOnClaim implements Route {
+        @Override
+        public String handle(Request request, Response response) throws Exception {
+            JSONObject reqJSON = new JSONObject(request.body());
+            String ownerEmail = "";
+
+            Iterator<String> iterator = reqJSON.keys();
+            while (iterator.hasNext()) {
+                String eachKey = iterator.next();
+                JSONObject theValue = reqJSON.getJSONObject(eachKey);
+                ownerEmail = theValue.getString("Owner_email");
+            }
+            if (EmailOwner.sendEmailToOwner(ownerEmail)) {
+                return "200 OK";
+            } else {
+                return "ERROR!";
+            }
+        }
+    }
 //
 //    private static class EmailUserOnDecision implements Route {
 //        @Override
