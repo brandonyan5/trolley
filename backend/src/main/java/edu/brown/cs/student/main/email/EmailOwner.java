@@ -1,61 +1,46 @@
 //package edu.brown.cs.student.main.email;
 //
-//
-//
-//import javax.mail.Message;
-//import javax.mail.MessagingException;
-//import javax.mail.Session;
-//import javax.mail.Transport;
-//import javax.mail.internet.InternetAddress;
-//import javax.mail.internet.MimeMessage;
+//import java.io.UnsupportedEncodingException;
 //import java.util.Properties;
 //
+//import javax.mail.*;
+//import javax.mail.internet.*;
+//
+//
 //public class EmailOwner {
-//    public static boolean sendEmailToOwner (String ownerEmail) {
-//        // email ID of Recipient.
-//        String recipient = ownerEmail;
 //
-//        // email ID of  Sender.
-//        String sender = "brandon78777@gmail.com";
+//    public static boolean sendEmailToOwner(String ownerEmail) throws MessagingException {
+//        Properties prop = new Properties();
+//        prop.put("mail.smtp.auth", true);
+//        prop.put("mail.smtp.starttls.enable", "true");
+//        prop.put("mail.smtp.host", "localhost");
+//        prop.put("mail.smtp.port", "4567");
+//        prop.put("mail.smtp.ssl.trust", "smtp.mailtrap.io");
 //
-//        // using host as localhost
-//        String host = "http://localhost:4567";
+//        Session session = Session.getInstance(prop, new Authenticator() {
+//            @Override
+//            protected PasswordAuthentication getPasswordAuthentication() {
+//                return new PasswordAuthentication("brandon78777@gmail.com", "dudujupiter");
+//            }
+//        });
 //
-//        // Getting system properties
-//        Properties properties = System.getProperties();
+//        Message message = new MimeMessage(session);
+//        message.setFrom(new InternetAddress("brandon78777@gmail.com"));
+//        message.setRecipients(
+//                Message.RecipientType.TO, InternetAddress.parse(ownerEmail));
+//        message.setSubject("Mail Subject");
 //
-//        // Setting up mail server
-//        properties.setProperty("mail.smtp.host", host);
+//        String msg = "This is my first email using JavaMailer";
 //
-//        // creating session object to get properties
-//        Session session = Session.getDefaultInstance(properties);
+//        MimeBodyPart mimeBodyPart = new MimeBodyPart();
+//        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
 //
-//        try
-//        {
-//            // MimeMessage object.
-//            MimeMessage message = new MimeMessage(session);
+//        Multipart multipart = new MimeMultipart();
+//        multipart.addBodyPart(mimeBodyPart);
 //
-//            // Set From Field: adding senders email to from field.
-//            message.setFrom(new InternetAddress(sender));
+//        message.setContent(multipart);
 //
-//            // Set To Field: adding recipient's email to from field.
-//            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-//
-//            // Set Subject: subject of the email
-//            message.setSubject("This is Subject");
-//
-//            // set body of the email.
-//            message.setText("This is a test mail");
-//
-//            // Send email.
-//            Transport.send(message);
-//            System.out.println("Mail successfully sent");
-//            return true;
-//        }
-//        catch (MessagingException mex)
-//        {
-//            mex.printStackTrace();
-//            return false;
-//        }
+//        Transport.send(message);
+//        return true;
 //    }
 //}

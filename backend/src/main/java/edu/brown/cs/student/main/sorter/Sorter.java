@@ -47,10 +47,10 @@ public class Sorter {
 
     public void distanceSetter(List<Listing> listingList) {
         for(Listing ls: listingList) {
-            double priceSquared = Math.pow((ls.getNormalizedNumeric().get(0) - 0), 2); // comparing to lowestPrice (Not necessarily 0, but the scaled value from [0,1] is 0.
-            double areaSquared = Math.pow(1 - ls.getNormalizedNumeric().get(1), 2);
-            double dSquared = Math.pow(ls.getNormalizedNumeric().get(2), 2);
-            double Euclidean = Math.sqrt(10 * dSquared + 10 * priceSquared + 10 * areaSquared);
+            double priceSquared = Math.pow((ls.getNormalizedNumeric().get(0) - 0) * 10, 2); // comparing to lowestPrice (Not necessarily 0, but the scaled value from [0,1] is 0.
+            double areaSquared = Math.pow((1 - ls.getNormalizedNumeric().get(1)) * 10, 2);
+            double dSquared = Math.pow(ls.getNormalizedNumeric().get(2) * 10, 2);
+            double Euclidean = Math.sqrt(dSquared + priceSquared + areaSquared);
             ls.seteuclideanDistance(Euclidean);
         }
     }

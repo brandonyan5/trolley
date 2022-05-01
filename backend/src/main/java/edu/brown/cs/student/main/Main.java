@@ -3,6 +3,8 @@ package edu.brown.cs.student.main;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 //import edu.brown.cs.student.main.email.EmailOwner;
+//import edu.brown.cs.student.main.email.EmailOwner;
+//import edu.brown.cs.student.main.email.EmailOwner;
 import edu.brown.cs.student.main.filter.Filter;
 import edu.brown.cs.student.main.listing.Listing;
 import edu.brown.cs.student.main.sorter.Sorter;
@@ -86,6 +88,10 @@ public final class Main {
 
     //how to convert list of listings back into a JSON
     //how to get lat long from address
+    //todo
+    //get return json in the right order
+    //email
+    //google maps api
     private static class FilterAndSortProducts implements Route {
         @Override
         public String handle(Request request, Response response) throws Exception {
@@ -158,33 +164,23 @@ public final class Main {
                         dateStart, dateEnd, ownerEmail, userEmail, eachKey);
                 newListing.setDistanceGoogleMaps(userAddress);  //this method in Listing class updates the private distance var at the top of the Listing class
 
-//                System.out.println(newListing.getListingName());
-////                System.out.println(newListing.getDistance());
-//                //System.out.println(newListing.geteuclideanDistance());
-//                System.out.println();
-
                 tempListings.add(newListing);
             }
             List<Listing> filteredListings = Filter.isValid(tempListings);
             Sorter theSorter = new Sorter();
+
             List<Listing> sortedListings = theSorter.sortAll(filteredListings);
 
-            for (Listing eachSorted : sortedListings) {
-                System.out.println(eachSorted.getListingName());
-                System.out.println(eachSorted.getDistance());
-                System.out.println(eachSorted.geteuclideanDistance());
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println();
+            for (Listing thing: sortedListings) {
+                System.out.println(thing.getListingName());
+                System.out.println("NORMALIZED PRICE: " + thing.getNormalizedNumeric().get(0));
+                System.out.println("NORMALIZED AREA: " + thing.getNormalizedNumeric().get(1));
+                System.out.println("NORMALIZED DISTANCE: " + thing.getNormalizedNumeric().get(2));
+                System.out.println("EUCLIDEAN DIST: " + thing.geteuclideanDistance());
+                System.out.println("DISTANCE: " + thing.getDistance());
             }
 
-
-
-
-
-            Map<String, Map<String, String>> returnListings = new HashMap<>();
+            LinkedHashMap<String, LinkedHashMap<String, String>> returnListings = new LinkedHashMap<>();
             for (Listing eachListing : sortedListings) {
                 String address = eachListing.getAddress();
                 Double price = eachListing.getPrice();
@@ -195,7 +191,7 @@ public final class Main {
                 String userEmail = eachListing.getUserEmail();
                 String listingName = eachListing.getListingName();
 
-                Map<String, String> innerMap = new HashMap<>();
+                LinkedHashMap<String, String> innerMap = new LinkedHashMap<>();
                 innerMap.put("Address", address);
                 innerMap.put("Price", String.valueOf(price));
                 innerMap.put("Area", String.valueOf(area));
