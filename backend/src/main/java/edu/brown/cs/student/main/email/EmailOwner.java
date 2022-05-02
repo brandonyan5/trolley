@@ -11,49 +11,44 @@ public class EmailOwner {
 
     public static boolean sendEmailToOwner(String ownerEmail) throws MessagingException {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", true);
+        prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true");
-        prop.put("mail.smtp.host", "localhost");
-        prop.put("mail.smtp.port", "4567");
-        prop.put("mail.smtp.ssl.trust", "smtp.mailtrap.io");
-        prop.put("mail.smtp.timeout", 9000);
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
 
         Session session = Session.getDefaultInstance(prop, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("brandon78777@gmail.com", "Dudujupiter1");
+                return new PasswordAuthentication("brandon78777@gmail.com", "CS32Temp");
             }
         });
 
-        System.out.println("HELLO");
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("brandon78777@gmail.com"));
+            message.setRecipients(
+                    Message.RecipientType.TO, InternetAddress.parse(ownerEmail));
+            message.setSubject("Your Listing was Booked! Confirm Now.");
 
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress("brandon78777@gmail.com"));
-        message.setRecipients(
-                Message.RecipientType.TO, InternetAddress.parse(ownerEmail));
-        message.setSubject("Mail Subject");
+            String msg = "Now you can both communicate from here, and confirm the booking and price.";
 
-        String msg = "This is my first email using JavaMailer";
+            MimeBodyPart mimeBodyPart = new MimeBodyPart();
+            mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
 
-        System.out.println("HELLO2");
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(mimeBodyPart);
 
-        MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+            message.setContent(multipart);
+            Transport.send(message);
+            return true;
 
-        System.out.println("HELLO3");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
 
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(mimeBodyPart);
-        System.out.println("HELLO4");
-
-        message.setContent(multipart);
-        System.out.println("HELLO5");
-
-        Transport.send(message);
-        System.out.println("HELLO6");
-
-        return true;
     }
 }
 
 //https://www.baeldung.com/java-email
+//https://stackoverflow.com/questions/31535863/error-when-sending-email-via-java-mail-api

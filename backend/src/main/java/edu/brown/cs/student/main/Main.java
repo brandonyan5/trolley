@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 //import edu.brown.cs.student.main.email.EmailOwner;
 //import edu.brown.cs.student.main.email.EmailOwner;
 import edu.brown.cs.student.main.email.EmailOwner;
+import edu.brown.cs.student.main.email.EmailUser;
 import edu.brown.cs.student.main.filter.Filter;
 import edu.brown.cs.student.main.listing.Listing;
 import edu.brown.cs.student.main.sorter.Sorter;
@@ -99,7 +100,7 @@ public final class Main {
         // Put Routes Here
         Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
         Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
-//        Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
+        Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
         Spark.init();
     }
 
@@ -110,6 +111,7 @@ public final class Main {
     //get return json in the right order
     //email
     //google maps api
+    //email all works, except it doesn't check for an invalid email address. should check in firebase frontend part
     private static class FilterAndSortProducts implements Route {
         @Override
         public String handle(Request request, Response response) throws Exception {
@@ -246,38 +248,39 @@ public final class Main {
             }
         }
     }
-//
-//    private static class EmailUserOnDecision implements Route {
-//        @Override
-//        public String handle(Request request, Response response) throws Exception {
-//            JSONObject reqJSON = new JSONObject(request.body());
-//
-//            String userEmail = "";
-//            Iterator<String> iterator = reqJSON.keys();
-//            while (iterator.hasNext()) {
-//                String eachKey = iterator.next();
-//                if (!eachKey.equals("Accepted")) {
-//                    JSONObject theValue = reqJSON.getJSONObject(eachKey);
-//                    userEmail = theValue.getString("User_email");
-//                }
-//            }
-//
-//            if (reqJSON.getString("Accepted").equals("true")) {
-//                if (sendAcceptEmailToUser(userEmail)) {
-//                    return "200 OK";
-//                } else {
-//                    return "ERROR!";
-//                }
-//            } else {
-//                if (sendRejectEmailToUser(userEmail)) {
-//                    return "200 OK";
-//                } else {
-//                    return "ERROR!";
-//                }
-//            }
-//
-//        }
-//    }
+
+    private static class EmailUserOnDecision implements Route {
+        @Override
+        public String handle(Request request, Response response) throws Exception {
+            JSONObject reqJSON = new JSONObject(request.body());
+
+            String userEmail = "";
+            Iterator<String> iterator = reqJSON.keys();
+            JSONObject theValue = null;
+            while (iterator.hasNext()) {
+                String eachKey = iterator.next();
+                if (!eachKey.equals("Accepted")) {
+                    theValue = reqJSON.getJSONObject(eachKey);
+                    userEmail = theValue.getString("User_email");
+                }
+            }
+
+            if (theValue.getString("Accepted").equals("true")) {
+                if (EmailUser.sendEmailToUserAccepted(userEmail)) {
+                    return "200 OK";
+                } else {
+                    return "ERROR!";
+                }
+            } else {
+                if (EmailUser.sendEmailToUserRejected(userEmail)) {
+                    return "200 OK";
+                } else {
+                    return "ERROR!";
+                }
+            }
+
+        }
+    }
   
 }
 
