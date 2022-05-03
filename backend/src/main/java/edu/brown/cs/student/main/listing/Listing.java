@@ -2,8 +2,9 @@ package edu.brown.cs.student.main.listing;
 
 import java.util.ArrayList;
 import java.util.List;
-
-public class Listing{
+import java.util.Random;
+  
+public class Listing {
     public String getAddress() {
         return address;
     }
@@ -84,7 +85,7 @@ public class Listing{
         this.normalizedNumeric = ls;
     }
 
-    public void setDistance(Double dist) {
+    public void setDistance(Double dist)  {
         this.distance = dist;
     }
 
@@ -95,4 +96,46 @@ public class Listing{
         x.add(distance); // make sure to call setDistance before doing this
         this.numeric = x;
     }
+
+    public void setDistanceForReal(String userAddress) {
+        Random rand = new Random();
+        Double randomDouble = rand.nextDouble() * 10;
+        this.distance = randomDouble;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

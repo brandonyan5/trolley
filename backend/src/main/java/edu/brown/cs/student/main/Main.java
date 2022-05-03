@@ -1,16 +1,19 @@
 //package edu.brown.cs.student.main;
 //
+//import com.google.common.collect.ImmutableMap;
 //import com.google.gson.Gson;
 //import edu.brown.cs.student.main.listing.Listing;
-//import edu.brown.cs.student.main.filter.Filter;
+//import edu.brown.cs.student.main.sorter.Filter;
 //import joptsimple.OptionParser;
 //import joptsimple.OptionSet;
+//import netscape.javascript.JSObject;
+//import org.checkerframework.checker.units.qual.A;
 //import org.json.JSONObject;
 //import spark.Request;
 //import spark.Response;
 //import spark.Route;
 //import spark.Spark;
-//
+//import java.sql.SQLException;
 //import java.util.*;
 //
 ///**
@@ -73,8 +76,8 @@
 //
 //        // Put Routes Here
 //        Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
-//        Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
-//        Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
+////        Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
+////        Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
 //        Spark.init();
 //    }
 //
@@ -90,31 +93,52 @@
 //            Iterator<String> productIterator = productJSON.keys();
 //
 //            JSONObject filterJSON = reqJSON.getJSONObject("Filters");
-//            Iterator<String> filterIterator = filterJSON.keys();
 //            String userAddress = "";
 //
-//            while (filterIterator.hasNext()) {
-//                String eachKey = filterIterator.next();
-//                List<String> dates = (List<String>) filterJSON.getJSONArray("Dates");
-//                List<String> areaRange = (List<String>) filterJSON.getJSONArray("Area");
-//                List<String> priceRange = (List<String>) filterJSON.getJSONArray("Price");
-//                userAddress = filterJSON.getString("user_address");
-//                String distance = filterJSON.getString("Distance");
-//                Filter.dates = dates;
-//                Filter.distance = Double.parseDouble(distance);
+//            List<String> dates = new ArrayList<>();
+//            List<String> areaRange = new ArrayList<>();
+//            List<String> priceRange = new ArrayList<>();
 //
-//                List<Double> newAreas = new ArrayList<>();
-//                for (String eachArea : areaRange) {
-//                    newAreas.add(Double.parseDouble(eachArea));
-//                }
+//            JSONObject datesObject = filterJSON.getJSONObject("Dates");
+//            JSONObject areaObject = filterJSON.getJSONObject("Area");
+//            JSONObject priceObject = filterJSON.getJSONObject("Price");
 //
-//                List<Double> newPrices = new ArrayList<>();
-//                for (String eachPrice : priceRange) {
-//                    newPrices.add(Double.parseDouble(eachPrice));
-//                }
-//                Filter.areas = newAreas;
-//                Filter.prices = newPrices;
+//            Iterator<String> datesIterator = datesObject.keys();
+//            Iterator<String> areaIterator = areaObject.keys();
+//            Iterator<String> priceIterator = priceObject.keys();
+//
+//            while (datesIterator.hasNext()) {
+//                String dateKey = datesIterator.next();
+//                dates.add(dateKey);
+//                dates.add(datesObject.getString(dateKey));
 //            }
+//            while (areaIterator.hasNext()) {
+//                String areaKey = areaIterator.next();
+//                areaRange.add(areaKey);
+//                areaRange.add(areaObject.getString(areaKey));
+//            }
+//            while (priceIterator.hasNext()) {
+//                String priceKey = priceIterator.next();
+//                priceRange.add(priceKey);
+//                priceRange.add(priceObject.getString(priceKey));
+//            }
+//
+//            userAddress = filterJSON.getString("user_address");
+//            String distance = filterJSON.getString("Distance");
+//            Filter.dates = dates;
+//            Filter.distance = Double.parseDouble(distance);
+//
+//            List<Double> newAreas = new ArrayList<>();
+//            for (String eachArea : areaRange) {
+//                newAreas.add(Double.parseDouble(eachArea));
+//            }
+//
+//            List<Double> newPrices = new ArrayList<>();
+//            for (String eachPrice : priceRange) {
+//                newPrices.add(Double.parseDouble(eachPrice));
+//            }
+//            Filter.areas = newAreas;
+//            Filter.prices = newPrices;
 //
 //            List<Listing> tempListings = new ArrayList<>();
 //            while (productIterator.hasNext()) {
@@ -141,7 +165,8 @@
 //                //then i convert that list of listings into a JSON, and return that at the end of this handler
 //            }
 //            List<Listing> filteredListings = Filter.isValid(tempListings);
-//            List<Listing> sortedListings = Listing.sortListings(filteredListings);
+//            //List<Listing> sortedListings = Listing.sortListings(filteredListings);
+//            List<Listing> sortedListings = filteredListings;
 //
 //            Map<String, Map<String, String>> returnListings = new HashMap<>();
 //            for (Listing eachListing : sortedListings) {
@@ -162,9 +187,9 @@
 //                innerMap.put("Date_end", dateEnd);
 //                innerMap.put("Owner_email", ownerEmail);
 //                innerMap.put("User_email", userEmail);
+//                System.out.println(innerMap);
 //
 //                returnListings.put(listingName, innerMap);
-//                //convert back to JSON/GSON somehow - continue here
 //            }
 //            Gson GSON = new Gson();
 //            return GSON.toJson(returnListings);
@@ -172,65 +197,60 @@
 //        }
 //    }
 //
-//    private static class EmailOwnerOnClaim implements Route {
-//        @Override
-//        public String handle(Request request, Response response) throws Exception {
-//            JSONObject reqJSON = new JSONObject(request.body());
-//            String ownerEmail = "";
 //
-//            Iterator<String> iterator = reqJSON.keys();
-//            while (iterator.hasNext()) {
-//                String eachKey = iterator.next();
-//                JSONObject theValue = reqJSON.getJSONObject(eachKey);
-//                ownerEmail = theValue.getString("Owner_email");
-//            }
-//            if (sendEmailToOwner(ownerEmail)) {
-//                return "200 OK";
-//            } else {
-//                return "ERROR!";
-//            }
-//        }
-//    }
-//
-//    private static class EmailUserOnDecision implements Route {
-//        @Override
-//        public String handle(Request request, Response response) throws Exception {
-//            JSONObject reqJSON = new JSONObject(request.body());
-//
-//            String userEmail = "";
-//            Iterator<String> iterator = reqJSON.keys();
-//            while (iterator.hasNext()) {
-//                String eachKey = iterator.next();
-//                if (!eachKey.equals("Accepted")) {
-//                    JSONObject theValue = reqJSON.getJSONObject(eachKey);
-//                    userEmail = theValue.getString("User_email");
-//                }
-//            }
-//
-//            if (reqJSON.getString("Accepted").equals("true")) {
-//                if (sendAcceptEmailToUser(userEmail)) {
-//                    return "200 OK";
-//                } else {
-//                    return "ERROR!";
-//                }
-//            } else {
-//                if (sendRejectEmailToUser(userEmail)) {
-//                    return "200 OK";
-//                } else {
-//                    return "ERROR!";
-//                }
-//            }
-//
-//        }
-//    }
+////    private static class EmailOwnerOnClaim implements Route {
+////        @Override
+////        public String handle(Request request, Response response) throws Exception {
+////            JSONObject reqJSON = new JSONObject(request.body());
+////            String ownerEmail = "";
+////
+////            Iterator<String> iterator = reqJSON.keys();
+////            while (iterator.hasNext()) {
+////                String eachKey = iterator.next();
+////                JSONObject theValue = reqJSON.getJSONObject(eachKey);
+////                ownerEmail = theValue.getString("Owner_email");
+////            }
+////            if (sendEmailToOwner(ownerEmail)) {
+////                return "200 OK";
+////            } else {
+////                return "ERROR!";
+////            }
+////        }
+////    }
+////
+////    private static class EmailUserOnDecision implements Route {
+////        @Override
+////        public String handle(Request request, Response response) throws Exception {
+////            JSONObject reqJSON = new JSONObject(request.body());
+////
+////            String userEmail = "";
+////            Iterator<String> iterator = reqJSON.keys();
+////            while (iterator.hasNext()) {
+////                String eachKey = iterator.next();
+////                if (!eachKey.equals("Accepted")) {
+////                    JSONObject theValue = reqJSON.getJSONObject(eachKey);
+////                    userEmail = theValue.getString("User_email");
+////                }
+////            }
+////
+////            if (reqJSON.getString("Accepted").equals("true")) {
+////                if (sendAcceptEmailToUser(userEmail)) {
+////                    return "200 OK";
+////                } else {
+////                    return "ERROR!";
+////                }
+////            } else {
+////                if (sendRejectEmailToUser(userEmail)) {
+////                    return "200 OK";
+////                } else {
+////                    return "ERROR!";
+////                }
+////            }
+////
+////        }
+////    }
 //
 //}
-//
-//
-//
-//
-//
-//
 //
 //
 //

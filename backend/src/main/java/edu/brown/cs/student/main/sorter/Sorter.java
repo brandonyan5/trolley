@@ -122,8 +122,8 @@ public class Sorter {
         areaRange.add(0.0);
         areaRange.add(1000000.0);
         Filter f = new Filter(new ArrayList<>(), priceRange, areaRange, 500.0);
-        List<Listing> p = f.isValid(l);
-        s.sortAll(p);
+//        List<Listing> p = f.isValid(l);
+        s.sortAll(l);
 
     }
 }
