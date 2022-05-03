@@ -83,11 +83,10 @@ function Marketplace(props: MarketplaceProps) {
             products: listingsData,
             filters: filters
         }
-        console.log(dataToSend)
 
 
         // make POST request to endpoint
-        fetch('http://localhost:4567/getColumnNamesInTable', {
+        fetch('http://localhost:4567/filterAndSortProducts', {
             // Specify the method
             method: 'POST',
             // Specifies that headers should be sent as JSON
@@ -109,6 +108,7 @@ function Marketplace(props: MarketplaceProps) {
                 console.log("")
             } else {
                 console.log("updating listings")
+                console.log(data)
                 setProcessedListingsData(data.result);
             }
         }).catch((error) => {
