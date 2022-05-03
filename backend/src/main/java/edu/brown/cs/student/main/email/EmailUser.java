@@ -8,7 +8,7 @@ import javax.mail.internet.*;
 
 public class EmailUser {
 
-    public static boolean sendEmailToUserAccepted(String userEmail) throws MessagingException {
+    public static boolean sendEmailToUserAccepted(String userEmail, String otherEmail) throws MessagingException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true");
@@ -30,7 +30,7 @@ public class EmailUser {
             message.setSubject("Your Booking was Accepted!");
 
             String msg = "Your booking was accepted by the host, and you can now communicate with the host" +
-                    "though email!";
+                    "though email!\n Email of the host is: " + otherEmail;
 
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
             mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
@@ -49,7 +49,7 @@ public class EmailUser {
 
     }
 
-    public static boolean sendEmailToUserRejected(String userEmail) throws MessagingException {
+    public static boolean sendEmailToUserRejected(String userEmail, String otherEmail) throws MessagingException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true");
@@ -70,7 +70,8 @@ public class EmailUser {
                     Message.RecipientType.TO, InternetAddress.parse(userEmail));
             message.setSubject("Your Booking Was Rejected.");
 
-            String msg = "Your Booking was rejected by the host. Book somewhere else!";
+            String msg = "Your Booking was rejected by the host. Book somewhere else!" +
+                    "\nEmail of host is: " + otherEmail;
 
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
             mimeBodyPart.setContent(msg, "text/html; charset=utf-8");

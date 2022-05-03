@@ -8,7 +8,7 @@ import javax.mail.internet.*;
 
 public class EmailOwner {
 
-    public static boolean sendEmailToOwner(String ownerEmail) throws MessagingException {
+    public static boolean sendEmailToOwner(String ownerEmail, String otherEmail) throws MessagingException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true");
@@ -29,7 +29,8 @@ public class EmailOwner {
                     Message.RecipientType.TO, InternetAddress.parse(ownerEmail));
             message.setSubject("Your Listing was Booked! Confirm Now.");
 
-            String msg = "Now you can both communicate from here, and confirm the booking and price.";
+            String msg = "Now you can both communicate from here, and confirm the booking and price." +
+                    "\n Email of the booker is: " + otherEmail;
 
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
             mimeBodyPart.setContent(msg, "text/html; charset=utf-8");

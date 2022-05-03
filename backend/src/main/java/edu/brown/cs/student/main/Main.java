@@ -223,14 +223,16 @@ public final class Main {
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
             String ownerEmail = "";
+            String otherEmail = "";
 
             Iterator<String> iterator = reqJSON.keys();
             while (iterator.hasNext()) {
                 String eachKey = iterator.next();
                 JSONObject theValue = reqJSON.getJSONObject(eachKey);
                 ownerEmail = theValue.getString("owner_email");
+                otherEmail = theValue.getString("user_email");
             }
-            if (EmailOwner.sendEmailToOwner(ownerEmail)) {
+            if (EmailOwner.sendEmailToOwner(ownerEmail, otherEmail)) {
                 return "200 OK";
             } else {
                 return "ERROR!";
@@ -244,6 +246,7 @@ public final class Main {
             JSONObject reqJSON = new JSONObject(request.body());
 
             String userEmail = "";
+            String otherEmail = "";
             Iterator<String> iterator = reqJSON.keys();
             JSONObject theValue = null;
             while (iterator.hasNext()) {
@@ -251,17 +254,18 @@ public final class Main {
                 if (!eachKey.equals("accepted")) {
                     theValue = reqJSON.getJSONObject(eachKey);
                     userEmail = theValue.getString("user_email");
+                    otherEmail = theValue.getString("owner_email");
                 }
             }
 
             if (theValue.getString("accepted").equals("true")) {
-                if (EmailUser.sendEmailToUserAccepted(userEmail)) {
+                if (EmailUser.sendEmailToUserAccepted(userEmail, otherEmail)) {
                     return "200 OK";
                 } else {
                     return "ERROR!";
                 }
             } else {
-                if (EmailUser.sendEmailToUserRejected(userEmail)) {
+                if (EmailUser.sendEmailToUserRejected(userEmail, otherEmail)) {
                     return "200 OK";
                 } else {
                     return "ERROR!";
