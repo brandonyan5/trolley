@@ -14,6 +14,8 @@ function App() {
     // // keep track of logged in state
     // const [isLoggedIn, setLoggedIn] = useState<boolean>(false)
 
+    
+
     return (
         <Router>
             <Routes>
@@ -24,6 +26,7 @@ function App() {
                 <Route path="/listings" element={<ListingsPage />}/>
                 <Route path="/claims" element={<ClaimsPage />}/>
                 <Route path="/profile" element={<ProfilePage />}/>
+                <Route path="/products" element={<UserView />}/>
                 <Route path="*" element={<Error />}/>
             </Routes>
         </Router>

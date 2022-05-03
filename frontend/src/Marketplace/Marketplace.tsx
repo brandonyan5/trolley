@@ -1,7 +1,7 @@
 // @ts-ignore
 
 import React, {useEffect, useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar'
 import "./Marketplace.css"
@@ -139,6 +139,7 @@ function Marketplace(props: MarketplaceProps) {
     }, [dateFilterRange])
 
 
+
     return (
         <div className="marketplace">
             <NavBar />
@@ -159,10 +160,13 @@ function Marketplace(props: MarketplaceProps) {
                 />
 
                 <div className="listings-wrapper">
+                    
                     { Object.keys(listingsData).length > 0 &&
                         // map each listing JSON data object to a Listing component
                         Object.keys(listingsData).map((listingID) =>
-                            <Listing key={listingID} listingName={listingID} data={listingsData[listingID]} isClaimed={false} />
+                            <Link to  = "/products"  state={{product:listingsData[listingID], listingName: listingID}}>
+                                <Listing key={listingID} listingName={listingID} data={listingsData[listingID]} isClaimed={false} />
+                            </Link>
                         )
                     }
                 </div>
