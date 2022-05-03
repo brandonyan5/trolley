@@ -1,8 +1,43 @@
 package edu.brown.cs.student.main;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+//import edu.brown.cs.student.main.email.EmailOwner;
+//import edu.brown.cs.student.main.email.EmailOwner;
+//import edu.brown.cs.student.main.email.EmailOwner;
+import edu.brown.cs.student.main.email.EmailOwner;
+import edu.brown.cs.student.main.email.EmailUser;
+import edu.brown.cs.student.main.filter.Filter;
+import edu.brown.cs.student.main.listing.Listing;
+import edu.brown.cs.student.main.sorter.Sorter;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import netscape.javascript.JSObject;
+import org.checkerframework.checker.units.qual.A;
+import org.json.JSONObject;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 import spark.Spark;
+import java.sql.SQLException;
+import java.util.*;
+
+// This is a method for calculating the distance between two locations
+
+//function haversine_distance(mk1, mk2) {
+//        var R = 3958.8; // Radius of the Earth in miles
+//        var rlat1 = mk1.position.lat() * (Math.PI/180); // Convert degrees to radians
+//        var rlat2 = mk2.position.lat() * (Math.PI/180); // Convert degrees to radians
+//        var difflat = rlat2-rlat1; // Radian difference (latitudes)
+//        var difflon = (mk2.position.lng()-mk1.position.lng()) * (Math.PI/180); // Radian difference (longitudes)
+//
+//        var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+//        return d;
+//        }
+
+
+// This is how you actually get the coordinates from the addresses
+// https://stackoverflow.com/questions/3490622/get-latitude-and-longitude-based-on-location-name-with-google-autocomplete-api
 
 /**
  * The Main class of our project. This is where execution begins.
@@ -63,7 +98,225 @@ public final class Main {
         Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
         
         // Put Routes Here
-        // Spark.get("/table", new TableHandler());
+        Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
+        Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
+        Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
         Spark.init();
     }
+
+
+    //how to convert list of listings back into a JSON
+    //how to get lat long from address
+    //todo
+    //get return json in the right order
+    //email
+    //google maps api
+    //email all works, except it doesn't check for an invalid email address. should check in firebase frontend part
+    //do date filtering
+    private static class FilterAndSortProducts implements Route {
+        @Override
+        public String handle(Request request, Response response) throws Exception {
+            JSONObject reqJSON = new JSONObject(request.body());
+
+            System.out.println(reqJSON.toString());
+
+            JSONObject productJSON = reqJSON.getJSONObject("dataToSend").getJSONObject("products");
+            Iterator<String> productIterator = productJSON.keys();
+
+            JSONObject filterJSON = reqJSON.getJSONObject("dataToSend").getJSONObject("filters");
+            String userAddress = "";
+
+            List<String> dates = new ArrayList<>();
+            List<String> areaRange = new ArrayList<>();
+            List<String> priceRange = new ArrayList<>();
+
+            JSONObject datesObject = filterJSON.getJSONObject("dates");
+            JSONObject areaObject = filterJSON.getJSONObject("area");
+            JSONObject priceObject = filterJSON.getJSONObject("price");
+
+            Iterator<String> datesIterator = datesObject.keys();
+            Iterator<String> areaIterator = areaObject.keys();
+            Iterator<String> priceIterator = priceObject.keys();
+
+            while (datesIterator.hasNext()) {
+                String dateKey = datesIterator.next();
+                dates.add(dateKey);
+                dates.add(datesObject.getString(dateKey));
+            }
+            while (areaIterator.hasNext()) {
+                String areaKey = areaIterator.next();
+                areaRange.add(areaKey);
+//                System.out.println("STRING/NUMBER: " + areaObject.getString(areaKey));
+                areaRange.add(areaObject.getString(areaKey));
+            }
+            while (priceIterator.hasNext()) {
+                String priceKey = priceIterator.next();
+                priceRange.add(priceKey);
+                priceRange.add(priceObject.getString(priceKey));
+            }
+
+            userAddress = filterJSON.getString("user_address");
+            String distance = filterJSON.getString("distance");
+            Filter.dates = dates;
+            Filter.distance = Double.parseDouble(distance);
+
+            List<Double> newAreas = new ArrayList<>();
+            for (String eachArea : areaRange) {
+                newAreas.add(Double.parseDouble(eachArea));
+            }
+
+            List<Double> newPrices = new ArrayList<>();
+            for (String eachPrice : priceRange) {
+                newPrices.add(Double.parseDouble(eachPrice));
+            }
+            Filter.areas = newAreas;
+            Filter.prices = newPrices;
+
+            List<Listing> tempListings = new ArrayList<>();
+            while (productIterator.hasNext()) {
+                String eachKey = productIterator.next();
+                JSONObject eachProductJSON = productJSON.getJSONObject(eachKey);
+                String address = eachProductJSON.getString("address");
+                String price = eachProductJSON.getString("price");
+                String area = eachProductJSON.getString("area");
+                String dateStart = eachProductJSON.getString("date_start");
+                String dateEnd = eachProductJSON.getString("date_end");
+                String ownerEmail = eachProductJSON.getString("owner_email");
+                String userEmail = eachProductJSON.getString("user_email");
+
+                Listing newListing = new Listing(address, Double.parseDouble(price), Double.parseDouble(area),
+                        dateStart, dateEnd, ownerEmail, userEmail, eachKey);
+                newListing.setDistanceGoogleMaps(userAddress);  //this method in Listing class updates the private distance var at the top of the Listing class
+
+                tempListings.add(newListing);
+            }
+
+            List<Listing> filteredListings = Filter.isValid(tempListings);
+            System.out.println("filteredListings: " + filteredListings.size());
+            Sorter theSorter = new Sorter();
+
+            List<Listing> sortedListings = theSorter.sortAll(filteredListings);
+
+            for (Listing thing: sortedListings) {
+                System.out.println(thing.getListingName());
+                System.out.println("NORMALIZED PRICE: " + thing.getNormalizedNumeric().get(0));
+                System.out.println("NORMALIZED AREA: " + thing.getNormalizedNumeric().get(1));
+                System.out.println("NORMALIZED DISTANCE: " + thing.getNormalizedNumeric().get(2));
+                System.out.println("EUCLIDEAN DIST: " + thing.geteuclideanDistance());
+                System.out.println("DISTANCE: " + thing.getDistance());
+            }
+
+            LinkedHashMap<String, LinkedHashMap<String, String>> returnListings = new LinkedHashMap<>();
+            for (Listing eachListing : sortedListings) {
+                String address = eachListing.getAddress();
+                Double price = eachListing.getPrice();
+                Double area = eachListing.getArea();
+                String dateStart = eachListing.getDate_start();
+                String dateEnd = eachListing.getDate_end();
+                String ownerEmail = eachListing.getOwnerEmail();
+                String userEmail = eachListing.getUserEmail();
+                String listingName = eachListing.getListingName();
+
+                LinkedHashMap<String, String> innerMap = new LinkedHashMap<>();
+                innerMap.put("address", address);
+                innerMap.put("price", String.valueOf(price));
+                innerMap.put("area", String.valueOf(area));
+                innerMap.put("date_start", dateStart);
+                innerMap.put("date_end", dateEnd);
+                innerMap.put("owner_email", ownerEmail);
+                innerMap.put("user_email", userEmail);
+
+                returnListings.put(listingName, innerMap);
+            }
+            Gson GSON = new Gson();
+            return GSON.toJson(returnListings);
+
+        }
+    }
+
+
+    private static class EmailOwnerOnClaim implements Route {
+        @Override
+        public String handle(Request request, Response response) throws Exception {
+            JSONObject reqJSON = new JSONObject(request.body());
+            String ownerEmail = "";
+
+            Iterator<String> iterator = reqJSON.keys();
+            while (iterator.hasNext()) {
+                String eachKey = iterator.next();
+                JSONObject theValue = reqJSON.getJSONObject(eachKey);
+                ownerEmail = theValue.getString("owner_email");
+            }
+            if (EmailOwner.sendEmailToOwner(ownerEmail)) {
+                return "200 OK";
+            } else {
+                return "ERROR!";
+            }
+        }
+    }
+
+    private static class EmailUserOnDecision implements Route {
+        @Override
+        public String handle(Request request, Response response) throws Exception {
+            JSONObject reqJSON = new JSONObject(request.body());
+
+            String userEmail = "";
+            Iterator<String> iterator = reqJSON.keys();
+            JSONObject theValue = null;
+            while (iterator.hasNext()) {
+                String eachKey = iterator.next();
+                if (!eachKey.equals("accepted")) {
+                    theValue = reqJSON.getJSONObject(eachKey);
+                    userEmail = theValue.getString("user_email");
+                }
+            }
+
+            if (theValue.getString("accepted").equals("true")) {
+                if (EmailUser.sendEmailToUserAccepted(userEmail)) {
+                    return "200 OK";
+                } else {
+                    return "ERROR!";
+                }
+            } else {
+                if (EmailUser.sendEmailToUserRejected(userEmail)) {
+                    return "200 OK";
+                } else {
+                    return "ERROR!";
+                }
+            }
+
+        }
+    }
+  
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

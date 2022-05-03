@@ -1,0 +1,43 @@
+
+
+.navbar {
+    background: #031C34;
+
+} 
+
+
+.nav-content {
+    display: flex;
+    flex-direction: row;
+    margin-right: 2pc;
+    margin-top: 0.5pc;
+    
+}
+
+.nav-buttons {
+    color: white;
+    padding-right: 4em;
+    font-weight: 400;
+    font-size: 21px;
+    line-height: 34px;
+    text-decoration: none;
+    margin-left: 2pc;
+
+}
+
+.dolly {
+    margin-left: 1pc;
+}
+
+.dropdown-toggle::after {
+    display: none !important; 
+  }
+
+.profile {
+    margin-left: 2pc;
+}
+
+.toggle {
+    margin-right: 1pc;
+}
+
