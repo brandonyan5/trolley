@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main.email;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import javax.mail.*;
@@ -50,8 +49,6 @@ public class EmailUser {
 
     }
 
-
-
     public static boolean sendEmailToUserRejected(String userEmail) throws MessagingException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", "true");
@@ -93,5 +90,6 @@ public class EmailUser {
     }
 }
 
+//Source:
 //https://www.baeldung.com/java-email
 //https://stackoverflow.com/questions/31535863/error-when-sending-email-via-java-mail-api

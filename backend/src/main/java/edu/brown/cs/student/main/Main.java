@@ -1,10 +1,6 @@
 package edu.brown.cs.student.main;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
-//import edu.brown.cs.student.main.email.EmailOwner;
-//import edu.brown.cs.student.main.email.EmailOwner;
-//import edu.brown.cs.student.main.email.EmailOwner;
 import edu.brown.cs.student.main.email.EmailOwner;
 import edu.brown.cs.student.main.email.EmailUser;
 import edu.brown.cs.student.main.filter.Filter;
@@ -12,14 +8,11 @@ import edu.brown.cs.student.main.listing.Listing;
 import edu.brown.cs.student.main.sorter.Sorter;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import netscape.javascript.JSObject;
-import org.checkerframework.checker.units.qual.A;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.Spark;
-import java.sql.SQLException;
 import java.util.*;
 
 // This is a method for calculating the distance between two locations
@@ -104,12 +97,8 @@ public final class Main {
         Spark.init();
     }
 
-
-    //how to convert list of listings back into a JSON
     //how to get lat long from address
     //todo
-    //get return json in the right order
-    //email
     //google maps api
     //email all works, except it doesn't check for an invalid email address. should check in firebase frontend part
     //do date filtering
@@ -117,9 +106,6 @@ public final class Main {
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
-
-            System.out.println(reqJSON.toString());
-
             JSONObject productJSON = reqJSON.getJSONObject("dataToSend").getJSONObject("products");
             Iterator<String> productIterator = productJSON.keys();
 
@@ -146,7 +132,6 @@ public final class Main {
             while (areaIterator.hasNext()) {
                 String areaKey = areaIterator.next();
                 areaRange.add(areaKey);
-//                System.out.println("STRING/NUMBER: " + areaObject.getString(areaKey));
                 areaRange.add(areaObject.getString(areaKey));
             }
             while (priceIterator.hasNext()) {
@@ -192,7 +177,6 @@ public final class Main {
             }
 
             List<Listing> filteredListings = Filter.isValid(tempListings);
-            System.out.println("filteredListings: " + filteredListings.size());
             Sorter theSorter = new Sorter();
 
             List<Listing> sortedListings = theSorter.sortAll(filteredListings);
@@ -233,7 +217,6 @@ public final class Main {
 
         }
     }
-
 
     private static class EmailOwnerOnClaim implements Route {
         @Override
