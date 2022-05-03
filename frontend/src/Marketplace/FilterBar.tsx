@@ -4,6 +4,7 @@ import "./FilterBar.css";
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRange } from "react-date-range";
+import {getMonthDate} from "../SharedComponents/UtilFunctions";
 
 interface FilterBarProps {
     priceFilterRange: [number, number]
@@ -42,7 +43,15 @@ function FilterBar(props: FilterBarProps) {
 
     const handleDateSelect = (date: Date) => {
         console.log(date); // native Date object
+        //TODO: hide dateRange on select after updating state
     }
+
+    const handleClickDatePreview = () => {
+        // show date picker on top
+
+    }
+
+
 
     return (
         <div className="filter-bar">
@@ -72,6 +81,11 @@ function FilterBar(props: FilterBarProps) {
             />
 
 
+            <div className="date-range-preview">
+                <p>{getMonthDate(props.dateFilterRange[0].startDate)}</p>
+                <div className="date-range-preview-midbar">|</div>
+                <p>{getMonthDate(props.dateFilterRange[0].endDate)}</p>
+            </div>
             <div className="date-range-wrapper">
                 <DateRange
                     editableDateInputs={true}

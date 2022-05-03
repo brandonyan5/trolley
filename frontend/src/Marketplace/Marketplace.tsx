@@ -34,18 +34,21 @@ function Marketplace(props: MarketplaceProps) {
 
     // set state for all listings in marketplace (dictionary of dictionaries where each dictionary is for one listing)
     const [listingsData, setListingsData] = useState<ListingsData>({})
+    // state for filtered/sorted listings (keep separate so that we don't need to re-query firebase for a fresh copy
+    const [processedListingsData, setProcessedListingsData] = useState<ListingsData>({})
     // state for filters
     const [priceFilterRange, setPriceFilterRange] = useState<[number, number]>([0,20])
     const [areaFilterRange, setAreaFilterRange] = useState<[number, number]>([50,300])
     const [distanceFilterRange, setDistanceFilterRange] = useState<[number, number]>([0,3]) // distance in miles
     const [dateFilterRange, setDateFilterRange] = useState([
         {
-            startDate: new Date(),
+            startDate: new Date(), // NOTE: this state type is required by the date picker component
             endDate: new Date(),
             key: 'selection'
         }
-    ]);
+    ])
 
+    /* retrieves ALL listing data from the DB (with a listener attached) and updates state */
     const getAllListings = () => {
         // get reference to db
         const db = getDatabase()
@@ -59,13 +62,71 @@ function Marketplace(props: MarketplaceProps) {
         })
     }
 
+    /* FILTERING & SORTING: pass all listings data to backend and retrieve filtered & sorted listings */
+    const filterAndSortListings = () => {
+        // get all filters in one object
+        const filters = {
+            dates: {
+                [distanceFilterRange[0]]: distanceFilterRange[1]
+            },
+            area: {
+                [areaFilterRange[0]]: areaFilterRange[1]
+            },
+            price: {
+                [priceFilterRange[0]]: priceFilterRange[1]
+            },
+            user_address: "69 Brown st", //TODO: SET AS LOGGED-IN USER'S ADDRESS
+            distance: distanceFilterRange[1] // only use MAX distance
+        }
 
+        const dataToSend = {
+            products: listingsData,
+            filters: filters
+        }
+        console.log(dataToSend)
+
+
+        // make POST request to endpoint
+        fetch('http://localhost:4567/getColumnNamesInTable', {
+            // Specify the method
+            method: 'POST',
+            // Specifies that headers should be sent as JSON
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            },
+            // Specify the body of the request
+            body: JSON.stringify({
+                dataToSend
+            })
+        })
+        .then((response) => {
+            // return the response as JSON
+            return response.json();
+        })
+        .then((data) => {
+            // update state if no error
+            if (data.error !== undefined) {
+                console.log("")
+            } else {
+                console.log("updating listings")
+                setProcessedListingsData(data.result);
+            }
+        }).catch((error) => {
+            console.log("JSON error while fetching sorted listings");
+        })
+    }
 
     // get all listings data and start db listener once when marketplace is initially rendered
     useEffect(() => {
         getAllListings()
     }, [])
 
+    // filter & sort every time the filters/dates are changed by the user
+    useEffect(() => {
+        filterAndSortListings()
+    }, [priceFilterRange, areaFilterRange, distanceFilterRange, dateFilterRange])
+
+    //  ===== TESTING =========
     useEffect(() => {
         console.log("price: " + priceFilterRange)
         console.log("dist: " + distanceFilterRange)
@@ -76,6 +137,7 @@ function Marketplace(props: MarketplaceProps) {
         console.log("start: " + getMonthDate(dateFilterRange[0].startDate))
         console.log("end: " + getMonthDate(dateFilterRange[0].endDate))
     }, [dateFilterRange])
+
 
     return (
         <div className="marketplace">

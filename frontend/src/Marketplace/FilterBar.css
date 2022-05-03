@@ -7,9 +7,22 @@
     column-gap: 20px;
 }
 
+.date-range-preview {
+    padding: 5px 20px;
+    display: flex;
+    background: white;
+    column-gap: 5px;
+    border-radius: 5px;
+}
+.date-range-preview p {
+    margin: 0
+}
+
 .date-range-wrapper {
     height:0;
-
+    top: 220px;
+    position: absolute;
+    /*right: 0;*/
     z-index: 100;
 }
 .rdrCalendarWrapper {
