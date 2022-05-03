@@ -21,7 +21,6 @@ public class Sorter {
     }
 
     public void normalizer(List<Listing> listingList) {
-
         double highestPrice = this.extremePrices(listingList)[0];
         double lowestPrice = this.extremePrices(listingList)[1];
         this.lowestPrice = lowestPrice;
@@ -35,9 +34,11 @@ public class Sorter {
 
         for(Listing ls: listingList) {
             List<Double> temp = new ArrayList<>();
-            double newPrice = (ls.getPrice() - lowestPrice) / (highestPrice - lowestPrice);
-            double newArea = (ls.getArea() - lowestArea) / (highestArea - lowestArea);
-            double newDistance = (ls.getDistance() - lowestDistance) / (highestDistance - lowestDistance);
+
+            double newPrice = (ls.getPrice() - lowestPrice) / (1+ highestPrice - lowestPrice);
+            double newArea = (ls.getArea() - lowestArea) / (1+ highestArea - lowestArea);
+            double newDistance = (ls.getDistance() - lowestDistance) / (1+ highestDistance - lowestDistance);
+
             temp.add(newPrice);
             temp.add(newArea);
             temp.add(newDistance);

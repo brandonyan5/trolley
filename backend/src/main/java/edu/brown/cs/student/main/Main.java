@@ -112,24 +112,27 @@ public final class Main {
     //email
     //google maps api
     //email all works, except it doesn't check for an invalid email address. should check in firebase frontend part
+    //do date filtering
     private static class FilterAndSortProducts implements Route {
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
 
-            JSONObject productJSON = reqJSON.getJSONObject("Products");
+            System.out.println(reqJSON.toString());
+
+            JSONObject productJSON = reqJSON.getJSONObject("dataToSend").getJSONObject("products");
             Iterator<String> productIterator = productJSON.keys();
 
-            JSONObject filterJSON = reqJSON.getJSONObject("Filters");
+            JSONObject filterJSON = reqJSON.getJSONObject("dataToSend").getJSONObject("filters");
             String userAddress = "";
 
             List<String> dates = new ArrayList<>();
             List<String> areaRange = new ArrayList<>();
             List<String> priceRange = new ArrayList<>();
 
-            JSONObject datesObject = filterJSON.getJSONObject("Dates");
-            JSONObject areaObject = filterJSON.getJSONObject("Area");
-            JSONObject priceObject = filterJSON.getJSONObject("Price");
+            JSONObject datesObject = filterJSON.getJSONObject("dates");
+            JSONObject areaObject = filterJSON.getJSONObject("area");
+            JSONObject priceObject = filterJSON.getJSONObject("price");
 
             Iterator<String> datesIterator = datesObject.keys();
             Iterator<String> areaIterator = areaObject.keys();
@@ -143,6 +146,7 @@ public final class Main {
             while (areaIterator.hasNext()) {
                 String areaKey = areaIterator.next();
                 areaRange.add(areaKey);
+//                System.out.println("STRING/NUMBER: " + areaObject.getString(areaKey));
                 areaRange.add(areaObject.getString(areaKey));
             }
             while (priceIterator.hasNext()) {
@@ -152,7 +156,7 @@ public final class Main {
             }
 
             userAddress = filterJSON.getString("user_address");
-            String distance = filterJSON.getString("Distance");
+            String distance = filterJSON.getString("distance");
             Filter.dates = dates;
             Filter.distance = Double.parseDouble(distance);
 
@@ -172,13 +176,13 @@ public final class Main {
             while (productIterator.hasNext()) {
                 String eachKey = productIterator.next();
                 JSONObject eachProductJSON = productJSON.getJSONObject(eachKey);
-                String address = eachProductJSON.getString("Address");
-                String price = eachProductJSON.getString("Price");
-                String area = eachProductJSON.getString("Area");
-                String dateStart = eachProductJSON.getString("Date_start");
-                String dateEnd = eachProductJSON.getString("Date_end");
-                String ownerEmail = eachProductJSON.getString("Owner_email");
-                String userEmail = eachProductJSON.getString("User_email");
+                String address = eachProductJSON.getString("address");
+                String price = eachProductJSON.getString("price");
+                String area = eachProductJSON.getString("area");
+                String dateStart = eachProductJSON.getString("date_start");
+                String dateEnd = eachProductJSON.getString("date_end");
+                String ownerEmail = eachProductJSON.getString("owner_email");
+                String userEmail = eachProductJSON.getString("user_email");
 
                 Listing newListing = new Listing(address, Double.parseDouble(price), Double.parseDouble(area),
                         dateStart, dateEnd, ownerEmail, userEmail, eachKey);
@@ -186,7 +190,9 @@ public final class Main {
 
                 tempListings.add(newListing);
             }
+
             List<Listing> filteredListings = Filter.isValid(tempListings);
+            System.out.println("filteredListings: " + filteredListings.size());
             Sorter theSorter = new Sorter();
 
             List<Listing> sortedListings = theSorter.sortAll(filteredListings);
@@ -212,13 +218,13 @@ public final class Main {
                 String listingName = eachListing.getListingName();
 
                 LinkedHashMap<String, String> innerMap = new LinkedHashMap<>();
-                innerMap.put("Address", address);
-                innerMap.put("Price", String.valueOf(price));
-                innerMap.put("Area", String.valueOf(area));
-                innerMap.put("Date_start", dateStart);
-                innerMap.put("Date_end", dateEnd);
-                innerMap.put("Owner_email", ownerEmail);
-                innerMap.put("User_email", userEmail);
+                innerMap.put("address", address);
+                innerMap.put("price", String.valueOf(price));
+                innerMap.put("area", String.valueOf(area));
+                innerMap.put("date_start", dateStart);
+                innerMap.put("date_end", dateEnd);
+                innerMap.put("owner_email", ownerEmail);
+                innerMap.put("user_email", userEmail);
 
                 returnListings.put(listingName, innerMap);
             }
@@ -239,7 +245,7 @@ public final class Main {
             while (iterator.hasNext()) {
                 String eachKey = iterator.next();
                 JSONObject theValue = reqJSON.getJSONObject(eachKey);
-                ownerEmail = theValue.getString("Owner_email");
+                ownerEmail = theValue.getString("owner_email");
             }
             if (EmailOwner.sendEmailToOwner(ownerEmail)) {
                 return "200 OK";
@@ -259,13 +265,13 @@ public final class Main {
             JSONObject theValue = null;
             while (iterator.hasNext()) {
                 String eachKey = iterator.next();
-                if (!eachKey.equals("Accepted")) {
+                if (!eachKey.equals("accepted")) {
                     theValue = reqJSON.getJSONObject(eachKey);
-                    userEmail = theValue.getString("User_email");
+                    userEmail = theValue.getString("user_email");
                 }
             }
 
-            if (theValue.getString("Accepted").equals("true")) {
+            if (theValue.getString("accepted").equals("true")) {
                 if (EmailUser.sendEmailToUserAccepted(userEmail)) {
                     return "200 OK";
                 } else {
