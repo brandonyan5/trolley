@@ -18,13 +18,13 @@ public class EmailOwner {
         Session session = Session.getDefaultInstance(prop, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("brandon78777@gmail.com", "CS32Temp");
+                return new PasswordAuthentication("trolley.storage32@gmail.com", "CS32Temp");
             }
         });
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress("brandon78777@gmail.com"));
+            message.setFrom(new InternetAddress("trolley.storage32@gmail.com"));
             message.setRecipients(
                     Message.RecipientType.TO, InternetAddress.parse(ownerEmail));
             message.setSubject("Your Listing was Booked! Confirm Now.");
