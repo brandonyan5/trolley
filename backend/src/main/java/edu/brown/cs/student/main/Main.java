@@ -14,6 +14,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import netscape.javascript.JSObject;
 import org.checkerframework.checker.units.qual.A;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
@@ -126,6 +127,14 @@ public final class Main {
             JSONObject filterJSON = reqJSON.getJSONObject("dataToSend").getJSONObject("filters");
             String userAddress = "";
 
+            // get filter weights
+            JSONArray filterWeightJSON =  reqJSON.getJSONObject("dataToSend").getJSONArray("filterWeights");
+            // convert to array of doubles
+            double[] filterWeights = new double[3];
+            for (int i = 0; i < 3; i++) {
+                filterWeights[i] = Double.parseDouble(filterWeightJSON.getString(i));
+            }
+
             List<String> dates = new ArrayList<>();
             List<String> areaRange = new ArrayList<>();
             List<String> priceRange = new ArrayList<>();
@@ -195,16 +204,16 @@ public final class Main {
             System.out.println("filteredListings: " + filteredListings.size());
             Sorter theSorter = new Sorter();
 
-            List<Listing> sortedListings = theSorter.sortAll(filteredListings);
+            List<Listing> sortedListings = theSorter.sortAll(filteredListings, filterWeights);
 
-            for (Listing thing: sortedListings) {
-                System.out.println(thing.getListingName());
-                System.out.println("NORMALIZED PRICE: " + thing.getNormalizedNumeric().get(0));
-                System.out.println("NORMALIZED AREA: " + thing.getNormalizedNumeric().get(1));
-                System.out.println("NORMALIZED DISTANCE: " + thing.getNormalizedNumeric().get(2));
-                System.out.println("DISTANCE: " + thing.getDistance());
-                System.out.println("EUCLIDEAN DIST: " + thing.geteuclideanDistance());
-            }
+//            for (Listing thing: sortedListings) {
+//                System.out.println(thing.getListingName());
+//                System.out.println("NORMALIZED PRICE: " + thing.getNormalizedNumeric().get(0));
+//                System.out.println("NORMALIZED AREA: " + thing.getNormalizedNumeric().get(1));
+//                System.out.println("NORMALIZED DISTANCE: " + thing.getNormalizedNumeric().get(2));
+//                System.out.println("DISTANCE: " + thing.getDistance());
+//                System.out.println("EUCLIDEAN DIST: " + thing.geteuclideanDistance());
+//            }
 
             LinkedHashMap<String, LinkedHashMap<String, String>> returnListings = new LinkedHashMap<>();
             for (Listing eachListing : sortedListings) {

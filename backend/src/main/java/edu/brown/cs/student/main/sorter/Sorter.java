@@ -2,10 +2,9 @@ package edu.brown.cs.student.main.sorter;
 
 import edu.brown.cs.student.main.filter.Filter;
 import edu.brown.cs.student.main.listing.Listing;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -14,13 +13,14 @@ public class Sorter {
     public Double lowestPrice;
     public Double highestArea;
 
-    public List<Listing> sortAll(List<Listing> listingList) {
-        this.normalizer(listingList);
-        this.distanceSetter(listingList);
+    public List<Listing> sortAll(List<Listing> listingList, double[] filterWeights) {
+        System.out.println("FILTER WEIGHTS: " + Arrays.toString(filterWeights));
+        this.normalizer(listingList, filterWeights);
+        this.euclideanDistanceSetter(listingList);
         return this.sorter(listingList);
     }
 
-    public void normalizer(List<Listing> listingList) {
+    public void normalizer(List<Listing> listingList, double[] filterWeights) {
         double highestPrice = this.extremePrices(listingList)[0];
         double lowestPrice = this.extremePrices(listingList)[1];
         this.lowestPrice = lowestPrice;
@@ -37,11 +37,26 @@ public class Sorter {
             // NOTE: new normalization divides by max possible GLOBAL value to ensure meaningful distribution in [0,1]
 //            double newPrice = (ls.getPrice() - lowestPrice) / (1+ highestPrice - lowestPrice);
             double newPrice = ls.getPrice() / 10;
-//            double newArea = (ls.getArea() - lowestArea) / (1+ highestArea - lowestArea);
-            double newArea = ls.getArea()  / 200;
 //            double newDistance = (ls.getDistance() - lowestDistance) / (1+ highestDistance - lowestDistance);
             double newDistance = ls.getDistance() / 5;
+//            double newArea = (ls.getArea() - lowestArea) / (1+ highestArea - lowestArea);
+            double newArea = ls.getArea()  / 200;
 
+            System.out.println("BEFORE weighting");
+            System.out.println(newPrice);
+            System.out.println(newDistance);
+            System.out.println(newArea);
+
+            // apply filter weights on normalized [0,1] values
+            newPrice *= filterWeights[0];
+            newDistance *= filterWeights[1];
+            newArea *= filterWeights[2];
+
+            System.out.println(newPrice);
+            System.out.println(newDistance);
+            System.out.println(newArea);
+
+            System.out.println("AFTER weighting");
 
 
             temp.add(newPrice);
@@ -51,7 +66,7 @@ public class Sorter {
         }
     }
 
-    public void distanceSetter(List<Listing> listingList) {
+    public void euclideanDistanceSetter(List<Listing> listingList) {
         for(Listing ls: listingList) {
             double priceSquared = Math.pow((ls.getNormalizedNumeric().get(0) - 0) * 10, 2); // comparing to lowestPrice (Not necessarily 0, but the scaled value from [0,1] is 0.
             double areaSquared = Math.pow((1 - ls.getNormalizedNumeric().get(1)) * 10, 2); // want larger area = smaller Euclidean dist
@@ -129,7 +144,8 @@ public class Sorter {
         areaRange.add(1000000.0);
         Filter f = new Filter(new ArrayList<>(), priceRange, areaRange, 500.0);
         // List<Listing> p = f.isValid(l);
-        s.sortAll(l);
+        // NOTE: UNCOMMENTED line below
+//        s.sortAll(l);
 
     }
 }

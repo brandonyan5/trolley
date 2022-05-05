@@ -47,6 +47,8 @@ function Marketplace(props: MarketplaceProps) {
             key: 'selection'
         }
     ])
+    // weights for price, max distance, area (higher = more importance in sorting metric). Range = [0,1]
+    const [filterWeights, setFilterWeights] = useState<[number, number, number]>([0.5,0.5,0.5])
 
     /* retrieves ALL listing data from the DB (with a listener attached) and updates state */
     const getAllListings = () => {
@@ -83,7 +85,8 @@ function Marketplace(props: MarketplaceProps) {
 
         const dataToSend = {
             products: listingsData,
-            filters: filters
+            filters: filters,
+            filterWeights: filterWeights
         }
 
 
