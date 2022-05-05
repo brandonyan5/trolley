@@ -42,7 +42,7 @@ public class Sorter {
 //            double newArea = (ls.getArea() - lowestArea) / (1+ highestArea - lowestArea);
             double newArea = ls.getArea()  / 200;
 
-            System.out.println("BEFORE weighting");
+            System.out.println("BEFORE weighting. price, dist, area = ");
             System.out.println(newPrice);
             System.out.println(newDistance);
             System.out.println(newArea);
@@ -52,11 +52,10 @@ public class Sorter {
             newDistance *= filterWeights[1];
             newArea *= filterWeights[2];
 
+            System.out.println("AFTER weighting");
             System.out.println(newPrice);
             System.out.println(newDistance);
             System.out.println(newArea);
-
-            System.out.println("AFTER weighting");
 
 
             temp.add(newPrice);

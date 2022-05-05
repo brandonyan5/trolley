@@ -20,14 +20,14 @@ interface FilterBarProps {
 function FilterBar(props: FilterBarProps) {
 
     const handlePriceFilterChange = (range: [number, number]) => {
-        // do not allow for max/min prices within $5 range
+        // do not allow for max/min prices under $1 range
         if (range[0]  < range[1]) {
             props.setPriceFilterRange(range)
         }
     }
 
     const handleAreaFilterChange = (range: [number, number]) => {
-        // do not allow for area values closer than 25 sqft
+        // do not allow for area values closer than 5 sqft
         if (range[0] + 5 < range[1]) {
             props.setAreaFilterRange(range)
         }
@@ -35,7 +35,7 @@ function FilterBar(props: FilterBarProps) {
 
     const handleDistanceFilterChange = (range: [number, number]) => {
         // only allow the max distance to change (i.e. upper thumb of slider)
-        // max distance must be >= 1 mile
+        // Max distance must be >= 1 mile
         if (range[1] > 0) {
             props.setDistanceFilterRange([0, range[1]])
         }
