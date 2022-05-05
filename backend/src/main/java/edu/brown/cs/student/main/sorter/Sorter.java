@@ -34,10 +34,15 @@ public class Sorter {
 
         for(Listing ls: listingList) {
             List<Double> temp = new ArrayList<>();
+            // NOTE: new normalization divides by max possible GLOBAL value to ensure meaningful distribution in [0,1]
+//            double newPrice = (ls.getPrice() - lowestPrice) / (1+ highestPrice - lowestPrice);
+            double newPrice = ls.getPrice() / 10;
+//            double newArea = (ls.getArea() - lowestArea) / (1+ highestArea - lowestArea);
+            double newArea = ls.getArea()  / 200;
+//            double newDistance = (ls.getDistance() - lowestDistance) / (1+ highestDistance - lowestDistance);
+            double newDistance = ls.getDistance() / 5;
 
-            double newPrice = (ls.getPrice() - lowestPrice) / (1+ highestPrice - lowestPrice);
-            double newArea = (ls.getArea() - lowestArea) / (1+ highestArea - lowestArea);
-            double newDistance = (ls.getDistance() - lowestDistance) / (1+ highestDistance - lowestDistance);
+
 
             temp.add(newPrice);
             temp.add(newArea);
@@ -49,7 +54,7 @@ public class Sorter {
     public void distanceSetter(List<Listing> listingList) {
         for(Listing ls: listingList) {
             double priceSquared = Math.pow((ls.getNormalizedNumeric().get(0) - 0) * 10, 2); // comparing to lowestPrice (Not necessarily 0, but the scaled value from [0,1] is 0.
-            double areaSquared = Math.pow((1 - ls.getNormalizedNumeric().get(1)) * 10, 2);
+            double areaSquared = Math.pow((1 - ls.getNormalizedNumeric().get(1)) * 10, 2); // want larger area = smaller Euclidean dist
             double dSquared = Math.pow(ls.getNormalizedNumeric().get(2) * 10, 2);
             double Euclidean = Math.sqrt(dSquared + priceSquared + areaSquared);
             ls.seteuclideanDistance(Euclidean);

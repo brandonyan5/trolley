@@ -25,7 +25,6 @@ public class Filter {
                     && ls.getArea() >= areas.get(0) && ls.getArea() <= areas.get(1)
                     && ls.getDistance() <= distance
             ) {
-                System.out.println("entered if statement");
                 finalList.add(ls);
             }
         }

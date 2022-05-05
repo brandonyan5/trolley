@@ -202,8 +202,8 @@ public final class Main {
                 System.out.println("NORMALIZED PRICE: " + thing.getNormalizedNumeric().get(0));
                 System.out.println("NORMALIZED AREA: " + thing.getNormalizedNumeric().get(1));
                 System.out.println("NORMALIZED DISTANCE: " + thing.getNormalizedNumeric().get(2));
-                System.out.println("EUCLIDEAN DIST: " + thing.geteuclideanDistance());
                 System.out.println("DISTANCE: " + thing.getDistance());
+                System.out.println("EUCLIDEAN DIST: " + thing.geteuclideanDistance());
             }
 
             LinkedHashMap<String, LinkedHashMap<String, String>> returnListings = new LinkedHashMap<>();
@@ -227,8 +227,12 @@ public final class Main {
                 innerMap.put("user_email", userEmail);
 
                 returnListings.put(listingName, innerMap);
+                System.out.println("====");
+                System.out.println(listingName);
+                System.out.println(address);
             }
             Gson GSON = new Gson();
+            System.out.println("RETURNING " + returnListings.size() + " sorted listings");
             return GSON.toJson(returnListings);
 
         }

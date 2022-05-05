@@ -36,10 +36,10 @@ function Marketplace(props: MarketplaceProps) {
     const [listingsData, setListingsData] = useState<ListingsData>({})
     // state for filtered/sorted listings (keep separate so that we don't need to re-query firebase for a fresh copy
     const [processedListingsData, setProcessedListingsData] = useState<ListingsData>({})
-    // state for filters
-    const [priceFilterRange, setPriceFilterRange] = useState<[number, number]>([0,20])
-    const [areaFilterRange, setAreaFilterRange] = useState<[number, number]>([50,300])
-    const [distanceFilterRange, setDistanceFilterRange] = useState<[number, number]>([0,3]) // distance in miles
+    // state for filters: set to be at extremes initially (to display all listings before filtering)
+    const [priceFilterRange, setPriceFilterRange] = useState<[number, number]>([0,10])
+    const [areaFilterRange, setAreaFilterRange] = useState<[number, number]>([0,200])
+    const [distanceFilterRange, setDistanceFilterRange] = useState<[number, number]>([0,10]) // distance in miles
     const [dateFilterRange, setDateFilterRange] = useState([
         {
             startDate: new Date(), // NOTE: this state type is required by the date picker component
@@ -59,6 +59,8 @@ function Marketplace(props: MarketplaceProps) {
             const newestData = dataSnapshot.val()
             // set data to be fed to each listing
             setListingsData(newestData)
+            console.log("fetched firebase")
+            console.log(newestData)
         })
     }
 
@@ -103,13 +105,12 @@ function Marketplace(props: MarketplaceProps) {
             return response.json();
         })
         .then((data) => {
+            console.log(data)
             // update state if no error
             if (data.error !== undefined) {
-                console.log("")
+                console.log("ERR")
             } else {
-                console.log("updating listings")
-                console.log(data)
-                setProcessedListingsData(data.result);
+                setProcessedListingsData(data);
             }
         }).catch((error) => {
             console.log("JSON error while fetching sorted listings");
@@ -123,8 +124,14 @@ function Marketplace(props: MarketplaceProps) {
 
     // filter & sort every time the filters/dates are changed by the user
     useEffect(() => {
+        console.log("RE-FILTERING")
         filterAndSortListings()
     }, [priceFilterRange, areaFilterRange, distanceFilterRange, dateFilterRange])
+
+    // filter and sort on initail rendering once listingsData has been loaded from DB
+    useEffect(() => {
+        filterAndSortListings()
+    }, [listingsData])
 
     //  ===== TESTING =========
     useEffect(() => {
@@ -160,15 +167,24 @@ function Marketplace(props: MarketplaceProps) {
                 />
 
                 <div className="listings-wrapper">
-                    
-                    { Object.keys(listingsData).length > 0 &&
+
+                    { (processedListingsData !== undefined) &&
                         // map each listing JSON data object to a Listing component
-                        Object.keys(listingsData).map((listingID) =>
+                        Object.keys(processedListingsData).map((listingID) =>
                             <Link to  = "/products"  state={{product:listingsData[listingID], listingName: listingID}}>
                                 <Listing key={listingID} listingName={listingID} data={listingsData[listingID]} isClaimed={false} />
                             </Link>
                         )
                     }
+
+                    {/*{ Object.keys(listingsData).length > 0 &&*/}
+                    {/*    // map each listing JSON data object to a Listing component*/}
+                    {/*    Object.keys(listingsData).map((listingID) =>*/}
+                    {/*        <Link to  = "/products"  state={{product:listingsData[listingID], listingName: listingID}}>*/}
+                    {/*            <Listing key={listingID} listingName={listingID} data={listingsData[listingID]} isClaimed={false} />*/}
+                    {/*        </Link>*/}
+                    {/*    )*/}
+                    {/*}*/}
                 </div>
             </div>
         </div>

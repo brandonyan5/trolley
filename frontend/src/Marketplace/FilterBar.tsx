@@ -21,14 +21,14 @@ function FilterBar(props: FilterBarProps) {
 
     const handlePriceFilterChange = (range: [number, number]) => {
         // do not allow for max/min prices within $5 range
-        if (range[0] + 5 < range[1]) {
+        if (range[0]  < range[1]) {
             props.setPriceFilterRange(range)
         }
     }
 
     const handleAreaFilterChange = (range: [number, number]) => {
         // do not allow for area values closer than 25 sqft
-        if (range[0] + 25 < range[1]) {
+        if (range[0] + 5 < range[1]) {
             props.setAreaFilterRange(range)
         }
     }
@@ -57,7 +57,7 @@ function FilterBar(props: FilterBarProps) {
         <div className="filter-bar">
             <TwoThumbInputRange
                 min={0}
-                max={75}
+                max={10}
                 values={props.priceFilterRange}
                 onChange={handlePriceFilterChange}
                 inputStyle={{width: "200px;"}}
@@ -73,8 +73,8 @@ function FilterBar(props: FilterBarProps) {
                 inputStyle={{width: "200px;"}}
             />
             <TwoThumbInputRange
-                min={10}
-                max={500}
+                min={5}
+                max={200}
                 values={props.areaFilterRange}
                 onChange={handleAreaFilterChange}
                 inputStyle={{width: "200px;"}}
@@ -86,15 +86,15 @@ function FilterBar(props: FilterBarProps) {
                 <div className="date-range-preview-midbar">|</div>
                 <p>{getMonthDate(props.dateFilterRange[0].endDate)}</p>
             </div>
-            <div className="date-range-wrapper">
-                <DateRange
-                    editableDateInputs={true}
-                    onChange={item => props.setDateFilterRange([item.selection])}
-                    moveRangeOnFirstSelection={false}
-                    ranges={props.dateFilterRange}
-                    minDate={new Date()}
-                />
-            </div>
+            {/*<div className="date-range-wrapper">*/}
+            {/*    <DateRange*/}
+            {/*        editableDateInputs={true}*/}
+            {/*        onChange={item => props.setDateFilterRange([item.selection])}*/}
+            {/*        moveRangeOnFirstSelection={false}*/}
+            {/*        ranges={props.dateFilterRange}*/}
+            {/*        minDate={new Date()}*/}
+            {/*    />*/}
+            {/*</div>*/}
 
         </div>
     );
