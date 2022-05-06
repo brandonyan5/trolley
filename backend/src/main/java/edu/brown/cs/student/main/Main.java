@@ -15,30 +15,16 @@ import spark.Route;
 import spark.Spark;
 import java.util.*;
 
-// This is a method for calculating the distance between two locations
-
-//function haversine_distance(mk1, mk2) {
-//        var R = 3958.8; // Radius of the Earth in miles
-//        var rlat1 = mk1.position.lat() * (Math.PI/180); // Convert degrees to radians
-//        var rlat2 = mk2.position.lat() * (Math.PI/180); // Convert degrees to radians
-//        var difflat = rlat2-rlat1; // Radian difference (latitudes)
-//        var difflon = (mk2.position.lng()-mk1.position.lng()) * (Math.PI/180); // Radian difference (longitudes)
-//
-//        var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
-//        return d;
-//        }
-
-
-// This is how you actually get the coordinates from the addresses
-// https://stackoverflow.com/questions/3490622/get-latitude-and-longitude-based-on-location-name-with-google-autocomplete-api
 
 /**
  * The Main class of our project. This is where execution begins.
  *
  */
-
 public final class Main {
 
+    /**
+     * the port that the server is running on.
+     */
   private static final int DEFAULT_PORT = 4567;
 
   /**
@@ -50,14 +36,23 @@ public final class Main {
     new Main(args).run();
   }
 
+    /**
+     * stores the command line arguments.
+     */
   private String[] args;
 
+    /**
+     * main method.
+     * @param args - the command line arguments
+     */
   private Main(String[] args) {
     this.args = args;
   }
 
+    /**
+     * runs the server from the specified port.
+     */
   private void run() {
-	  
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
     parser.accepts("port").withRequiredArg().ofType(Integer.class).defaultsTo(DEFAULT_PORT);
@@ -68,7 +63,11 @@ public final class Main {
 		runSparkServer((int) options.valueOf("port"));
 	}    
   }
-  
+
+    /**
+     * sets up the endpoints for our project.
+     * @param port - the port number of the server
+     */
   private static void runSparkServer(int port) {
       Spark.port(port);
       Spark.externalStaticFileLocation("src/main/resources/static");
@@ -97,15 +96,27 @@ public final class Main {
         Spark.init();
     }
 
-    //how to get lat long from address
-    //todo
-    //google maps api
-    //email all works, except it doesn't check for an invalid email address. should check in firebase frontend part
-    //do date filtering
+
+    //in-line comments
+    //check for invalid email
+    //lastly, checkstyle
+    /**
+     * handler class that takes in listings and sends back sorted listings.
+     */
     private static class FilterAndSortProducts implements Route {
+
+        /**
+         * takes in a JSON object, sorts the listings based on criteria, and sends back sorted JSON.
+         * @param request - the JSON object with the listings
+         * @param response - the sorted listings
+         * @return - the sorted listings
+         * @throws Exception - if there's an error when processing
+         */
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
+
+            //gets the JSON with the actual listing info
             JSONObject productJSON = reqJSON.getJSONObject("dataToSend").getJSONObject("products");
             Iterator<String> productIterator = productJSON.keys();
 
@@ -124,6 +135,7 @@ public final class Main {
             Iterator<String> areaIterator = areaObject.keys();
             Iterator<String> priceIterator = priceObject.keys();
 
+            //retrieves the proper information for the filter
             while (datesIterator.hasNext()) {
                 String dateKey = datesIterator.next();
                 dates.add(dateKey);
@@ -158,6 +170,8 @@ public final class Main {
             Filter.prices = newPrices;
 
             List<Listing> tempListings = new ArrayList<>();
+
+            //for each iteration, creates a listing object with the retrieved fields
             while (productIterator.hasNext()) {
                 String eachKey = productIterator.next();
                 JSONObject eachProductJSON = productJSON.getJSONObject(eachKey);
@@ -176,6 +190,7 @@ public final class Main {
                 tempListings.add(newListing);
             }
 
+            //filter and then sort the listings
             List<Listing> filteredListings = Filter.isValid(tempListings);
             Sorter theSorter = new Sorter();
 
@@ -190,6 +205,7 @@ public final class Main {
                 System.out.println("DISTANCE: " + thing.getDistance());
             }
 
+            //converts the listings back into a JSON object to return to frontend
             LinkedHashMap<String, LinkedHashMap<String, String>> returnListings = new LinkedHashMap<>();
             for (Listing eachListing : sortedListings) {
                 String address = eachListing.getAddress();
@@ -218,7 +234,18 @@ public final class Main {
         }
     }
 
+    /**
+     * class that sends email to the owner of the listing.
+     */
     private static class EmailOwnerOnClaim implements Route {
+
+        /**
+         * takes in a JSON object, and sends an email to the appropriate address.
+         * @param request - the JSON object with the listing info
+         * @param response - the response
+         * @return - whether or not the email was successfully sent
+         * @throws Exception - if there's an error when processing
+         */
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
@@ -226,12 +253,16 @@ public final class Main {
             String otherEmail = "";
 
             Iterator<String> iterator = reqJSON.keys();
+
+            //retrieves the email addresses from the JSON
             while (iterator.hasNext()) {
                 String eachKey = iterator.next();
                 JSONObject theValue = reqJSON.getJSONObject(eachKey);
                 ownerEmail = theValue.getString("owner_email");
                 otherEmail = theValue.getString("user_email");
             }
+
+            //sends the email
             if (EmailOwner.sendEmailToOwner(ownerEmail, otherEmail)) {
                 return "200 OK";
             } else {
@@ -240,7 +271,18 @@ public final class Main {
         }
     }
 
+    /**
+     * class that sends email to user about acceptance or rejection.
+     */
     private static class EmailUserOnDecision implements Route {
+
+        /**
+         * takes in a JSON object, and sends an email to the appropriate address.
+         * @param request - the JSON object with the listing info
+         * @param response - the response
+         * @return - whether or not the email was successfully sent
+         * @throws Exception - if there's an error when processing
+         */
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
@@ -249,6 +291,8 @@ public final class Main {
             String otherEmail = "";
             Iterator<String> iterator = reqJSON.keys();
             JSONObject theValue = null;
+
+            //retrieves the email addresses from the JSON
             while (iterator.hasNext()) {
                 String eachKey = iterator.next();
                 if (!eachKey.equals("accepted")) {
@@ -258,6 +302,7 @@ public final class Main {
                 }
             }
 
+            //sends a different email based on whether it was accepted or rejected
             if (theValue.getString("accepted").equals("true")) {
                 if (EmailUser.sendEmailToUserAccepted(userEmail, otherEmail)) {
                     return "200 OK";
