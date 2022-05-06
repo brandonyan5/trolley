@@ -9,14 +9,14 @@ export type ListingData = {
     date_start: string
     date_end: string
     price: string
-    owner_email: string
-    user_email: string
+    owner_id: string
+    user_id: string | null // null if listing has not been claimed, else string ID of the claimer
+    completed: boolean // true if user has claimed AND owner then accepts the claim
 }
 
 interface ListingProps {
     listingName: string,
     data: ListingData,
-    isClaimed: boolean,
 }
 
 function Listing(props: ListingProps) {

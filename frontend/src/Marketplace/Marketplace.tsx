@@ -32,10 +32,12 @@ function Marketplace(props: MarketplaceProps) {
         }
     });
 
-    // set state for all listings in marketplace (dictionary of dictionaries where each dictionary is for one listing)
+    // set state for ALL listings in marketplace (dictionary of dictionaries where each dictionary is for one listing)
     const [listingsData, setListingsData] = useState<ListingsData>({})
-    // state for filtered/sorted listings (keep separate so that we don't need to re-query firebase for a fresh copy
+    // state for filtered/sorted listings (keep separate so that we don't need to re-query firebase for a fresh copy each time
     const [processedListingsData, setProcessedListingsData] = useState<ListingsData>({})
+    // state for relative distance from user's address to each listing address: only calculate once and store on initial DB fetch for efficiency
+    const [listingDistances, setListingDistances] = useState<number[]>([])
     // state for filters: set to be at extremes initially (to display all listings before filtering)
     const [priceFilterRange, setPriceFilterRange] = useState<[number, number]>([0,10])
     const [areaFilterRange, setAreaFilterRange] = useState<[number, number]>([0,200])
@@ -185,7 +187,6 @@ function Marketplace(props: MarketplaceProps) {
                                     key={listingID}
                                     listingName={listingID}
                                     data={listingsData[listingID]}
-                                    isClaimed={false}
                                 />
                             </Link>
                         )

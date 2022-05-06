@@ -51,9 +51,15 @@ function FilterBar(props: FilterBarProps) {
         //TODO: hide dateRange on select after updating state
     }
 
-    const handleClickDatePreview = () => {
-        // toggle visibility of date range picker
+    const toggleDateRange = () => {
+        console.log("toggling date range")
+        // TODO toggle visibility of date range picker
 
+    }
+
+    const toggleFilterWeights = () => {
+        // TODO
+        console.log("toggling filter weights")
     }
 
     const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>, weightID: number) => {
@@ -90,13 +96,13 @@ function FilterBar(props: FilterBarProps) {
             />
 
 
-            <div className="date-range-preview">
+            <div className="date-range-preview" onClick={toggleDateRange}>
                 <p>{getMonthDate(props.dateFilterRange[0].startDate)}</p>
                 <div className="date-range-preview-midbar">|</div>
                 <p>{getMonthDate(props.dateFilterRange[0].endDate)}</p>
             </div>
 
-            <h4>I care most about</h4>
+            <h4 onClick={toggleFilterWeights}>I care most about</h4>
 
             <div className="filter-weights-wrapper">
                 {
