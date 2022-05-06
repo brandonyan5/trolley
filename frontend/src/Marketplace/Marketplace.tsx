@@ -47,8 +47,8 @@ function Marketplace(props: MarketplaceProps) {
             key: 'selection'
         }
     ])
-    // weights for price, max distance, area (higher = more importance in sorting metric). Range = [0,1]
-    const [filterWeights, setFilterWeights] = useState<[number, number, number]>([0.5,0.5,0.5])
+    // weights for price, max distance, area (higher = more importance in sorting metric). Range = [0,10] bc HTML sliders can't do decimals
+    const [filterWeights, setFilterWeights] = useState<[number, number, number]>([5,5,5])
 
     /* retrieves ALL listing data from the DB (with a listener attached) and updates state */
     const getAllListings = () => {
@@ -83,10 +83,13 @@ function Marketplace(props: MarketplaceProps) {
             distance: distanceFilterRange[1] // only use MAX distance
         }
 
+        // get NORMALIZED filer weights in [0,1] bc slider values are in [0,10]
+        const normalizedFilterWeights = filterWeights.map(weight => weight/10)
+
         const dataToSend = {
             products: listingsData,
             filters: filters,
-            filterWeights: filterWeights
+            filterWeights: normalizedFilterWeights
         }
 
 
@@ -125,16 +128,17 @@ function Marketplace(props: MarketplaceProps) {
         getAllListings()
     }, [])
 
-    // filter & sort every time the filters/dates are changed by the user
+    // filter & sort every time the filters/dates or filter weights are changed by the user
     useEffect(() => {
         console.log("RE-FILTERING")
         filterAndSortListings()
-    }, [priceFilterRange, areaFilterRange, distanceFilterRange, dateFilterRange])
+    }, [priceFilterRange, areaFilterRange, distanceFilterRange, dateFilterRange, filterWeights])
 
-    // filter and sort on initail rendering once listingsData has been loaded from DB
+    // filter and sort on initial rendering once listingsData has been loaded from DB
     useEffect(() => {
         filterAndSortListings()
     }, [listingsData])
+
 
     //  ===== TESTING =========
     useEffect(() => {
@@ -167,6 +171,8 @@ function Marketplace(props: MarketplaceProps) {
                     setDistanceFilterRange={setDistanceFilterRange}
                     dateFilterRange={dateFilterRange}
                     setDateFilterRange={setDateFilterRange}
+                    filterWeights={filterWeights}
+                    setFilterWeights={setFilterWeights}
                 />
 
                 <div className="listings-wrapper">
@@ -174,8 +180,13 @@ function Marketplace(props: MarketplaceProps) {
                     { (processedListingsData !== undefined) &&
                         // map each listing JSON data object to a Listing component
                         Object.keys(processedListingsData).map((listingID) =>
-                            <Link to  = "/products"  state={{product:listingsData[listingID], listingName: listingID}}>
-                                <Listing key={listingID} listingName={listingID} data={listingsData[listingID]} isClaimed={false} />
+                            <Link key={listingID} to="/products"  state={{product:listingsData[listingID], listingName: listingID}}>
+                                <Listing
+                                    key={listingID}
+                                    listingName={listingID}
+                                    data={listingsData[listingID]}
+                                    isClaimed={false}
+                                />
                             </Link>
                         )
                     }

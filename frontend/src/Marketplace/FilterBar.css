@@ -4,9 +4,22 @@
     background: red;
     margin: 20px auto;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-bar > h4 {
+    flex-basis: 100%;
+}
+
+.filter-weights-wrapper {
+    background: green;
+    flex-basis: 100%;
+    display: flex;
     column-gap: 20px;
 }
 
+/* styling for date picker and preview*/
 .date-range-preview {
     padding: 5px 20px;
     display: flex;
@@ -29,6 +42,8 @@
     border-radius: 5px;
 }
 
+
+/* Override styling for slider component*/
 /* make sliders have dynamic width */
 .css-j8gyih-TwoThumbInputRange:nth-child(2) {
     /*width: 100px !important;*/
