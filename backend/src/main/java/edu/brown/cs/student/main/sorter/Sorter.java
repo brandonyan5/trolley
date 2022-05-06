@@ -117,34 +117,34 @@ public class Sorter {
         return result;
     }
 
-    public static void main(String[] args) {
-        Double[] y = new Double[2];
-        y[0] = 2.0;
-        y[0] = 3.0;
-        y[1] = 5.0;
-        int x = 5;
-
-        Listing listing0 = new Listing("rando0", 10.0, 40.0, "jan", "feb", "rando@gmail.com", "user@gmail.com", "cool listing");
-        listing0.setDistance(5.0);
-        Listing listing1 = new Listing("rando1", 20.0, 900.0, "jan", "feb", "rando@gmail.com", "user@gmail.com", "cool listing");
-        listing1.setDistance(10.0);
-        Listing listing2 = new Listing("rando2", 30.0, 40.0, "jan", "feb", "rando@gmail.com", "user@gmail.com", "cool listing");
-        listing2.setDistance(30.0);
-        Sorter s = new Sorter();
-        List<Listing> l = new ArrayList<>();
-        l.add(listing2);
-        l.add(listing1);
-        l.add(listing0);
-        List<Double> priceRange = new ArrayList<>();
-        priceRange.add(5.0);
-        priceRange.add(20.0);
-        List<Double> areaRange = new ArrayList<>();
-        areaRange.add(0.0);
-        areaRange.add(1000000.0);
-        Filter f = new Filter(new ArrayList<>(), priceRange, areaRange, 500.0);
-        // List<Listing> p = f.isValid(l);
-        // NOTE: UNCOMMENTED line below
-//        s.sortAll(l);
-
-    }
+//    public static void main(String[] args) {
+//        Double[] y = new Double[2];
+//        y[0] = 2.0;
+//        y[0] = 3.0;
+//        y[1] = 5.0;
+//        int x = 5;
+//
+//        Listing listing0 = new Listing("rando0", 10.0, 40.0, "jan", "feb", "rando@gmail.com", "user@gmail.com", "cool listing");
+//        listing0.setDistance(5.0);
+//        Listing listing1 = new Listing("rando1", 20.0, 900.0, "jan", "feb", "rando@gmail.com", "user@gmail.com", "cool listing");
+//        listing1.setDistance(10.0);
+//        Listing listing2 = new Listing("rando2", 30.0, 40.0, "jan", "feb", "rando@gmail.com", "user@gmail.com", "cool listing");
+//        listing2.setDistance(30.0);
+//        Sorter s = new Sorter();
+//        List<Listing> l = new ArrayList<>();
+//        l.add(listing2);
+//        l.add(listing1);
+//        l.add(listing0);
+//        List<Double> priceRange = new ArrayList<>();
+//        priceRange.add(5.0);
+//        priceRange.add(20.0);
+//        List<Double> areaRange = new ArrayList<>();
+//        areaRange.add(0.0);
+//        areaRange.add(1000000.0);
+//        Filter f = new Filter(new ArrayList<>(), priceRange, areaRange, 500.0);
+//        // List<Listing> p = f.isValid(l);
+//        // NOTE: UNCOMMENTED line below
+////        s.sortAll(l);
+//
+//    }
 }

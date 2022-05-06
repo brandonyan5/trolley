@@ -186,15 +186,16 @@ public final class Main {
                 String eachKey = productIterator.next();
                 JSONObject eachProductJSON = productJSON.getJSONObject(eachKey);
                 String address = eachProductJSON.getString("address");
+                //String distanceListing = eachProductJSON.getString("distance");
                 String price = eachProductJSON.getString("price");
                 String area = eachProductJSON.getString("area");
                 String dateStart = eachProductJSON.getString("date_start");
                 String dateEnd = eachProductJSON.getString("date_end");
-                String ownerEmail = eachProductJSON.getString("owner_email");
-                String userEmail = eachProductJSON.getString("user_email");
+                String ownerID = eachProductJSON.getString("owner_id");
+                String userID = eachProductJSON.getString("user_id");
 
-                Listing newListing = new Listing(address, Double.parseDouble(price), Double.parseDouble(area),
-                        dateStart, dateEnd, ownerEmail, userEmail, eachKey);
+                Listing newListing = new Listing(address, Double.parseDouble("5.7"), Double.parseDouble(price), Double.parseDouble(area),
+                        dateStart, dateEnd, ownerID, userID, eachKey);
                 newListing.setDistanceGoogleMaps(userAddress);  //this method in Listing class updates the private distance var at the top of the Listing class
 
                 tempListings.add(newListing);
@@ -218,22 +219,24 @@ public final class Main {
             LinkedHashMap<String, LinkedHashMap<String, String>> returnListings = new LinkedHashMap<>();
             for (Listing eachListing : sortedListings) {
                 String address = eachListing.getAddress();
+                //Double distanceListing = eachListing.getDistance();
                 Double price = eachListing.getPrice();
                 Double area = eachListing.getArea();
                 String dateStart = eachListing.getDate_start();
                 String dateEnd = eachListing.getDate_end();
-                String ownerEmail = eachListing.getOwnerEmail();
-                String userEmail = eachListing.getUserEmail();
+                String ownerID = eachListing.getOwnerID();
+                String userID = eachListing.getUserID();
                 String listingName = eachListing.getListingName();
 
                 LinkedHashMap<String, String> innerMap = new LinkedHashMap<>();
                 innerMap.put("address", address);
+                //innerMap.put("distance", String.valueOf(distanceListing));
                 innerMap.put("price", String.valueOf(price));
                 innerMap.put("area", String.valueOf(area));
                 innerMap.put("date_start", dateStart);
                 innerMap.put("date_end", dateEnd);
-                innerMap.put("owner_email", ownerEmail);
-                innerMap.put("user_email", userEmail);
+                innerMap.put("owner_id", ownerID);
+                innerMap.put("user_id", userID);
 
                 returnListings.put(listingName, innerMap);
                 System.out.println("====");
@@ -252,14 +255,9 @@ public final class Main {
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
-            String ownerEmail = "";
+            String ownerEmail = reqJSON.getString("owner_email");
+            String otherEmail = reqJSON.getString("user_email");
 
-            Iterator<String> iterator = reqJSON.keys();
-            while (iterator.hasNext()) {
-                String eachKey = iterator.next();
-                JSONObject theValue = reqJSON.getJSONObject(eachKey);
-                ownerEmail = theValue.getString("owner_email");
-            }
             if (EmailOwner.sendEmailToOwner(ownerEmail)) {
                 return "200 OK";
             } else {
@@ -272,19 +270,10 @@ public final class Main {
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
+            String userEmail = reqJSON.getString("user_email");
+            String otherEmail = reqJSON.getString("owner_email");
 
-            String userEmail = "";
-            Iterator<String> iterator = reqJSON.keys();
-            JSONObject theValue = null;
-            while (iterator.hasNext()) {
-                String eachKey = iterator.next();
-                if (!eachKey.equals("accepted")) {
-                    theValue = reqJSON.getJSONObject(eachKey);
-                    userEmail = theValue.getString("user_email");
-                }
-            }
-
-            if (theValue.getString("accepted").equals("true")) {
+            if (reqJSON.getString("accepted").equals("true")) {
                 if (EmailUser.sendEmailToUserAccepted(userEmail)) {
                     return "200 OK";
                 } else {

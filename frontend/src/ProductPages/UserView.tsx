@@ -7,22 +7,26 @@ import { ListingData } from '../SharedComponents/Listing';
 import {Row, Col, Container, Button} from "react-bootstrap"
 import { Icon } from '@iconify/react';
 import {getImageSrc} from "../SharedComponents/UtilFunctions";
+import {UserData} from "../Profile/ProfilePage"
 
 
 
 import './products.css'
 
-interface UserViewProps {
-    // possible props to consider: listing_id
-    listing_id : string
-}
-
-
 function UserView() {
+
+    // Firebase consts
+    const auth = getAuth()
 
     // Constants for accessing info from state passed
     const location = useLocation();
     const state = location.state as {[key:string] : ListingData}
+    const listingData = state.product
+
+    // state for keeping track of user's info
+    const [name, setName] = useState("")
+    const [phone, setPhone] = useState("")
+    const [email, setEmail] = useState("")
 
     // Hooks for showing image
     const [img, setImg] = useState("");
@@ -39,6 +43,15 @@ function UserView() {
         loadImg(`${state.listingName}/img1`)
     }, [state.listingName])
 
+    // reload content once user auth is satisfied
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, user => {
+            if (user) {
+                readProfile()
+            }
+        });
+    }, [])
+
     const updateListing = () => {
         // get reference to db
         const db = getDatabase()
@@ -54,11 +67,32 @@ function UserView() {
         update(ref(db), updates);  
     }
 
+    // read owners's profile from firebase to get contact info
+    const readProfile = () => {
+        
+        // get reference to db
+        const db = getDatabase()
+
+        console.log(listingData)
+
+        const userRef = ref(db, 'users/' + listingData.owner_id);
+
+        // Check if entry exists in database, if not, add them
+        onValue(userRef, (snapshot) => {
+            const data : UserData = snapshot.val();
+            console.log(data)
+            setEmail(data.email)
+            setPhone(data.phone)
+            setName(data.name)
+        },
+        {
+            onlyOnce: true
+        });
+    }
+
     
 
-    // Firebase consts
-    const auth = getAuth()
-    const db = getDatabase();
+    
     // redirect to login page if user is not already logged in
     let navigateTo = useNavigate()
     onAuthStateChanged(auth, (user) => {
@@ -79,7 +113,7 @@ function UserView() {
                     <div className = "product-content">
                         <div className = "product-info">
                             <Icon  icon="iconoir:profile-circled" className = "dolly" color="dark blue" width='50px'/>
-                            {state.product.owner_email} (name instead)
+                            {name}
                         </div>
 
                         <div className = "product-info">
@@ -108,11 +142,11 @@ function UserView() {
                             </div>
                             <div>
                                 <Icon  icon="akar-icons:phone" color="dark blue" className = "dolly" width='40px'/>
-                                {state.product.owner_email} (number instead)
+                                {phone} 
                             </div>
                             <div>
                                 <Icon  icon="ant-design:mail-outlined" color="dark blue" className = "dolly" width='40px'/>
-                                {state.product.owner_email}
+                                {email}
                             </div>
                         </div>
                     </div>

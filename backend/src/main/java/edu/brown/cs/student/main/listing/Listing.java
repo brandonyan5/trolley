@@ -35,8 +35,8 @@ public class Listing {
     private String date_start;
     private String date_end;
     private Double distance;
-    private String ownerEmail;
-    private String userEmail;
+    private String ownerID;
+    private String userID;
     private String listingName;
     private List<Double> numeric;
     private List<Double> normalizedNumeric;
@@ -46,22 +46,23 @@ public class Listing {
         return listingName;
     }
 
-    public String getOwnerEmail() {
-        return ownerEmail;
+    public String getOwnerID() {
+        return ownerID;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public String getUserID() {
+        return userID;
     }
 
-    public Listing(String address, Double price, Double area, String date_start, String date_end, String ownerEmail, String userEmail, String listingName) {
+    public Listing(String address, Double distance, Double price, Double area, String date_start, String date_end, String ownerID, String userID, String listingName) {
         this.address = address;
+        this.distance = distance;
         this.price = price;
         this.area = area;
         this.date_start = date_start;
         this.date_end = date_end;
-        this.ownerEmail = ownerEmail;
-        this.userEmail = userEmail;
+        this.ownerID = ownerID;
+        this.userID = userID;
         this.listingName = listingName;
     }
 
