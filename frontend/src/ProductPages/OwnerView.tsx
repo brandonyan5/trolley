@@ -21,11 +21,16 @@ function OwnerView() {
     const [img, setImg] = useState("");
 
     // Const for accessing info from location state
-    /*
+
     const location  = useLocation()
     const state = location.state as {[key:string] : string | ListingData}
-    console.log("state passed to ownerview: ")
-    console.log(state)
+
+    useEffect(() => {
+        console.log("state passed to ownerview: ")
+        console.log(state)
+    }, [state]);
+
+
 
     const listingData = state.listingData as ListingData
 
@@ -38,7 +43,7 @@ function OwnerView() {
     const [price, setPrice] = useState(listingData.price)
     const listingID = state.listingID as string
 
-    // Post updates 
+    // Post updates
     const postListing  = () => {
 
         const user = auth.currentUser
@@ -56,7 +61,7 @@ function OwnerView() {
         update(ref(db), updates)
 
     }
-    */
+
 
     const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
         uploadImage(e, "product99/test")
@@ -75,7 +80,7 @@ function OwnerView() {
                             <Icon  icon="bx:map"  className = "dolly" color="dark blue" width='50px'/>
                             </Form.Label>
                             <Col sm={10}>
-                            <Form.Control type="text" placeholder="Address" defaultValue  = {"hi"} />
+                            <Form.Control type="text" placeholder="Address" defaultValue  = {address} />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
@@ -83,7 +88,7 @@ function OwnerView() {
                             <Icon  icon="radix-icons:dimensions" color="dark blue" rotate={2} className = "dolly" width='50px'/>
                             </Form.Label>
                             <Col sm={10}>   
-                            <Form.Control type="text" placeholder="Phone Number" defaultValue  = {"hi"}/>
+                            <Form.Control type="text" placeholder="Area" defaultValue = {area}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
@@ -91,7 +96,7 @@ function OwnerView() {
                             <Icon icon="dashicons:money-alt" color="dark blue" rotate={2} className = "dolly" width='50px'/>
                             </Form.Label>
                             <Col sm={10}>
-                            <Form.Control type="text" placeholder="Price per day" defaultValue  = {"hi"}/>
+                            <Form.Control type="text" placeholder="Price per day" defaultValue  = {price}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
@@ -99,10 +104,10 @@ function OwnerView() {
                             <Icon icon="bi:calendar-date-fill" color="#031c34" rotate={2} hFlip={true} vFlip={true} className = "dolly" width='50px' />
                             </Form.Label>
                             <Col xs={5} sm={4}>
-                            <Form.Control type="text" placeholder="Start date" defaultValue  = {"hi"}/>
+                            <Form.Control type="text" placeholder="Start date" defaultValue  = {dateStart}/>
                             </Col> to
                             <Col xs={5} sm={4}>
-                            <Form.Control type="text" placeholder="End date" defaultValue  = {"hi"}/>
+                            <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd}/>
                             </Col>
                         </Form.Group>
                     </Form>
