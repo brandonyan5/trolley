@@ -8,7 +8,7 @@ import {Row, Col, Container, Button} from "react-bootstrap"
 import { Icon } from '@iconify/react';
 import {getImageSrc} from "../SharedComponents/UtilFunctions";
 import {UserData} from "../Profile/ProfilePage"
-
+import OwnerView from "./OwnerView"
 
 
 import './products.css'
@@ -20,8 +20,8 @@ function UserView() {
 
     // Constants for accessing info from state passed
     const location = useLocation();
-    const state = location.state as {[key:string] : ListingData}
-    const listingData = state.product
+    const state = location.state as {[key:string] : ListingData | string}
+    const listingData = state.product as ListingData
 
     // state for keeping track of user's info
     const [name, setName] = useState("")
@@ -30,6 +30,8 @@ function UserView() {
 
     // Hooks for showing image
     const [img, setImg] = useState("");
+
+    
 
     const loadImg = async (relativeImgURL: string) => {
         // resolve promise by only updating img AFTER the promise is returned from getImageSrc
@@ -60,8 +62,8 @@ function UserView() {
         const updates : {[change : string] : string | null }= {};
         const user  = auth.currentUser
 
-        // update the email
-        updates['/products/' + state.listingName + '/user_email'] = user!.email;
+        // update the user id
+        updates['/products/' + state.listingName + '/user_id'] = user!.uid;
 
         // send changes to firebase
         update(ref(db), updates);  
@@ -88,6 +90,42 @@ function UserView() {
         {
             onlyOnce: true
         });
+    }
+
+    // api to send email
+    const sendEmail = () => {
+
+        const user  = auth.currentUser
+
+        const dataToSend = {
+            key1 : listingData,
+            user_email: user?.email,
+            owner_email: email
+        }
+
+        // make POST request to endpoint
+        fetch('http://localhost:4567/emailOwnerOnClaim', {
+            // Specify the method
+            method: 'POST',
+            // Specifies that headers should be sent as JSON
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            },
+            // Specify the body of the request
+            body: JSON.stringify({
+                dataToSend
+            })
+        })
+        .then((response) => {
+            // return the response as JSON
+            return response.json();
+        })
+        .catch((error) => {
+            console.log("JSON error while sending email notification");
+        })
+
+
+
     }
 
     
@@ -118,22 +156,22 @@ function UserView() {
 
                         <div className = "product-info">
                             <Icon  icon="bx:map"  className = "dolly" color="dark blue" width='50px'/>
-                            {state.product.address}
+                            {listingData.address}
                         </div>
                         <div className = "product-info">
                             <Icon  icon="radix-icons:dimensions" color="dark blue" rotate={2} className = "dolly" width='50px'/>
-                            {state.product.area} sqft
+                            {listingData.area} sqft
                         </div>
                         <div className = "product-info">
                             <Icon   icon="dashicons:money-alt" color="dark blue" rotate={2} className = "dolly" width='50px'/>
-                            ${state.product.price}/day
+                            ${listingData.price}/day
                         </div>
                         <div>
                             <div className = "product-descriptors">
                                 Availability
                             </div>
                             <div>
-                                {state.product.date_start} -- {state.product.date_end}
+                                {listingData.date_start} -- {listingData.date_end}
                             </div>
                         </div>
                         <div>
@@ -159,7 +197,7 @@ function UserView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            <Button variant="primary" onClick = {updateListing}>Claim</Button>{' '}
+                            <Button variant="primary" onClick = {() => {updateListing(); sendEmail()}}>Claim</Button>{' '}
                         </div>
                     </Row>
                 </Col>

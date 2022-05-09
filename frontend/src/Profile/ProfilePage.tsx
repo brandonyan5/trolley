@@ -33,6 +33,7 @@ function ProfilePage(props: ProfilePageProps) {
     const [phone, setPhone] = useState("")
     const [showEmail, setShowEmail] = useState(false)
     const [showPhone, setShowPhone] = useState(false)
+    const [validUpdate, setValidUpdate] = useState(true)
 
     // Firebase consts
     const auth = getAuth()
@@ -89,6 +90,32 @@ function ProfilePage(props: ProfilePageProps) {
 
     }
 
+    // update email and phone preferences
+    const updateEmail = () => {
+        if(showPhone) {
+            setShowEmail(!showEmail)
+        }
+    }
+
+    const updatePhone = () => {
+        if(showEmail) {
+            setShowPhone(!showPhone)
+            checkValidUpdate()
+        }
+    }
+
+    const checkValidUpdate = () => {
+        if(showPhone) {
+            if(phone.length >= 10) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     /**
      * Update the profile of the user based on changes made
      */
@@ -137,13 +164,13 @@ function ProfilePage(props: ProfilePageProps) {
                                     Phone
                                     </Form.Label>
                                     <Col sm={10}>
-                                    <Form.Control type="text" placeholder="Phone Number" defaultValue  = {phone} onChange={(e) => setPhone(e.target.value)}/>
+                                    <Form.Control type="text" placeholder="Phone Number" defaultValue  = {phone} onChange={(e) => {setPhone(e.target.value); console.log("here"); checkValidUpdate()}}/>
                                     </Col>
                                 </Form.Group>
                                 <fieldset>
                                     <Form.Group as={Row} className="mb-3">
                                     <Form.Label as="legend" column sm={2}>
-                                        Radios
+                                        Contact Information
                                     </Form.Label>
                                     <Col sm={10}>
                                         <Form.Check
@@ -151,7 +178,7 @@ function ProfilePage(props: ProfilePageProps) {
                                         label="Share email"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios1"
-                                        onChange={(e) => setShowEmail(!showEmail)}
+                                        onChange={(e) => updateEmail()}
                                         checked={showEmail}
                                         />
                                         <Form.Check
@@ -159,14 +186,14 @@ function ProfilePage(props: ProfilePageProps) {
                                         label="Share phone number"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios2"
-                                        onChange={(e) => setShowPhone(!showPhone)}
+                                        onChange={(e) => updatePhone()}
                                         checked={showPhone}
                                         />
                                     </Col>
                                     </Form.Group>
                                 </fieldset>
                             </Form>
-                            <Button variant="primary" onClick = {() => updateProfile()} >Update Profile</Button>
+                            <Button variant="primary" disabled  = {!checkValidUpdate()} onClick = {() => updateProfile()} >Update Profile</Button>
                         </Card.Body>
                     </Card>
                 </Col>
