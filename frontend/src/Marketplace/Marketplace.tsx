@@ -134,7 +134,6 @@ function Marketplace(props: MarketplaceProps) {
             price: {
                 [priceFilterRange[0]]: priceFilterRange[1]
             },
-            user_address: "69 Brown st", //TODO: SET AS LOGGED-IN USER'S ADDRESS
             distance: distanceFilterRange[1] // only use MAX distance
         }
 

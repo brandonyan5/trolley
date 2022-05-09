@@ -164,7 +164,6 @@ public final class Main {
                 priceRange.add(priceObject.getString(priceKey));
             }
 
-            userAddress = filterJSON.getString("user_address");
             String distance = filterJSON.getString("distance");
             Filter.dates = dates;
             Filter.distance = Double.parseDouble(distance);
