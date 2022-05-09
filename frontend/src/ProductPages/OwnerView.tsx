@@ -64,7 +64,7 @@ function OwnerView() {
 
 
     const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-        uploadImage(e, "product99/test")
+        uploadImage(e, `${listingID}/img1`)
     }
 
     return (
@@ -80,7 +80,7 @@ function OwnerView() {
                             <Icon  icon="bx:map"  className = "dolly" color="dark blue" width='50px'/>
                             </Form.Label>
                             <Col sm={10}>
-                            <Form.Control type="text" placeholder="Address" defaultValue  = {address} />
+                            <Form.Control type="text" placeholder="Address" defaultValue = {address} onChange={(e) => setAddress(e.target.value)} />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
@@ -88,7 +88,7 @@ function OwnerView() {
                             <Icon  icon="radix-icons:dimensions" color="dark blue" rotate={2} className = "dolly" width='50px'/>
                             </Form.Label>
                             <Col sm={10}>   
-                            <Form.Control type="text" placeholder="Area" defaultValue = {area}/>
+                            <Form.Control type="text" placeholder="Area" defaultValue = {area} onChange={(e) => setArea(e.target.value)}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
@@ -96,7 +96,7 @@ function OwnerView() {
                             <Icon icon="dashicons:money-alt" color="dark blue" rotate={2} className = "dolly" width='50px'/>
                             </Form.Label>
                             <Col sm={10}>
-                            <Form.Control type="text" placeholder="Price per day" defaultValue  = {price}/>
+                            <Form.Control type="text" placeholder="Price per day" defaultValue={price} onChange={(e) => setPrice(e.target.value)}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
@@ -104,10 +104,10 @@ function OwnerView() {
                             <Icon icon="bi:calendar-date-fill" color="#031c34" rotate={2} hFlip={true} vFlip={true} className = "dolly" width='50px' />
                             </Form.Label>
                             <Col xs={5} sm={4}>
-                            <Form.Control type="text" placeholder="Start date" defaultValue  = {dateStart}/>
+                            <Form.Control type="text" placeholder="Start date" defaultValue={dateStart} onChange={(e) => setDateStart(e.target.value)}/>
                             </Col> to
                             <Col xs={5} sm={4}>
-                            <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd}/>
+                            <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd} onChange={(e) => setDateEnd(e.target.value)}/>
                             </Col>
                         </Form.Group>
                     </Form>
@@ -122,7 +122,7 @@ function OwnerView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            <Button variant="primary">Post Listing</Button>
+                            <Button variant="primary" onClick={postListing}>Post Listing</Button>
                         </div>
                     </Row>
                     <Row className = "row g-0">
