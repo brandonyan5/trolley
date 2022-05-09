@@ -12,6 +12,7 @@ export type ListingData = {
     owner_id: string
     user_id: string | null // null if listing has not been claimed, else string ID of the claimer
     completed: boolean // true if user has claimed AND owner then accepts the claim
+    distance?: string // distance is calculated asynchronously
 }
 
 interface ListingProps {

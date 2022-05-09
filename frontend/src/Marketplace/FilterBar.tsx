@@ -82,7 +82,7 @@ function FilterBar(props: FilterBarProps) {
             />
             <TwoThumbInputRange
                 min={0}
-                max={15}
+                max={5}
                 values={props.distanceFilterRange}
                 onChange={handleDistanceFilterChange}
                 inputStyle={{width: "200px;"}}
@@ -118,15 +118,15 @@ function FilterBar(props: FilterBarProps) {
                 }
             </div>
 
-            {/*<div className="date-range-wrapper">*/}
-            {/*    <DateRange*/}
-            {/*        editableDateInputs={true}*/}
-            {/*        onChange={item => props.setDateFilterRange([item.selection])}*/}
-            {/*        moveRangeOnFirstSelection={false}*/}
-            {/*        ranges={props.dateFilterRange}*/}
-            {/*        minDate={new Date()}*/}
-            {/*    />*/}
-            {/*</div>*/}
+            <div className="date-range-wrapper">
+                <DateRange
+                    editableDateInputs={true}
+                    onChange={item => props.setDateFilterRange([item.selection])}
+                    moveRangeOnFirstSelection={false}
+                    ranges={props.dateFilterRange}
+                    minDate={new Date()}
+                />
+            </div>
 
         </div>
     );

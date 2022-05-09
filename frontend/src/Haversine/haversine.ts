@@ -1,4 +1,3 @@
-import './index.css';
 
 type location = {
     address: any
@@ -17,7 +16,7 @@ type location = {
 
 // Takes two addresses of the format "69 Brown St" and then outputs the haversine distance between them. Assumes they are both in Providence.
 
-function addressestoDistance(address1: string, address2: string) {
+export async function addressestoDistance(address1: string, address2: string): Promise<string> {
     const ad1split: string[] = address1.split(" ")
     const ad2split: string[] = address2.split(" ")
     const firstIntermediate = ad1split[0] + "+" + ad1split[1] + "+" + ad1split[2] + ",+" + "providence"
@@ -28,40 +27,16 @@ function addressestoDistance(address1: string, address2: string) {
     const firstURL = beginning + firstIntermediate + ending
     const secondURL = beginning + secondIntermediate + ending
 
-    let lat1: number
-    let lon1: number
 
-    let lat2: number
-    let lon2: number
+    const latLong1 = await fetch(firstURL, {}).then(response => response.json())
+    const latLong2 = await fetch(secondURL, {}).then(response => response.json())
+    const lat1 = latLong1[0].lat
+    const lat2 = latLong2[0].lat
+    const long1 = latLong1[0].lon
+    const long2 = latLong2[0].lon
+    console.log("DISTANCE: " + haversine_distance(lat1, lat2, long1, long2))
+    return haversine_distance(lat1, lat2, long1, long2).toString()
 
-    console.log(firstURL)
-
-    fetch(firstURL, {}).then(response => response.json())
-        .then((data: location[]) => {
-            console.log(data[0].lat)
-            console.log(data[0].lon)
-
-            lat1 = parseFloat(data[0].lat)
-            lon1 = parseFloat(data[0].lon)
-
-            fetch(secondURL, {}).then(response => response.json())
-                .then((data: location[]) => {
-                    console.log(data[0].lat)
-                    console.log(data[0].lon)
-
-                    lat2 = parseFloat(data[0].lat)
-                    lon2 = parseFloat(data[0].lon)
-
-                    console.log(lat1.toString() + "LAT 1")
-                    console.log(lon1.toString() + "LON 1")
-                    console.log(lat2.toString() + "LAT 2")
-                    console.log(lon2.toString() + "LON 2")
-                    const d = haversine_distance(lat1, lat2, lon1, lon2)
-                    console.log("DISTANCE " + d.toString())
-
-                    return d
-                })
-        })
 }
 
 // From https://cloud.google.com/blog/products/maps-platform/how-calculate-distances-map-maps-javascript-api
