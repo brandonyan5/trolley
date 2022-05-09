@@ -6,7 +6,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar'
 import "./Marketplace.css"
 import Listing, {ListingData} from "../SharedComponents/Listing";
-import {getMonthDate, uploadImage} from "../SharedComponents/UtilFunctions"
+import {getFullDate, getMonthDate, uploadImage} from "../SharedComponents/UtilFunctions"
 import { getDatabase, ref, onValue } from "firebase/database";
 import FilterBar from "./FilterBar";
 import {addressestoDistance} from "../Haversine/haversine";
@@ -60,7 +60,7 @@ function Marketplace(props: MarketplaceProps) {
     // state for filters: set to be at extremes initially (to display all listings before filtering)
     const [priceFilterRange, setPriceFilterRange] = useState<[number, number]>([0,10])
     const [areaFilterRange, setAreaFilterRange] = useState<[number, number]>([5,200])
-    const [distanceFilterRange, setDistanceFilterRange] = useState<[number, number]>([0,10]) // distance in miles
+    const [distanceFilterRange, setDistanceFilterRange] = useState<[number, number]>([0,5]) // distance in miles
     const [dateFilterRange, setDateFilterRange] = useState([
         {
             startDate: new Date(), // NOTE: this state type is required by the date picker component
@@ -126,7 +126,7 @@ function Marketplace(props: MarketplaceProps) {
         // get all filters in one object
         const filters = {
             dates: {
-                [distanceFilterRange[0]]: distanceFilterRange[1]
+                [getFullDate(dateFilterRange[0].startDate)]: getFullDate(dateFilterRange[0].endDate)
             },
             area: {
                 [areaFilterRange[0]]: areaFilterRange[1]

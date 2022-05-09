@@ -41,10 +41,20 @@ export const uploadImage = (e: React.ChangeEvent<HTMLInputElement>, relativeSave
 }
 
 // converts raw Date objects to date strings of the format "MMM DD" (e.g. Jan 1, Dec 31)
-export const getMonthDate = (date: Date) => {
+export const getMonthDate = (date: Date): string => {
     const options = {
         month: 'short',
         day: 'numeric'
+    } as const
+    return date.toLocaleDateString('en-us', options)
+}
+
+// converts raw Date to string date of form "mm/dd/yyyy"
+export const getFullDate = (date: Date): string => {
+    const options = {
+        year: "numeric",
+        month: '2-digit',
+        day: '2-digit'
     } as const
     return date.toLocaleDateString('en-us', options)
 }
