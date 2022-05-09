@@ -24,6 +24,8 @@ function OwnerView() {
     /*
     const location  = useLocation()
     const state = location.state as {[key:string] : string | ListingData}
+    console.log("state passed to ownerview: ")
+    console.log(state)
 
     const listingData = state.listingData as ListingData
 
