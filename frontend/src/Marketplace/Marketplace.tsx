@@ -1,6 +1,6 @@
 // @ts-ignore
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar'
@@ -9,6 +9,7 @@ import Listing, {ListingData} from "../SharedComponents/Listing";
 import {getMonthDate, uploadImage} from "../SharedComponents/UtilFunctions"
 import { getDatabase, ref, onValue } from "firebase/database";
 import FilterBar from "./FilterBar";
+import {addressestoDistance} from "../Haversine/haversine";
 
 
 interface MarketplaceProps {
@@ -26,21 +27,39 @@ function Marketplace(props: MarketplaceProps) {
     // check for valid login
     const auth = getAuth()
     let navigateTo = useNavigate()
-    onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            navigateTo("/login")
-        }
-    });
+
+    const [userID, setUserID] = useState<string>("")
+    const [userAddress, setUserAddress] = useState("")
+    const loadedUserID = useRef(false)
+
+    useEffect(()=> {
+        onAuthStateChanged(auth, (user) => {
+            if (!loadedUserID.current) {
+                if (!user) {
+                    navigateTo("/login")
+                } else {
+                    console.log("onauthstatechanged")
+
+                    console.log(" setting user id")
+                    setUserID(user.uid)
+                    // update ref so that further interactions with page don't trigger hook
+                    loadedUserID.current = true
+                }
+            }
+        })
+    }, [])
+
 
     // set state for ALL listings in marketplace (dictionary of dictionaries where each dictionary is for one listing)
     const [listingsData, setListingsData] = useState<ListingsData>({})
+    const fetchedDataFromDB = useRef<boolean>(false);
     // state for filtered/sorted listings (keep separate so that we don't need to re-query firebase for a fresh copy each time
     const [processedListingsData, setProcessedListingsData] = useState<ListingsData>({})
-    // state for relative distance from user's address to each listing address: only calculate once and store on initial DB fetch for efficiency
-    const [listingDistances, setListingDistances] = useState<number[]>([])
+    // flag for whether all distances have been calculated (asynchronously)
+    const calculatedDistances = useRef<boolean>(false);
     // state for filters: set to be at extremes initially (to display all listings before filtering)
     const [priceFilterRange, setPriceFilterRange] = useState<[number, number]>([0,10])
-    const [areaFilterRange, setAreaFilterRange] = useState<[number, number]>([0,200])
+    const [areaFilterRange, setAreaFilterRange] = useState<[number, number]>([5,200])
     const [distanceFilterRange, setDistanceFilterRange] = useState<[number, number]>([0,10]) // distance in miles
     const [dateFilterRange, setDateFilterRange] = useState([
         {
@@ -52,8 +71,10 @@ function Marketplace(props: MarketplaceProps) {
     // weights for price, max distance, area (higher = more importance in sorting metric). Range = [0,10] bc HTML sliders can't do decimals
     const [filterWeights, setFilterWeights] = useState<[number, number, number]>([5,5,5])
 
+
     /* retrieves ALL listing data from the DB (with a listener attached) and updates state */
     const getAllListings = () => {
+        console.log("== GETTING ALL LISTINGS")
         // get reference to db
         const db = getDatabase()
         // get reference to node we want to read
@@ -61,11 +82,43 @@ function Marketplace(props: MarketplaceProps) {
         // fetch and track "products" JSON object
         onValue(listingsRef, (dataSnapshot) => {
             const newestData = dataSnapshot.val()
-            // set data to be fed to each listing
-            setListingsData(newestData)
-            console.log("fetched firebase")
-            console.log(newestData)
+            // get user address
+            console.log("user ID in onval: " + userID)
+            onValue(ref(db, `users/${userID}/address`), (addressSnapshot) => {
+                if (!fetchedDataFromDB.current) {
+                    console.log("user address: " + addressSnapshot.val())
+                    setUserAddress(addressSnapshot.val())
+
+                    // set data to be fed to each listing
+                    console.log("initial data w/out dists:")
+                    console.log(newestData)
+                    setListingsData(newestData)
+                    fetchedDataFromDB.current = true
+                }
+            })
         })
+    }
+
+    /* Helper function to get relative distances of listings to the current user. Sets listingsData. Should be called once initially */
+    const setListingsDistances = async () => {
+        if (!calculatedDistances.current) {
+            // make copy of distance-less listingsData
+            // const dataCopy: ListingsData = Object.assign({}, listingsData)
+            const dataCopy: ListingsData = JSON.parse(JSON.stringify(listingsData));
+
+
+            // iterate over each listing and calculate distance (append new "distance" field to each listing)
+            // NOTE: line below only resolves when all promises within the loop (for retrieving distance) resolve
+            await Promise.all(Object.keys(listingsData).map(async listingID => {
+                await addressestoDistance(userAddress, dataCopy[listingID].address).then(dist => {
+                    dataCopy[listingID]["distance"] = dist
+                })
+            }))
+
+            // set listingsData to be the copy once all distances have been calculated
+            setListingsData(dataCopy)
+            calculatedDistances.current = true
+        }
     }
 
     /* FILTERING & SORTING: pass all listings data to backend and retrieve filtered & sorted listings */
@@ -94,65 +147,86 @@ function Marketplace(props: MarketplaceProps) {
             filterWeights: normalizedFilterWeights
         }
 
+        if (calculatedDistances.current) {
+            console.log("data to send")
+            console.log(dataToSend)
 
-        // make POST request to endpoint
-        fetch('http://localhost:4567/filterAndSortProducts', {
-            // Specify the method
-            method: 'POST',
-            // Specifies that headers should be sent as JSON
-            headers: {
-                "Access-Control-Allow-Origin": "*"
-            },
-            // Specify the body of the request
-            body: JSON.stringify({
-                dataToSend
+            // make POST request to endpoint
+            fetch('http://localhost:4567/filterAndSortProducts', {
+                // Specify the method
+                method: 'POST',
+                // Specifies that headers should be sent as JSON
+                headers: {
+                    "Access-Control-Allow-Origin": "*"
+                },
+                // Specify the body of the request
+                body: JSON.stringify({
+                    dataToSend
+                })
             })
-        })
-        .then((response) => {
-            // return the response as JSON
-            return response.json();
-        })
-        .then((data) => {
-            console.log(data)
-            // update state if no error
-            if (data.error !== undefined) {
-                console.log("ERR")
-            } else {
-                setProcessedListingsData(data);
-            }
-        }).catch((error) => {
-            console.log("JSON error while fetching sorted listings");
-        })
+                .then((response) => {
+                    // return the response as JSON
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("from backend:")
+                    console.log(data)
+                    // update state if no error
+                    if (data.error !== undefined) {
+                        console.log("ERR")
+                    } else {
+                        setProcessedListingsData(data);
+                    }
+                }).catch((error) => {
+                console.log("JSON error while fetching sorted listings");
+            })
+        }
     }
 
-    // get all listings data and start db listener once when marketplace is initially rendered
+    // get all listings data and start db listener once when marketplace is initially rendered AND user ID has been retrieved
     useEffect(() => {
-        getAllListings()
-    }, [])
+        if (userID !== "") {
+            console.log("getting initial listings")
+            getAllListings()
+        }
+    }, [userID])
+
+    // calculate relative distance to each listing once current user's address has been fetched
+    useEffect(() => {
+        if (userAddress !== "") {
+            setListingsDistances()
+        }
+    }, [userAddress]);
+
 
     // filter & sort every time the filters/dates or filter weights are changed by the user
     useEffect(() => {
-        console.log("RE-FILTERING")
-        filterAndSortListings()
+        if (Object.keys(listingsData).length > 0) {
+            console.log("fetching on filter change")
+            filterAndSortListings()
+        }
     }, [priceFilterRange, areaFilterRange, distanceFilterRange, dateFilterRange, filterWeights])
 
     // filter and sort on initial rendering once listingsData has been loaded from DB
     useEffect(() => {
-        filterAndSortListings()
+        if (Object.keys(listingsData).length > 0 && calculatedDistances.current) {
+            console.log("fetching initial")
+            filterAndSortListings()
+        }
     }, [listingsData])
 
 
     //  ===== TESTING =========
-    useEffect(() => {
-        console.log("price: " + priceFilterRange)
-        console.log("dist: " + distanceFilterRange)
-        console.log("area:" + areaFilterRange)
-    }, [priceFilterRange, areaFilterRange, distanceFilterRange])
-
-    useEffect(() => {
-        console.log("start: " + getMonthDate(dateFilterRange[0].startDate))
-        console.log("end: " + getMonthDate(dateFilterRange[0].endDate))
-    }, [dateFilterRange])
+    // useEffect(() => {
+    //     console.log("price: " + priceFilterRange)
+    //     console.log("dist: " + distanceFilterRange)
+    //     console.log("area:" + areaFilterRange)
+    // }, [priceFilterRange, areaFilterRange, distanceFilterRange])
+    //
+    // useEffect(() => {
+    //     console.log("start: " + getMonthDate(dateFilterRange[0].startDate))
+    //     console.log("end: " + getMonthDate(dateFilterRange[0].endDate))
+    // }, [dateFilterRange])
 
 
 

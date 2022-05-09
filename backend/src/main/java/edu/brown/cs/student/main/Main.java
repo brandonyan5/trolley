@@ -186,7 +186,7 @@ public final class Main {
                 String eachKey = productIterator.next();
                 JSONObject eachProductJSON = productJSON.getJSONObject(eachKey);
                 String address = eachProductJSON.getString("address");
-                //String distanceListing = eachProductJSON.getString("distance");
+                String distanceListing = eachProductJSON.getString("distance");
                 String price = eachProductJSON.getString("price");
                 String area = eachProductJSON.getString("area");
                 String dateStart = eachProductJSON.getString("date_start");
@@ -194,9 +194,8 @@ public final class Main {
                 String ownerID = eachProductJSON.getString("owner_id");
                 String userID = eachProductJSON.getString("user_id");
 
-                Listing newListing = new Listing(address, Double.parseDouble("5.7"), Double.parseDouble(price), Double.parseDouble(area),
+                Listing newListing = new Listing(address, Double.parseDouble(distanceListing), Double.parseDouble(price), Double.parseDouble(area),
                         dateStart, dateEnd, ownerID, userID, eachKey);
-                newListing.setDistanceGoogleMaps(userAddress);  //this method in Listing class updates the private distance var at the top of the Listing class
 
                 tempListings.add(newListing);
             }
@@ -219,7 +218,7 @@ public final class Main {
             LinkedHashMap<String, LinkedHashMap<String, String>> returnListings = new LinkedHashMap<>();
             for (Listing eachListing : sortedListings) {
                 String address = eachListing.getAddress();
-                //Double distanceListing = eachListing.getDistance();
+                Double distanceListing = eachListing.getDistance();
                 Double price = eachListing.getPrice();
                 Double area = eachListing.getArea();
                 String dateStart = eachListing.getDate_start();
@@ -230,7 +229,7 @@ public final class Main {
 
                 LinkedHashMap<String, String> innerMap = new LinkedHashMap<>();
                 innerMap.put("address", address);
-                //innerMap.put("distance", String.valueOf(distanceListing));
+                innerMap.put("distance", String.valueOf(distanceListing));
                 innerMap.put("price", String.valueOf(price));
                 innerMap.put("area", String.valueOf(area));
                 innerMap.put("date_start", dateStart);
