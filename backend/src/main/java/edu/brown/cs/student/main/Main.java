@@ -253,8 +253,9 @@ public final class Main {
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
-            String ownerEmail = reqJSON.getString("owner_email");
-            String otherEmail = reqJSON.getString("user_email");
+            JSONObject dataToSend = reqJSON.getJSONObject("dataToSend");
+            String ownerEmail = dataToSend.getString("owner_email");
+            String otherEmail = dataToSend.getString("user_email");
 
             if (EmailOwner.sendEmailToOwner(ownerEmail)) {
                 return "200 OK";
@@ -268,10 +269,11 @@ public final class Main {
         @Override
         public String handle(Request request, Response response) throws Exception {
             JSONObject reqJSON = new JSONObject(request.body());
-            String userEmail = reqJSON.getString("user_email");
-            String otherEmail = reqJSON.getString("owner_email");
+            JSONObject dataToSend = reqJSON.getJSONObject("dataToSend");
+            String userEmail = dataToSend.getString("user_email");
+            String otherEmail = dataToSend.getString("owner_email");
 
-            if (reqJSON.getString("accepted").equals("true")) {
+            if (dataToSend.getString("accepted").equals("true")) {
                 if (EmailUser.sendEmailToUserAccepted(userEmail)) {
                     return "200 OK";
                 } else {
