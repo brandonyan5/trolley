@@ -22,6 +22,7 @@ function UserView() {
     const location = useLocation();
     const state = location.state as {[key:string] : ListingData | string}
     const listingData = state.product as ListingData
+    const listingName = state.listingName  as string
 
     // state for keeping track of user's info
     const [name, setName] = useState("")
@@ -42,8 +43,8 @@ function UserView() {
     // load image once upon initial rendering of listing
     useEffect(() => {
         // path to image is in the format "product<number>/img<number>"
-        loadImg(`${state.listingName}/img1`)
-    }, [state.listingName])
+        loadImg(`${listingName}/img1`)
+    }, [listingName])
 
     // reload content once user auth is satisfied
     useEffect(() => {
@@ -63,7 +64,10 @@ function UserView() {
         const user  = auth.currentUser
 
         // update the user id
-        updates['/products/' + state.listingName + '/user_id'] = user!.uid;
+        updates['/products/' + listingName + '/user_id'] = user!.uid;
+
+        // update the users claims
+        updates['/users/'+ user!.uid +"/claims/" + listingName] = listingName
 
         // send changes to firebase
         update(ref(db), updates);  
@@ -103,6 +107,8 @@ function UserView() {
             owner_email: email
         }
 
+        console.log(dataToSend)
+
         // make POST request to endpoint
         fetch('http://localhost:4567/emailOwnerOnClaim', {
             // Specify the method
@@ -123,8 +129,6 @@ function UserView() {
         .catch((error) => {
             console.log("JSON error while sending email notification");
         })
-
-
 
     }
 

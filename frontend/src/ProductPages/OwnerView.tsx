@@ -7,7 +7,7 @@ import { ListingData } from '../SharedComponents/Listing';
 import {Row, Col, Container, Form, Button} from "react-bootstrap"
 import { Icon } from '@iconify/react';
 import {uploadImage} from "../SharedComponents/UtilFunctions";
-
+import { UserData }from "../Profile/ProfilePage"
 
 
 import './products.css'
@@ -25,10 +25,11 @@ function OwnerView() {
     const location  = useLocation()
     const state = location.state as {[key:string] : string | ListingData}
 
+
+    // Check for claims for this listing
     useEffect(() => {
-        console.log("state passed to ownerview: ")
-        console.log(state)
-    }, [state]);
+        getUserClaim()
+    }, []);
 
 
 
@@ -41,6 +42,9 @@ function OwnerView() {
     const [dateStart, setDateStart] = useState(listingData.date_start)
     const [dateEnd, setDateEnd] = useState(listingData.date_end)
     const [price, setPrice] = useState(listingData.price)
+    const [userName, setUserName] = useState("")
+    const [userPhone, setUserPhone] = useState("")
+    const [userEmail, setUserEmail] = useState("")
     const listingID = state.listingID as string
 
     // Post updates
@@ -62,6 +66,67 @@ function OwnerView() {
 
     }
 
+    // api to send email
+     // api to send email
+     const sendEmail = (accepted: boolean) => {
+
+        const user  = auth.currentUser
+
+        const dataToSend = {
+            accepted: accepted,
+            key1 : listingData,
+            user_email: userEmail,
+            owner_email: user?.email
+        }
+
+        // make POST request to endpoint
+        // temp comment
+        fetch('http://localhost:4567/emailUserOnDecision', {
+            // Specify the method
+            method: 'POST',
+            // Specifies that headers should be sent as JSON
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            },
+            // Specify the body of the request
+            body: JSON.stringify({
+                dataToSend
+            })
+        })
+        .then((response) => {
+            // return the response as JSON
+            return response.json();
+        })
+        .catch((error) => {
+            console.log("JSON error while sending email notification");
+        })
+    }
+
+    // access profile info of claimer if it exists
+    const getUserClaim = () => {
+        if(listingData.user_id != "") {
+
+            // get database
+            const db = getDatabase()
+
+            // Get firebase const info
+            const userRef = ref(db, 'users/' + listingData.user_id);
+
+            // Get info of the claimer of this listing
+            onValue(userRef, (snapshot) => {
+                const data : UserData = snapshot.val();
+                setUserName(data.name)
+                setUserEmail(data.email)
+                setUserPhone(data.phone)
+            },
+            {
+                onlyOnce: true
+            });
+        }
+    }
+
+
+    // upload image the user selects
 
     const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
         uploadImage(e, `${listingID}/img1`)
@@ -127,7 +192,13 @@ function OwnerView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            <Button variant="primary">Post Listing</Button>
+                            {(userName != "") && 
+                            <div>
+                                <div>{userName}</div>
+                                <Button variant="primary" onClick = {() => sendEmail(true)}>Accept</Button>
+                                <Button variant="danger" onClick = {() => sendEmail(false)}>Decline</Button>
+                            </div>}
+
                         </div>
                     </Row>
                 </Col>
