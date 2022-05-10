@@ -258,9 +258,9 @@ public final class Main {
             String otherEmail = dataToSend.getString("user_email");
 
             if (EmailOwner.sendEmailToOwner(ownerEmail)) {
-                return "200 OK";
+                return "{\"200\" : \"OK\"}";
             } else {
-                return "ERROR!";
+                return "{\"ERROR\" : \"AN ERROR\"}";
             }
         }
     }
@@ -275,15 +275,15 @@ public final class Main {
 
             if (dataToSend.getString("accepted").equals("true")) {
                 if (EmailUser.sendEmailToUserAccepted(userEmail)) {
-                    return "200 OK";
+                    return "{\"200\" : \"OK\"}";
                 } else {
-                    return "ERROR!";
+                    return "{\"ERROR\" : \"AN ERROR\"}";
                 }
             } else {
                 if (EmailUser.sendEmailToUserRejected(userEmail)) {
-                    return "200 OK";
+                    return "{\"200\" : \"OK\"}";
                 } else {
-                    return "ERROR!";
+                    return "{\"ERROR\" : \"AN ERROR\"}";
                 }
             }
 

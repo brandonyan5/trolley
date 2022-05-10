@@ -124,9 +124,10 @@ function UserView() {
         })
         .then((response) => {
             // return the response as JSON
-            return response.json();
+            console.log(JSON.stringify(response));
         })
         .catch((error) => {
+            console.log(error)
             console.log("JSON error while sending email notification");
         })
 
