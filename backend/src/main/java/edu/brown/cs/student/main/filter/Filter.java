@@ -5,6 +5,7 @@ import edu.brown.cs.student.main.listing.Listing;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -16,8 +17,10 @@ public class Filter {
     public static List<Double> prices;
     public static Double distance;
 
-    public Filter(List<Double> dates, List<Double> prices, List<Double> areas, Double distance) {
-//        this.dates = dates;
+    public Filter(List<String> dates, List<Double> prices, List<Double> areas, Double distance) {
+        this.dates = dates;
+
+
         this.areas = areas;
         this.prices = prices;
         this.distance = distance;
@@ -59,4 +62,27 @@ public class Filter {
         return finalList;
     }
 
+    public static void main(String[] args) throws ParseException {
+        String d1 = "2000-05-20";
+        String d2 = "2005-05-20";
+
+        String p1 = "1999-05-20";
+        String p2 = "2005-05-20";
+
+        ArrayList potList = new ArrayList<>();
+        potList.add(p1);
+        potList.add(p2);
+
+        ArrayList x = new ArrayList();
+        x.add(d1);
+        x.add(d2);
+
+        ArrayList y = new ArrayList();
+        y.add(2);
+        y.add(3);
+
+        Filter f = new Filter(x, y, y, 1.0);
+        boolean b = f.dateCheck(potList);
+        System.out.println(b);
+    }
 }

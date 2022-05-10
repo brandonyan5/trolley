@@ -140,6 +140,7 @@ public final class Main {
             List<String> priceRange = new ArrayList<>();
 
             JSONObject datesObject = filterJSON.getJSONObject("dates");
+            System.out.println("datesObject: " + datesObject.toString());
             JSONObject areaObject = filterJSON.getJSONObject("area");
             JSONObject priceObject = filterJSON.getJSONObject("price");
 
@@ -149,6 +150,7 @@ public final class Main {
 
             while (datesIterator.hasNext()) {
                 String dateKey = datesIterator.next();
+                System.out.println("dateKey: " + dateKey);
                 dates.add(dateKey);
                 dates.add(datesObject.getString(dateKey));
             }
@@ -166,6 +168,9 @@ public final class Main {
 
             String distance = filterJSON.getString("distance");
             Filter.dates = dates;
+            System.out.println("blue dates:");
+            System.out.println(dates.get(0));
+            System.out.println(dates.get(1));
             Filter.distance = Double.parseDouble(distance);
 
             List<Double> newAreas = new ArrayList<>();

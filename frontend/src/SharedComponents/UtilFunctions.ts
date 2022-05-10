@@ -75,5 +75,5 @@ export const getFullDateHyphens = (date: Date): string => {
     console.log(y)
     console.log(date.toLocaleDateString('en-us', options).replace(/\//g, '-').split('/').reverse().join('/'))
 
-    return date.toLocaleDateString('en-us', options).replace(/\//g, '-')
+    return y
 }
