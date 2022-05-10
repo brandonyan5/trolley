@@ -45,7 +45,7 @@ function ListingsPage(props: ListingsPageProps) {
             date_end: "",
             price: "",
             owner_id: userID,
-            user_id: "",
+            user_id: "JvjxzxMRZ8cTeKOopsGxufsgRsk1",
             completed: false
         }
 
