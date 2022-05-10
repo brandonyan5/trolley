@@ -1,0 +1,37 @@
+.listings-page {
+    /*background: wheat;*/
+}
+
+.new-listing-btn {
+    background: yellow;
+    width: 200px;
+    text-align: center;
+    padding: 20px 30px;
+    margin: 0 auto;
+}
+
+.listings-page h3 {
+    text-align: left;
+    width: 100%;
+}
+
+.claimed-listings-wrapper, .unclaimed-listings-wrapper, .completed-listings-wrapper {
+    width: 80%;
+    margin: 0 auto;
+    background: gray;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 30px;
+    row-gap: 30px;
+    padding: 40px 40px;
+    margin: 20px auto;
+}
+
+.listings-page > div a {
+    flex-basis: 40%;
+    width: 100%;
+    text-decoration: none;
+    color: black;
+}

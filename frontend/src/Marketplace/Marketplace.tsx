@@ -16,7 +16,7 @@ interface MarketplaceProps {
 
 }
 
-type ListingsData = {
+export type ListingsData = {
     // each listing/product ID is mapped to its dictionary of data.
     // the inner dictionary maps field names (e.g. price, address, etc) to values
     [listingID: string]: ListingData
@@ -261,6 +261,8 @@ function Marketplace(props: MarketplaceProps) {
                                     key={listingID}
                                     listingName={listingID}
                                     data={listingsData[listingID]}
+                                    showClaimedBox={false}
+                                    showAcceptDecline={false}
                                 />
                             </Link>
                         )

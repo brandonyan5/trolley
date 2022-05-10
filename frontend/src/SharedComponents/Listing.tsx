@@ -18,10 +18,13 @@ export type ListingData = {
 interface ListingProps {
     listingName: string,
     data: ListingData,
+    showClaimedBox: boolean,
+    showAcceptDecline: boolean
 }
 
 function Listing(props: ListingProps) {
     const [img, setImg] = useState("");
+
 
     const loadImg = async (relativeImgURL: string) => {
         // resolve promise by only updating img AFTER the promise is returned from getImageSrc
@@ -35,7 +38,12 @@ function Listing(props: ListingProps) {
         loadImg(`${props.listingName}/img1`)
     }, [props.listingName])
 
-
+    /* Event handlers */
+    const onClickAccept = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        e.preventDefault()
+        console.log("accept")
+    }
     // TODO: convert date to Jan 1 - Dec 31 instead of full dates?
     // TODO: redirect to product page onclick
     // TODO: tags?
@@ -50,6 +58,21 @@ function Listing(props: ListingProps) {
                 <p>{props.data.area} sqft.</p>
                 <p>${props.data.price}/day</p>
             </div>
+
+            { props.data.user_id !== "" && props.showClaimedBox && // only render claimer and accept/decline for claimed listings
+                <div className="claimed-box">
+                    <div className="claiming-user-info">
+                        <h3>Claimed by {props.data.user_id}</h3>
+                    </div>
+
+                    { props.showAcceptDecline &&
+                        <div className="accept-decline-wrapper">
+                            <div onClick={onClickAccept}>Accept</div>
+                            <div>Decline</div>
+                        </div>
+                    }
+                </div>
+            }
 
         </div>
     );

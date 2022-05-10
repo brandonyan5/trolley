@@ -1,5 +1,6 @@
 import {getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 import React from "react";
+import {ListingData} from "./Listing";
 
 // returns PROMISE for an image URL string (which can be used as "src" for <img>)
 //  since returns a promise, can be used as follows:
@@ -76,4 +77,37 @@ export const getFullDateHyphens = (date: Date): string => {
     console.log(date.toLocaleDateString('en-us', options).replace(/\//g, '-').split('/').reverse().join('/'))
 
     return y
+}
+
+
+// api to send email
+const sendEmail = (listingData: ListingData, userEmail: string, ownerEmail: string, listingAccepted: boolean) => {
+
+    const dataToSend = {
+        accepted: listingAccepted,
+        key1 : listingData,
+        user_email: userEmail,
+        owner_email: ownerEmail
+    }
+
+    // make POST request to email endpoint
+    fetch('http://localhost:4567/emailUserOnDecision', {
+        // Specify the method
+        method: 'POST',
+        // Specifies that headers should be sent as JSON
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        },
+        // Specify the body of the request
+        body: JSON.stringify({
+            dataToSend
+        })
+    })
+        .then((response) => {
+            // return the response as JSON
+            return response.json();
+        })
+        .catch((error) => {
+            console.log("JSON error while sending email notification");
+        })
 }
