@@ -58,3 +58,22 @@ export const getFullDate = (date: Date): string => {
     } as const
     return date.toLocaleDateString('en-us', options)
 }
+
+// converts raw Date to string date of form "mm/dd/yyyy"
+export const getFullDateHyphens = (date: Date): string => {
+    const options = {
+        year: "numeric",
+        month: '2-digit',
+        day: '2-digit'
+    } as const
+    const dateString = date.toLocaleDateString('en-us', options).replace(/\//g, '-')
+    console.log("before reverse")
+    const x: string[] = dateString.split("-")
+    console.log(x)
+    const y = x[2] + "-" + x[0] + "-" + x[1]
+    console.log("after reverse")
+    console.log(y)
+    console.log(date.toLocaleDateString('en-us', options).replace(/\//g, '-').split('/').reverse().join('/'))
+
+    return date.toLocaleDateString('en-us', options).replace(/\//g, '-')
+}

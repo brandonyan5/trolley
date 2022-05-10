@@ -6,7 +6,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar'
 import "./Marketplace.css"
 import Listing, {ListingData} from "../SharedComponents/Listing";
-import {getFullDate, getMonthDate, uploadImage} from "../SharedComponents/UtilFunctions"
+import {getFullDate, getFullDateHyphens, getMonthDate, uploadImage} from "../SharedComponents/UtilFunctions"
 import { getDatabase, ref, onValue } from "firebase/database";
 import FilterBar from "./FilterBar";
 import {addressestoDistance} from "../Haversine/haversine";
@@ -126,7 +126,7 @@ function Marketplace(props: MarketplaceProps) {
         // get all filters in one object
         const filters = {
             dates: {
-                [getFullDate(dateFilterRange[0].startDate)]: getFullDate(dateFilterRange[0].endDate)
+                [getFullDateHyphens(dateFilterRange[0].startDate)]: getFullDateHyphens(dateFilterRange[0].endDate)
             },
             area: {
                 [areaFilterRange[0]]: areaFilterRange[1]
@@ -145,6 +145,7 @@ function Marketplace(props: MarketplaceProps) {
             filters: filters,
             filterWeights: normalizedFilterWeights
         }
+
 
         if (calculatedDistances.current) {
             console.log("data to send")
