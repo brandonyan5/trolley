@@ -80,6 +80,7 @@ function OwnerView() {
         }
 
         // make POST request to endpoint
+        // temp comment
         fetch('http://localhost:4567/emailUserOnDecision', {
             // Specify the method
             method: 'POST',
