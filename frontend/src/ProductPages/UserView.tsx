@@ -15,8 +15,19 @@ import './products.css'
 
 function UserView() {
 
+    
     // Firebase consts
     const auth = getAuth()
+
+    // Route to login page if not logged in
+    const navigateTo = useNavigate()
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            navigateTo("/login")
+        } 
+
+    });
+
 
     // Constants for accessing info from state passed
     const location = useLocation();
@@ -32,6 +43,8 @@ function UserView() {
     const [img, setImg] = useState("");
 
     const [displayClaim, setDisplayClaim] = useState(listingData.user_id === "");
+
+    
 
     const checkIsClaimed = () => {
         const db = getDatabase()
@@ -145,18 +158,6 @@ function UserView() {
 
     }
 
-    
-
-    
-    // redirect to login page if user is not already logged in
-    let navigateTo = useNavigate()
-    onAuthStateChanged(auth, (user) => {
-        console.log('why')
-        if (!user) {
-            navigateTo("/login")
-        } 
-
-    });
 
 
     return (

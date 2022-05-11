@@ -10,11 +10,16 @@ import {uploadImage} from "../SharedComponents/UtilFunctions";
 import { UserData }from "../Profile/ProfilePage"
 import {getImageSrc} from "../SharedComponents/UtilFunctions";
 import {sendEmailOnDecision} from "../SharedComponents/UtilFunctions"
+import {addressestoDistance} from "../Haversine/haversine";
+
 
 
 import './products.css'
 
 function OwnerView() {
+
+    // const for navigation
+    const navigateTo = useNavigate()
 
     // Firebase states
     const auth = getAuth()
@@ -40,7 +45,6 @@ function OwnerView() {
     const listingData = state.listingData as ListingData
 
     // states for editability and keeping track of listing properties
-    const [editable, setEditable] = useState(listingData.user_id != "")
     const [address, setAddress] = useState(listingData.address)
     const [area, setArea] = useState(listingData.area)
     const [dateStart, setDateStart] = useState(listingData.date_start)
@@ -51,6 +55,8 @@ function OwnerView() {
     const [userEmail, setUserEmail] = useState("")
     const [completed, setCompleted] = useState(listingData.completed)
     const listingID = state.listingID as string
+
+    const listingText = (address != "" ? "Update Listing" : "Post Listing")
 
     // Check for images
     useEffect(() => {
@@ -63,21 +69,34 @@ function OwnerView() {
 
 
     // Post updates
-    const postListing  = () => {
+    const postListing  = async () => {
 
         const user = auth.currentUser
         const db = getDatabase()
 
         const updates : {[key: string] : string|boolean} = {}
+        console.log("here")
 
-        updates['/users/' + user?.uid + "/listings/" + listingID] = listingID;
-        updates['/products/' + listingID + "/address"] = address;
-        updates['/products/' + listingID + "/date_start"] = dateStart;
-        updates['/products/' + listingID + "/date_end"] = dateEnd;
-        updates['/products/' + listingID + "/area"] = area;
-        updates['/products/' + listingID + "/price"] = price;
+        await addressestoDistance(address, "69 Brown St").then(dist => {
+            if (dist !== "ERROR" && area != "" && price != "") {
 
-        update(ref(db), updates)
+                updates['/users/' + user?.uid + "/listings/" + listingID] = listingID;
+                updates['/products/' + listingID + "/address"] = address;
+                updates['/products/' + listingID + "/date_start"] = dateStart;
+                updates['/products/' + listingID + "/date_end"] = dateEnd;
+                updates['/products/' + listingID + "/area"] = area;
+                updates['/products/' + listingID + "/price"] = price;
+
+                update(ref(db), updates)
+
+                navigateTo("/listings")
+                
+                
+            } else {
+                console.log("invalid entry")
+            }   
+
+        })
 
     }
 
@@ -117,7 +136,7 @@ function OwnerView() {
         })
         .then((response) => {
             // return the response as JSON
-            markListingAsComplete()
+            markListingAsComplete(accepted)
         })
         .catch((error) => {
             console.log("JSON error while sending email notification");
@@ -125,16 +144,22 @@ function OwnerView() {
     }
 
     // Post updates
-    const markListingAsComplete  = () => {
+    const markListingAsComplete  = (completed: boolean) => {
 
-        setCompleted(true)
+        setCompleted(completed)
 
         const user = auth.currentUser
         const db = getDatabase()
 
         const updates : {[key: string] : string|boolean} = {}
 
-        updates['/products/' + listingID + "/completed"] = true;
+        updates['/products/' + listingID + "/completed"] = completed;
+        if(!completed) {
+            updates['/products/' + listingID + "/user_id"] = "";
+            setUserName("")
+            setUserEmail("")
+            setUserPhone("")
+        }
 
         update(ref(db), updates)
 
@@ -232,12 +257,13 @@ function OwnerView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            <Button variant="primary" onClick={postListing}>Post Listing</Button>
+                            <Button variant="primary" onClick={postListing}>{listingText}</Button>
                         </div>
                     </Row>
+                    {(userName != "") && 
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            {(userName != "") && 
+                            
                             <div>
                                 <div>{userName}</div>
                                 {(!completed) &&
@@ -246,10 +272,10 @@ function OwnerView() {
                                     <Button variant="danger" onClick = {() => sendEmail(false)}>Decline</Button>
                                 </div>
                                 }
-                            </div>}
+                            </div>
 
                         </div>
-                    </Row>
+                    </Row>}
                 </Col>
             </Row>
             </Container>

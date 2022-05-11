@@ -41,7 +41,6 @@ function ProfilePage(props: ProfilePageProps) {
     // redirect to login page if user is not already logged in
     let navigateTo = useNavigate()
     onAuthStateChanged(auth, (user) => {
-        console.log('why')
         if (!user) {
             navigateTo("/login")
         } 
