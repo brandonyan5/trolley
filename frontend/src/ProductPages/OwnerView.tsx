@@ -9,6 +9,7 @@ import { Icon } from '@iconify/react';
 import {uploadImage} from "../SharedComponents/UtilFunctions";
 import { UserData }from "../Profile/ProfilePage"
 import {getImageSrc} from "../SharedComponents/UtilFunctions";
+import {sendEmailOnDecision} from "../SharedComponents/UtilFunctions"
 
 
 import './products.css'
@@ -241,7 +242,7 @@ function OwnerView() {
                                 <div>{userName}</div>
                                 {(!completed) &&
                                 <div>
-                                    <Button variant="primary" onClick = {() => sendEmail(true)}>Accept</Button>
+                                    <Button variant="primary" onClick = {() => sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, true)}>Accept</Button>
                                     <Button variant="danger" onClick = {() => sendEmail(false)}>Decline</Button>
                                 </div>
                                 }
