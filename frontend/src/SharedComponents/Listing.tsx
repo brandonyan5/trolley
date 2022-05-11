@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {getImageSrc} from "./UtilFunctions";
+import {getImageSrc, sendEmailOnDecision} from "./UtilFunctions";
 import "../SharedComponents/Listing.css"
-import {getDatabase, onValue, ref} from "firebase/database";
+import {getDatabase, onValue, ref, update} from "firebase/database";
 import {UserData} from "../Profile/ProfilePage";
 
 // Type for the JSON data of a single listing = map from string -> string (field name -> field value)
@@ -18,17 +18,18 @@ export type ListingData = {
 }
 
 interface ListingProps {
-    listingName: string,
+    listingID: string,
     data: ListingData,
     showClaimedBox: boolean,
-    showAcceptDecline: boolean
+    showAcceptDecline: boolean,
+    ownerEmail?: string // optionally accept owner email for claimed listings (so that we don't need more listeners)
 }
 
 function Listing(props: ListingProps) {
     const [img, setImg] = useState("");
-    const [userName, setUserName] = useState<string>("");
-    const [userEmail, setUserEmail] = useState<string>("");
-    const [userPhone, setUserPhone] = useState<string>("");
+    const [claimerName, setClaimerName] = useState<string>("");
+    const [claimerEmail, setClaimerEmail] = useState<string>("");
+    const [claimerPhone, setClaimerPhone] = useState<string>("");
 
     const loadImg = async (relativeImgURL: string) => {
         // resolve promise by only updating img AFTER the promise is returned from getImageSrc
@@ -44,9 +45,9 @@ function Listing(props: ListingProps) {
         // Get info of the claimer of this listing
         onValue(userRef, (snapshot) => {
                 const data : UserData = snapshot.val();
-                setUserName(data.name)
-                setUserEmail(data.email)
-                setUserPhone(data.phone)
+                setClaimerName(data.name)
+                setClaimerEmail(data.email)
+                setClaimerPhone(data.phone)
             },
             {
                 onlyOnce: true
@@ -56,23 +57,46 @@ function Listing(props: ListingProps) {
     // load image once upon initial rendering of listing
     useEffect(() => {
         // path to image is in the format "product<number>/img<number>"
-        loadImg(`${props.listingName}/img1`)
-    }, [props.listingName])
+        loadImg(`${props.listingID}/img1`)
+    }, [props.listingID])
 
     // get detail of claimers (if any)
     useEffect(() => {
         if(props.data.user_id != "") {
             getUserClaim()
         }
-        }, [props.data.user_id]);
+    }, [props.data.user_id]);
 
 
     /* Event handlers */
-    const onClickAccept = (e: React.MouseEvent) => {
+
+    // sends acceptance email to claimer
+    const onClickDecision = (e: React.MouseEvent, ownerAccepted: boolean) => {
+        // stop redirection to product page
         e.stopPropagation()
         e.preventDefault()
-        console.log("accept")
+        if (props.ownerEmail !== undefined) {
+            const db = getDatabase()
+            if (ownerAccepted) {
+                console.log("sending accept email")
+                sendEmailOnDecision(props.data, claimerEmail, props.ownerEmail, true)
+                // mark listing as completed in DB
+                const updates : {[key: string] : string|boolean} = {}
+                updates['/products/' + props.listingID + "/completed"] = true;
+                update(ref(db), updates)
+            } else {
+                console.log("sending declined email")
+                sendEmailOnDecision(props.data, claimerEmail, props.ownerEmail, false)
+                // mark as unclaimed (reset user_id field) to put listing back up on marketplace
+                const updates : {[key: string] : string} = {}
+                updates['/products/' + props.listingID + "/user_id"] = "";
+                update(ref(db), updates)
+            }
+        } else {
+            console.log("ERROR sending acceptance email: email undefined")
+        }
     }
+
 
 
 
@@ -95,15 +119,15 @@ function Listing(props: ListingProps) {
                 <div className="claimed-box">
                     <div className="claiming-user-info">
                         <p>Claimed by</p>
-                        <h4>{userName}</h4>
-                        <p>{userEmail}</p>
-                        <p>{userPhone}</p>
+                        <h4>{claimerName}</h4>
+                        <p>{claimerEmail}</p>
+                        <p>{claimerPhone}</p>
                     </div>
 
                     { props.showAcceptDecline &&
                         <div className="accept-decline-wrapper">
-                            <div onClick={onClickAccept}>Accept</div>
-                            <div>Decline</div>
+                            <div onClick={e => onClickDecision(e, true)}>Accept</div>
+                            <div onClick={e => onClickDecision(e, false)}>Decline</div>
                         </div>
                     }
                 </div>

@@ -17,7 +17,9 @@ function ListingsPage(props: ListingsPageProps) {
     // redirect to login page if user is not already logged in
     let navigateTo = useNavigate()
     const loadedUserID = useRef(false)
-    const [userID, setUserID] = useState<string>("")
+    const [ownerID, setOwnerID] = useState<string>("")
+    const [ownerEmail, setOwnerEmail] = useState<string>("");
+
     useEffect(()=> {
         onAuthStateChanged(auth, (user) => {
             if (!loadedUserID.current) {
@@ -26,7 +28,8 @@ function ListingsPage(props: ListingsPageProps) {
                 } else {
                     console.log("onauthstatechanged")
                     console.log("user id: " + user.uid)
-                    setUserID(user.uid)
+                    setOwnerID(user.uid)
+
                     // update ref so that further interactions with page don't trigger hook
                     loadedUserID.current = true
                 }
@@ -53,7 +56,7 @@ function ListingsPage(props: ListingsPageProps) {
             date_start: "",
             date_end: "",
             price: "",
-            owner_id: userID,
+            owner_id: ownerID,
             user_id: "", //TODO: make empty initially (bc no users have claimed it)
             completed: false
         }
@@ -75,7 +78,7 @@ function ListingsPage(props: ListingsPageProps) {
         }
     }
 
-    /* retrieves ALL listing data from the DB owned by the current user(with a listener attached) and updates state */
+    /* retrieves ALL listing data from the DB owned by the current user (with a listener attached) and updates state */
     const getAllListingsOwnedByUser = () => {
         console.log("== GETTING ALL LISTINGS OWNED BY USER ==")
         // get reference to db
@@ -90,10 +93,11 @@ function ListingsPage(props: ListingsPageProps) {
 
             Object.keys(allDBListings).map(listingID => {
                 const currListing = allDBListings[listingID]
-                console.log("using uid for owner: " + userID)
+                console.log("using uid for owner: " + ownerID)
                 console.log("curr listing: ")
                 console.log(currListing)
-                if (currListing.owner_id === userID) {
+                // only get listings owned by user
+                if (currListing.owner_id === ownerID) {
                     myListings[listingID] = allDBListings[listingID]
                 }
             })
@@ -147,7 +151,7 @@ function ListingsPage(props: ListingsPageProps) {
 
     /* When new listing btn is clicked, upload a new empty listing and pass it to the OwnerView page for modification*/
     const handleOnClickNewListing = () => {
-        if (userID !== "") {
+        if (ownerID !== "") {
             console.log("uploading new listing")
             uploadNewEmptyListing()
         }
@@ -156,11 +160,11 @@ function ListingsPage(props: ListingsPageProps) {
 
     // initially fetch all listings from DB
     useEffect(() => {
-        if (userID !== "") {
+        if (ownerID !== "") {
             console.log("getting initial listings")
             getAllListingsOwnedByUser()
         }
-    }, [userID])
+    }, [ownerID])
 
     // redirect to Owner View with empty listing template for user to create a new listing
     // only redirect when the template data is ready
@@ -183,7 +187,7 @@ function ListingsPage(props: ListingsPageProps) {
         <div>
             <NavBar />
             <div className="listings-page">
-                <h2>Listings Page</h2>
+                <h2>My Listings</h2>
 
                 <div className="new-listing-btn" onClick={handleOnClickNewListing}>
                         + Post a new listing
@@ -198,10 +202,11 @@ function ListingsPage(props: ListingsPageProps) {
                                 <Link key={listingID} to="/createlisting"  state={{listingID: listingID, listingData: claimedListings[listingID]}}>
                                     <Listing
                                         key={listingID}
-                                        listingName={listingID}
+                                        listingID={listingID}
                                         data={claimedListings[listingID]}
                                         showClaimedBox={true}
                                         showAcceptDecline={true}
+                                        ownerEmail={ownerEmail}
                                     />
                                 </Link>
                             )
@@ -215,10 +220,10 @@ function ListingsPage(props: ListingsPageProps) {
                         // render unclaimed listings (if any) else show generic message
                         Object.keys(unclaimedListings).length > 0 ?
                             Object.keys(unclaimedListings).map((listingID) =>
-                                <Link key={listingID} to="/products"  state={{product:unclaimedListings[listingID], listingName: listingID}}>
+                                <Link key={listingID} to="/createlisting"  state={{listingData:unclaimedListings[listingID], listingID: listingID}}>
                                     <Listing
                                         key={listingID}
-                                        listingName={listingID}
+                                        listingID={listingID}
                                         data={unclaimedListings[listingID]}
                                         showClaimedBox={false}
                                         showAcceptDecline={false}
@@ -238,7 +243,7 @@ function ListingsPage(props: ListingsPageProps) {
                                 <Link key={listingID} to="/products"  state={{product:completedListings[listingID], listingName: listingID}}>
                                     <Listing
                                         key={listingID}
-                                        listingName={listingID}
+                                        listingID={listingID}
                                         data={completedListings[listingID]}
                                         showClaimedBox={true}
                                         showAcceptDecline={false}

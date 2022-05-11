@@ -265,7 +265,7 @@ function Marketplace(props: MarketplaceProps) {
                             <Link key={listingID} to="/products"  state={{product:listingsData[listingID], listingName: listingID}}>
                                 <Listing
                                     key={listingID}
-                                    listingName={listingID}
+                                    listingID={listingID}
                                     data={listingsData[listingID]}
                                     showClaimedBox={false}
                                     showAcceptDecline={false}
