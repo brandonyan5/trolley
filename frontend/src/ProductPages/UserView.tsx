@@ -202,7 +202,9 @@ function UserView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            <Button variant="primary" onClick = {() => {updateListing(); sendEmail()}}>Claim</Button>{' '}
+                            {listingData.owner_id != auth.currentUser?.uid &&
+                            <Button variant="primary" onClick = {() => {updateListing(); sendEmail()}}>Claim</Button>
+                            }
                         </div>
                     </Row>
                 </Col>
