@@ -78,7 +78,7 @@ function OwnerView() {
         console.log("here")
 
         await addressestoDistance(address, "69 Brown St").then(dist => {
-            if (dist !== "ERROR" && area != "" && price != "") {
+            if (dist !== "ERROR") {
 
                 updates['/users/' + user?.uid + "/listings/" + listingID] = listingID;
                 updates['/products/' + listingID + "/address"] = address;
@@ -257,7 +257,7 @@ function OwnerView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            <Button variant="primary" onClick={postListing}>{listingText}</Button>
+                            <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="")}>{listingText}</Button>
                         </div>
                     </Row>
                     {(userName != "") && 
