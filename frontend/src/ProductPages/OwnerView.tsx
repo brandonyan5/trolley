@@ -8,6 +8,7 @@ import {Row, Col, Container, Form, Button} from "react-bootstrap"
 import { Icon } from '@iconify/react';
 import {uploadImage} from "../SharedComponents/UtilFunctions";
 import { UserData }from "../Profile/ProfilePage"
+import {getImageSrc} from "../SharedComponents/UtilFunctions";
 
 
 import './products.css'
@@ -31,6 +32,8 @@ function OwnerView() {
         getUserClaim()
     }, []);
 
+    
+
 
 
     const listingData = state.listingData as ListingData
@@ -45,7 +48,18 @@ function OwnerView() {
     const [userName, setUserName] = useState("")
     const [userPhone, setUserPhone] = useState("")
     const [userEmail, setUserEmail] = useState("")
+    const [completed, setCompleted] = useState(listingData.completed)
     const listingID = state.listingID as string
+
+    // Check for images
+    useEffect(() => {
+        console.log("here1")
+        if(address != "") {
+            loadImg(`${listingID}/img1`)
+        }
+    }, [listingID]);
+    
+
 
     // Post updates
     const postListing  = () => {
@@ -64,6 +78,13 @@ function OwnerView() {
 
         update(ref(db), updates)
 
+    }
+
+    // set image if loaded
+    const loadImg = async (relativeImgURL: string) => {
+        // resolve promise by only updating img AFTER the promise is returned from getImageSrc
+        const res = await getImageSrc(relativeImgURL)
+        setImg(res)
     }
 
     // api to send email
@@ -95,11 +116,27 @@ function OwnerView() {
         })
         .then((response) => {
             // return the response as JSON
-            return response.json();
+            markListingAsComplete()
         })
         .catch((error) => {
             console.log("JSON error while sending email notification");
         })
+    }
+
+    // Post updates
+    const markListingAsComplete  = () => {
+
+        setCompleted(true)
+
+        const user = auth.currentUser
+        const db = getDatabase()
+
+        const updates : {[key: string] : string|boolean} = {}
+
+        updates['/products/' + listingID + "/completed"] = true;
+
+        update(ref(db), updates)
+
     }
 
     // access profile info of claimer if it exists
@@ -118,6 +155,7 @@ function OwnerView() {
                 setUserName(data.name)
                 setUserEmail(data.email)
                 setUserPhone(data.phone)
+                
             },
             {
                 onlyOnce: true
@@ -180,10 +218,16 @@ function OwnerView() {
                 </Col>
                 <Col md = {6} xs = {12} className="p-3" >
                     <Row className = "row g-0">
+                        {img == "" ?
                         <Form.Group controlId="formFile" className="mb-3">
-                            <Form.Label>Default file input example</Form.Label>
+                            <Form.Label>Choose Image</Form.Label>
                             <Form.Control type="file" onChange = {(e) => uploadImg(e as any)}/>
                         </Form.Group>
+                        :
+                        <div className = "image-view">
+                            <img src={img} className="product-image" alt="Listing"/>
+                        </div>
+                        }                   
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
@@ -195,8 +239,12 @@ function OwnerView() {
                             {(userName != "") && 
                             <div>
                                 <div>{userName}</div>
-                                <Button variant="primary" onClick = {() => sendEmail(true)}>Accept</Button>
-                                <Button variant="danger" onClick = {() => sendEmail(false)}>Decline</Button>
+                                {(!completed) &&
+                                <div>
+                                    <Button variant="primary" onClick = {() => sendEmail(true)}>Accept</Button>
+                                    <Button variant="danger" onClick = {() => sendEmail(false)}>Decline</Button>
+                                </div>
+                                }
                             </div>}
 
                         </div>
