@@ -154,7 +154,7 @@ function ListingsPage(props: ListingsPageProps) {
     const handlePostNewListing = () => {
         if (ownerID !== "") {
             console.log("uploading new listing")
-            uploadNewEmptyListing()
+            // uploadNewEmptyListing()
         }
     }
 
@@ -167,13 +167,13 @@ function ListingsPage(props: ListingsPageProps) {
         }
     }, [ownerID])
 
-    // redirect to Owner View with empty listing template for user to create a new listing
-    // only redirect when the template data is ready
-    useEffect(() => {
-        if (Object.keys(emptyListingData).length > 0) {
-            navigateTo("/createlisting", {state: {listingID: newListingID, listingData: emptyListingData}})
-        }
-    }, [emptyListingData]);
+    // // redirect to Owner View with empty listing template for user to create a new listing
+    // // only redirect when the template data is ready
+    // useEffect(() => {
+    //     if (Object.keys(emptyListingData).length > 0) {
+    //         navigateTo("/createlisting", {state: {listingID: newListingID, listingData: emptyListingData}})
+    //     }
+    // }, [emptyListingData]);
 
     // separate the listings into claimed, unclaimed, and completed once all listings have been fetched
     useEffect(() => {
@@ -190,9 +190,12 @@ function ListingsPage(props: ListingsPageProps) {
             <div className="listings-page">
                 <h2>My Listings</h2>
 
-                <div className="new-listing-btn" onClick={handlePostNewListing}>
+                <Link to="/createlisting" state={{listingID: "invalid"}}>
+                    <div className="new-listing-btn" onClick={handlePostNewListing}>
                         + Post a new listing
-                </div>
+                    </div>
+                </Link>
+
 
                 <div className="claimed-listings-wrapper">
                     <h3>Claimed Listings</h3>
@@ -200,7 +203,7 @@ function ListingsPage(props: ListingsPageProps) {
                         // render claimed listings (if any) else show generic message
                         Object.keys(claimedListings).length > 0 ?
                             Object.keys(claimedListings).map((listingID) =>
-                                <Link key={listingID} to="/createlisting"  state={{listingID: listingID, listingData: claimedListings[listingID]}}>
+                                <Link key={listingID} to="/createlisting"  state={{listingID: listingID}}>
                                     <Listing
                                         key={listingID}
                                         listingID={listingID}
@@ -221,7 +224,7 @@ function ListingsPage(props: ListingsPageProps) {
                         // render unclaimed listings (if any) else show generic message
                         Object.keys(unclaimedListings).length > 0 ?
                             Object.keys(unclaimedListings).map((listingID) =>
-                                <Link key={listingID} to="/createlisting"  state={{listingData:unclaimedListings[listingID], listingID: listingID}}>
+                                <Link key={listingID} to="/createlisting"  state={{listingID: listingID}}>
                                     <Listing
                                         key={listingID}
                                         listingID={listingID}

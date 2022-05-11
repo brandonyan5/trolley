@@ -30,31 +30,30 @@ function OwnerView() {
     // Const for accessing info from location state
 
     const location  = useLocation()
-    const state = location.state as {[key:string] : string | ListingData}
+    const state = location.state as {[key:string] : string}
+
+    const [listingID, setListingID] = useState(state.listingID);
 
 
-    // Check for claims for this listing
-    useEffect(() => {
-        getUserClaim()
-    }, []);
+
 
     
 
 
 
-    const listingData = state.listingData as ListingData
 
     // states for editability and keeping track of listing properties
-    const [address, setAddress] = useState(listingData.address)
-    const [area, setArea] = useState(listingData.area)
-    const [dateStart, setDateStart] = useState(listingData.date_start)
-    const [dateEnd, setDateEnd] = useState(listingData.date_end)
-    const [price, setPrice] = useState(listingData.price)
+    const [address, setAddress] = useState("")
+    const [area, setArea] = useState("")
+    const [dateStart, setDateStart] = useState("")
+    const [dateEnd, setDateEnd] = useState("")
+    const [price, setPrice] = useState("")
     const [userName, setUserName] = useState("")
     const [userPhone, setUserPhone] = useState("")
     const [userEmail, setUserEmail] = useState("")
-    const [completed, setCompleted] = useState(listingData.completed)
-    const listingID = state.listingID as string
+    const [userID, setUserID] = useState("")
+    const [completed, setCompleted] = useState<boolean>(false)
+    const [listingData, setListingData] = useState({} as ListingData);
 
     const listingText = (address != "" ? "Update Listing" : "Post Listing")
 
@@ -64,8 +63,14 @@ function OwnerView() {
         if(address != "") {
             loadImg(`${listingID}/img1`)
         }
-    }, [listingID]);
-    
+    }, [listingData]);
+
+    // Check for claims for this listing
+    useEffect(() => {
+        if (userID !== "") {
+            getUserClaim()
+        }
+    }, [userID]);
 
 
     // Post updates
@@ -165,15 +170,39 @@ function OwnerView() {
 
     }
 
+
+    const getListingData = () => {
+        const db = getDatabase()
+        const userRef = ref(db, `products/${listingID}`);
+        onValue(userRef, (snapshot) => {
+            if (snapshot.exists()) {
+                const data: ListingData = snapshot.val();
+                setAddress(data.address)
+                setArea(data.area)
+                setCompleted(data.completed)
+                setDateEnd(data.date_end)
+                setDateStart(data.date_start)
+                setPrice(data.price)
+                setUserID(data.user_id as string)
+                setListingData(data)
+            }
+        })
+    }
+
+    useEffect(() => {
+        getListingData()
+    }, []);
+
+
     // access profile info of claimer if it exists
     const getUserClaim = () => {
-        if(listingData.user_id != "") {
+        if(userID != "") {
 
             // get database
             const db = getDatabase()
 
             // Get firebase const info
-            const userRef = ref(db, 'users/' + listingData.user_id);
+            const userRef = ref(db, 'users/' + userID);
 
             // Get info of the claimer of this listing
             onValue(userRef, (snapshot) => {
