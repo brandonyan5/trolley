@@ -29,14 +29,19 @@ export async function addressestoDistance(address1: string, address2: string): P
 
 
     const latLong1 = await fetch(firstURL, {}).then(response => response.json())
+    console.log(latLong1)
     const latLong2 = await fetch(secondURL, {}).then(response => response.json())
+    console.log(latLong2)
+    if (latLong1.length == 0 || latLong2.length == 0) {
+        console.log("ERROR: Invalid address encountered")
+        return "ERROR: Invalid address encountered"
+    }
     const lat1 = latLong1[0].lat
     const lat2 = latLong2[0].lat
     const long1 = latLong1[0].lon
     const long2 = latLong2[0].lon
     console.log("DISTANCE: " + haversine_distance(lat1, lat2, long1, long2))
     return haversine_distance(lat1, lat2, long1, long2).toString()
-
 }
 
 // From https://cloud.google.com/blog/products/maps-platform/how-calculate-distances-map-maps-javascript-api
