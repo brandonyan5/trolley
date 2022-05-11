@@ -28,11 +28,20 @@ function UserView() {
     const [name, setName] = useState("")
     const [phone, setPhone] = useState("")
     const [email, setEmail] = useState("")
-
     // Hooks for showing image
     const [img, setImg] = useState("");
 
-    
+    const [displayClaim, setDisplayClaim] = useState(listingData.user_id === "");
+
+    const checkIsClaimed = () => {
+        const db = getDatabase()
+        const listingRef = ref(db, `products/${listingName}`)
+        onValue(listingRef, (dataSnapshot) => {
+            const listing: ListingData = dataSnapshot.val()
+            // get user address
+            setDisplayClaim(listing.user_id === "")
+        })
+    }
 
     const loadImg = async (relativeImgURL: string) => {
         // resolve promise by only updating img AFTER the promise is returned from getImageSrc
@@ -48,12 +57,15 @@ function UserView() {
 
     // reload content once user auth is satisfied
     useEffect(() => {
+        checkIsClaimed()
         const unsub = onAuthStateChanged(auth, user => {
             if (user) {
                 readProfile()
             }
         });
     }, [])
+
+
 
     const updateListing = () => {
         // get reference to db
@@ -202,8 +214,9 @@ function UserView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            {listingData.owner_id != auth.currentUser?.uid &&
-                            <Button variant="primary" onClick = {() => {updateListing(); sendEmail()}}>Claim</Button>
+                            {listingData.owner_id != auth.currentUser?.uid //makes sure owner is not current viewer
+                            && displayClaim && // only display if current user_id for this listing is null (not claimed yet)
+                                <Button variant="primary" onClick = {() => {updateListing(); sendEmail()}}>Claim</Button>
                             }
                         </div>
                     </Row>

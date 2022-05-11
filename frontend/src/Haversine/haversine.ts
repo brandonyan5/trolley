@@ -34,7 +34,7 @@ export async function addressestoDistance(address1: string, address2: string): P
     console.log(latLong2)
     if (latLong1.length == 0 || latLong2.length == 0) {
         console.log("ERROR: Invalid address encountered")
-        return "ERROR: Invalid address encountered"
+        return "ERROR"
     }
     const lat1 = latLong1[0].lat
     const lat2 = latLong2[0].lat

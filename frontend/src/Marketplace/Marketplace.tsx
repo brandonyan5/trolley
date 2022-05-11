@@ -111,7 +111,13 @@ function Marketplace(props: MarketplaceProps) {
             // NOTE: line below only resolves when all promises within the loop (for retrieving distance) resolve
             await Promise.all(Object.keys(listingsData).map(async listingID => {
                 await addressestoDistance(userAddress, dataCopy[listingID].address).then(dist => {
-                    dataCopy[listingID]["distance"] = dist
+                    if (dist !== "ERROR") {
+                        dataCopy[listingID]["distance"] = dist
+                    } else {
+                        delete dataCopy[listingID]
+                        console.log("HAVERSINE ERROR")
+                    }
+
                 })
             }))
 
