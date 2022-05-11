@@ -29,9 +29,7 @@ export async function addressestoDistance(address1: string, address2: string): P
 
 
     const latLong1 = await fetch(firstURL, {}).then(response => response.json())
-    console.log(latLong1)
     const latLong2 = await fetch(secondURL, {}).then(response => response.json())
-    console.log(latLong2)
     if (latLong1.length == 0 || latLong2.length == 0) {
         console.log("ERROR: Invalid address encountered")
         return "ERROR"

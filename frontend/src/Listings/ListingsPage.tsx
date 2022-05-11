@@ -29,6 +29,7 @@ function ListingsPage(props: ListingsPageProps) {
                     console.log("onauthstatechanged")
                     console.log("user id: " + user.uid)
                     setOwnerID(user.uid)
+                    setOwnerEmail(user.email!)
 
                     // update ref so that further interactions with page don't trigger hook
                     loadedUserID.current = true
@@ -150,7 +151,7 @@ function ListingsPage(props: ListingsPageProps) {
     }
 
     /* When new listing btn is clicked, upload a new empty listing and pass it to the OwnerView page for modification*/
-    const handleOnClickNewListing = () => {
+    const handlePostNewListing = () => {
         if (ownerID !== "") {
             console.log("uploading new listing")
             uploadNewEmptyListing()
@@ -189,7 +190,7 @@ function ListingsPage(props: ListingsPageProps) {
             <div className="listings-page">
                 <h2>My Listings</h2>
 
-                <div className="new-listing-btn" onClick={handleOnClickNewListing}>
+                <div className="new-listing-btn" onClick={handlePostNewListing}>
                         + Post a new listing
                 </div>
 
@@ -204,14 +205,14 @@ function ListingsPage(props: ListingsPageProps) {
                                         key={listingID}
                                         listingID={listingID}
                                         data={claimedListings[listingID]}
-                                        showClaimedBox={true}
+                                        showClaimerBox={true}
                                         showAcceptDecline={true}
                                         ownerEmail={ownerEmail}
                                     />
                                 </Link>
                             )
-                            :
-                            <h4>Nothing to show here</h4>
+                        :
+                        <h4>Nothing to show here</h4>
                     }
                 </div>
                 <div className="unclaimed-listings-wrapper">
@@ -225,19 +226,19 @@ function ListingsPage(props: ListingsPageProps) {
                                         key={listingID}
                                         listingID={listingID}
                                         data={unclaimedListings[listingID]}
-                                        showClaimedBox={false}
+                                        showClaimerBox={false}
                                         showAcceptDecline={false}
                                     />
                                 </Link>
                             )
-                            :
-                            <h4>Nothing to show here</h4>
+                        :
+                        <h4>Nothing to show here</h4>
                     }
                 </div>
                 <div className="completed-listings-wrapper">
                     <h3>Completed</h3>
                     {
-                        // render unclaimed listings (if any) else show generic message
+                        // render completed listings (if any) else show generic message
                         Object.keys(completedListings).length > 0 ?
                             Object.keys(completedListings).map((listingID) =>
                                 <Link key={listingID} to="/products"  state={{product:completedListings[listingID], listingName: listingID}}>
@@ -245,13 +246,13 @@ function ListingsPage(props: ListingsPageProps) {
                                         key={listingID}
                                         listingID={listingID}
                                         data={completedListings[listingID]}
-                                        showClaimedBox={true}
+                                        showClaimerBox={true}
                                         showAcceptDecline={false}
                                     />
                                 </Link>
                             )
-                            :
-                            <h4>Nothing to show here</h4>
+                        :
+                        <h4>Nothing to show here</h4>
                     }
                 </div>
             </div>

@@ -20,7 +20,7 @@ export type ListingData = {
 interface ListingProps {
     listingID: string,
     data: ListingData,
-    showClaimedBox: boolean,
+    showClaimerBox: boolean,
     showAcceptDecline: boolean,
     ownerEmail?: string // optionally accept owner email for claimed listings (so that we don't need more listeners)
 }
@@ -115,7 +115,7 @@ function Listing(props: ListingProps) {
                 <p>${props.data.price}/day</p>
             </div>
 
-            { props.data.user_id !== "" && props.showClaimedBox && // only render claimer and accept/decline for claimed listings
+            { props.data.user_id !== "" && props.showClaimerBox && // only render claimer and accept/decline for claimed listings
                 <div className="claimed-box">
                     <div className="claiming-user-info">
                         <p>Claimed by</p>

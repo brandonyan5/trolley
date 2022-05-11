@@ -267,7 +267,7 @@ function Marketplace(props: MarketplaceProps) {
                                     key={listingID}
                                     listingID={listingID}
                                     data={listingsData[listingID]}
-                                    showClaimedBox={false}
+                                    showClaimerBox={false}
                                     showAcceptDecline={false}
                                 />
                             </Link>
