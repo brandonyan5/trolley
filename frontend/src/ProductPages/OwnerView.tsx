@@ -54,8 +54,10 @@ function OwnerView() {
     const [userID, setUserID] = useState("")
     const [completed, setCompleted] = useState<boolean>(false)
     const [listingData, setListingData] = useState({} as ListingData);
+    const [imageSelected, setImageSelected] = useState(false)
 
     const [listingText, setListingText] = useState("Post Listing")
+    const [imageUploadEvent, setImageUploadEvent] = useState<React.ChangeEvent<HTMLInputElement>>()
 
     // Check for images
     useEffect(() => {
@@ -126,8 +128,9 @@ function OwnerView() {
                     // Generate a reference to a new location and add some data using push()
                     const newPostRef = push(listingsRef, emptyListingData)
                     setListingID(newPostRef.key as string)
-                    setListingData(emptyListingData as ListingData)
 
+
+                    uploadImage(imageUploadEvent as React.ChangeEvent<HTMLInputElement>, `${newPostRef.key}/img1`)
                     navigateTo("/listings")
                 } 
 
@@ -259,7 +262,12 @@ function OwnerView() {
     // upload image the user selects
 
     const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-        uploadImage(e, `${listingID}/img1`)
+        if(listingID != "invalid") {
+            uploadImage(e, `${listingID}/img1`)
+            console.log("here95")
+        }
+        setImageUploadEvent(e)
+        setImageSelected(true)
     }
 
     return (
@@ -323,7 +331,7 @@ function OwnerView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="" || img=="")}>{listingText}</Button>
+                            <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="" || !imageSelected)}>{listingText}</Button>
                         </div>
                     </Row>
                     {(userName != "") && 
