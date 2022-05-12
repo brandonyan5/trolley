@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate, useLocation} from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
-import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/database";
+import { getDatabase, ref, onValue,push, DataSnapshot, update} from "firebase/database";
 import { ListingData } from '../SharedComponents/Listing';
 import {Row, Col, Container, Form, Button} from "react-bootstrap"
 import { Icon } from '@iconify/react';
@@ -55,7 +55,7 @@ function OwnerView() {
     const [completed, setCompleted] = useState<boolean>(false)
     const [listingData, setListingData] = useState({} as ListingData);
 
-    const listingText = (address != "" ? "Update Listing" : "Post Listing")
+    const [listingText, setListingText] = useState("Post Listing")
 
     // Check for images
     useEffect(() => {
@@ -82,26 +82,62 @@ function OwnerView() {
         const updates : {[key: string] : string|boolean} = {}
         console.log("here")
 
-        await addressestoDistance(address, "69 Brown St").then(dist => {
-            if (dist !== "ERROR") {
+        if(listingID != "invalid") {
+            await addressestoDistance(address, "69 Brown St").then(dist => {
+                if (dist !== "ERROR") {
 
-                updates['/users/' + user?.uid + "/listings/" + listingID] = listingID;
-                updates['/products/' + listingID + "/address"] = address;
-                updates['/products/' + listingID + "/date_start"] = dateStart;
-                updates['/products/' + listingID + "/date_end"] = dateEnd;
-                updates['/products/' + listingID + "/area"] = area;
-                updates['/products/' + listingID + "/price"] = price;
+                    updates['/users/' + user?.uid + "/listings/" + listingID] = listingID;
+                    updates['/products/' + listingID + "/address"] = address;
+                    updates['/products/' + listingID + "/date_start"] = dateStart;
+                    updates['/products/' + listingID + "/date_end"] = dateEnd;
+                    updates['/products/' + listingID + "/area"] = area;
+                    updates['/products/' + listingID + "/price"] = price;
 
-                update(ref(db), updates)
+                    update(ref(db), updates)
 
-                navigateTo("/listings")
-                
-                
-            } else {
-                console.log("invalid entry")
-            }   
+                    navigateTo("/listings")
+                    
+                    
+                } else {
+                    console.log("invalid entry")
+                }   
 
-        })
+            })
+        } 
+        else {
+
+            await addressestoDistance(address, "69 Brown St").then(dist => {
+                if (dist !== "ERROR") {
+                    const listingsRef = ref(db, "products")
+
+                    // define the new listing data
+                    const emptyListingData = {
+                        address: address,
+                        area: area,
+                        completed: completed, 
+                        date_end: dateEnd,
+                        date_start: dateStart,
+                        owner_id: auth.currentUser?.uid,
+                        price: price,
+                        user_id: ""
+
+                    }
+
+                    // Generate a reference to a new location and add some data using push()
+                    const newPostRef = push(listingsRef, emptyListingData)
+                    setListingID(newPostRef.key as string)
+                    setListingData(emptyListingData as ListingData)
+
+                    navigateTo("/listings")
+                } 
+
+                else {
+                    console.log("invalid entry")
+                }   
+    
+            })
+
+        }  
 
     }
 
@@ -185,6 +221,7 @@ function OwnerView() {
                 setPrice(data.price)
                 setUserID(data.user_id as string)
                 setListingData(data)
+                setListingText("Update Listing")
             }
         })
     }
@@ -286,7 +323,7 @@ function OwnerView() {
                     </Row>
                     <Row className = "row g-0">
                         <div className = "claim-box">
-                            <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="")}>{listingText}</Button>
+                            <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="" || img=="")}>{listingText}</Button>
                         </div>
                     </Row>
                     {(userName != "") && 
