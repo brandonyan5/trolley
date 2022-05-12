@@ -1,6 +1,5 @@
 package edu.brown.cs.student.main;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 //import edu.brown.cs.student.main.email.EmailOwner;
 //import edu.brown.cs.student.main.email.EmailOwner;
@@ -12,15 +11,13 @@ import edu.brown.cs.student.main.listing.Listing;
 import edu.brown.cs.student.main.sorter.Sorter;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import netscape.javascript.JSObject;
-import org.checkerframework.checker.units.qual.A;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.Spark;
-import java.sql.SQLException;
+
 import java.util.*;
 
 // This is a method for calculating the distance between two locations
@@ -101,6 +98,7 @@ public final class Main {
         // Put Routes Here
         Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
         Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
+        Spark.post("/emailOwnerOnUnclaim", new EmailOwnerOnUnclaim());
         Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
         Spark.init();
     }
@@ -262,7 +260,23 @@ public final class Main {
             String ownerEmail = dataToSend.getString("owner_email");
             String otherEmail = dataToSend.getString("user_email");
 
-            if (EmailOwner.sendEmailToOwner(ownerEmail)) {
+            if (EmailOwner.sendEmailToOwnerOnDecision(ownerEmail)) {
+                return "{\"200\" : \"OK\"}";
+            } else {
+                return "{\"ERROR\" : \"AN ERROR\"}";
+            }
+        }
+    }
+
+    private static class EmailOwnerOnUnclaim implements Route {
+        @Override
+        public String handle(Request request, Response response) throws Exception {
+            JSONObject reqJSON = new JSONObject(request.body());
+            JSONObject dataToSend = reqJSON.getJSONObject("dataToSend");
+            String ownerEmail = dataToSend.getString("owner_email");
+            String otherEmail = dataToSend.getString("user_email");
+
+            if (EmailOwner.sendEmailToOwnerOnUnclaim(ownerEmail)) {
                 return "{\"200\" : \"OK\"}";
             } else {
                 return "{\"ERROR\" : \"AN ERROR\"}";

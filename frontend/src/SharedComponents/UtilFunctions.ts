@@ -80,9 +80,8 @@ export const getFullDateHyphens = (date: Date): string => {
 }
 
 
-// api to send email
+// send email when owner accepts/declines a claim
 export const sendEmailOnDecision = (listingData: ListingData, userEmail: string, ownerEmail: string | null, listingAccepted: boolean) => {
-
     if(ownerEmail != null) {
     
         const dataToSend = {
@@ -94,6 +93,38 @@ export const sendEmailOnDecision = (listingData: ListingData, userEmail: string,
 
         // make POST request to email endpoint
         fetch('http://localhost:4567/emailUserOnDecision', {
+            // Specify the method
+            method: 'POST',
+            // Specifies that headers should be sent as JSON
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            },
+            // Specify the body of the request
+            body: JSON.stringify({
+                dataToSend
+            })
+        })
+            .then((response) => {
+                // return the response as JSON
+                return response.json();
+            })
+            .catch((error) => {
+                console.log("JSON error while sending email notification");
+            })
+    }
+}
+
+// send email when claimer cancels their claim
+export const sendEmailOnUnclaim = (listingData: ListingData, claimerEmail: string, ownerEmail: string | null) => {
+    if(ownerEmail != null) {
+        const dataToSend = {
+            key1 : listingData,
+            user_email: claimerEmail,
+            owner_email: ownerEmail
+        }
+
+        // make POST request to email endpoint
+        fetch('http://localhost:4567/emailOwnerOnUnclaim', {
             // Specify the method
             method: 'POST',
             // Specifies that headers should be sent as JSON

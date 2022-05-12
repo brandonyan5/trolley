@@ -33,11 +33,11 @@
 }
 
 /* CLAIMED section */
-.claimed-box {
+.claimer-box {
     background: pink;
     width: 300px;
 }
-.claiming-user-info {
+.claimer-info {
     background: #4a77a8;
 }
 .accept-decline-wrapper {
