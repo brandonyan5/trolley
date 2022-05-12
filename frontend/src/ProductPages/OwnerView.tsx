@@ -64,6 +64,7 @@ function OwnerView() {
         console.log("here1")
         if(address != "") {
             loadImg(`${listingID}/img1`)
+            setImageSelected(true)
         }
     }, [listingData]);
 
