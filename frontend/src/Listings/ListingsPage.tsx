@@ -192,7 +192,7 @@ function ListingsPage(props: ListingsPageProps) {
         <div>
             <NavBar />
             <div className="listings-page">
-                <h2>My Listings</h2>
+                <h1 id="my-listings-title">My Listings</h1>
 
                 <Link to="/createlisting" state={{listingID: "invalid"}}>
                     <div className="new-listing-btn" onClick={handlePostNewListing}>
@@ -201,7 +201,7 @@ function ListingsPage(props: ListingsPageProps) {
                 </Link>
 
 
-                <div className="claimed-listings-wrapper">
+                <div className="my-listings-wrapper claimed-listings-wrapper">
                     <h3>Claimed Listings</h3>
                     {
                         // render claimed listings (if any) else show generic message
@@ -222,7 +222,7 @@ function ListingsPage(props: ListingsPageProps) {
                         <h4>Nothing to show here</h4>
                     }
                 </div>
-                <div className="unclaimed-listings-wrapper">
+                <div className="my-listings-wrapper unclaimed-listings-wrapper">
                     <h3>Unclaimed Listings</h3>
                     {
                         // render unclaimed listings (if any) else show generic message
@@ -242,7 +242,7 @@ function ListingsPage(props: ListingsPageProps) {
                         <h4>Nothing to show here</h4>
                     }
                 </div>
-                <div className="completed-listings-wrapper">
+                <div className="my-listings-wrapper  completed-listings-wrapper">
                     <h3>Completed</h3>
                     {
                         // render completed listings (if any) else show generic message

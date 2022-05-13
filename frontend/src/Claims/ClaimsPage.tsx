@@ -130,7 +130,7 @@ function ClaimsPage(props: ClaimsPageProps) {
             <div className="claims-page">
                 <h2>My Claims</h2>
 
-                <div className="claimed-listings-wrapper">
+                <div className="my-listings-wrapper claimed-listings-wrapper">
                     <h3>Claimed Listings</h3>
                     {
                         // render listings claimed by user (if any) else show generic message
@@ -152,7 +152,7 @@ function ClaimsPage(props: ClaimsPageProps) {
                         <h4>Nothing to show here</h4>
                     }
                 </div>
-                <div className="completed-listings-wrapper">
+                <div className="my-listings-wrapper completed-listings-wrapper">
                     <h3>Completed</h3>
                     {
                         // render completed listings (if any) else show generic message

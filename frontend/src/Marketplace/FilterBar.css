@@ -1,22 +1,27 @@
 .filter-bar {
     width: 80%;
     padding: 20px 30px;
-    background: red;
+    background: #123963;
     margin: 20px auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    color: white;
+    border-radius: 25px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
 .filter-bar > h4 {
     flex-basis: 100%;
+    font-weight: 400;
+    margin: 15px 0;
 }
 
 .filter-weights-wrapper {
-    background: green;
     flex-basis: 100%;
     display: flex;
     column-gap: 20px;
+    font-weight: 200;
 }
 
 /* styling for date picker and preview*/
@@ -25,10 +30,11 @@
     display: flex;
     background: white;
     column-gap: 5px;
-    border-radius: 5px;
+    border-radius: 20px;
 }
 .date-range-preview p {
-    margin: 0
+    margin: 0;
+    color: black;
 }
 
 .date-range-wrapper {
