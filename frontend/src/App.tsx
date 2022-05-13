@@ -8,6 +8,7 @@ import ListingsPage from "./Listings/ListingsPage";
 import ClaimsPage from "./Claims/ClaimsPage";
 import ProfilePage from "./Profile/ProfilePage";
 import UserView from "./ProductPages/UserView";
+import OwnerView from "./ProductPages/OwnerView";
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/claims" element={<ClaimsPage />}/>
                 <Route path="/profile" element={<ProfilePage />}/>
                 <Route path="/products" element={<UserView />}/>
+                <Route path="/createlisting" element={<OwnerView />}/>
                 <Route path="*" element={<Error />}/>
             </Routes>
         </Router>

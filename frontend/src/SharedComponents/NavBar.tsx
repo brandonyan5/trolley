@@ -58,6 +58,7 @@ function NavBar(props: NavBarProps) {
             <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="ms-auto">
                 <Nav.Link as={Link} to= "/listings" className = "nav-buttons">My Listings</Nav.Link>
+                <Nav.Link as={Link} to= "/claims" className = "nav-buttons">My Claims</Nav.Link>
                 <NavDropdown  align={{ lg: 'end' }} className ="dropdown-menu-right"
                 title={<Icon className = "profile" icon="iconoir:profile-circled"  width='40px' /> }
                 id="collasible-nav-dropdown">

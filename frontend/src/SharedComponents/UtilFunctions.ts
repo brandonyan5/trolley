@@ -1,5 +1,6 @@
 import {getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 import React from "react";
+import {ListingData} from "./Listing";
 
 // returns PROMISE for an image URL string (which can be used as "src" for <img>)
 //  since returns a promise, can be used as follows:
@@ -41,10 +42,106 @@ export const uploadImage = (e: React.ChangeEvent<HTMLInputElement>, relativeSave
 }
 
 // converts raw Date objects to date strings of the format "MMM DD" (e.g. Jan 1, Dec 31)
-export const getMonthDate = (date: Date) => {
+export const getMonthDate = (date: Date): string => {
     const options = {
         month: 'short',
         day: 'numeric'
     } as const
     return date.toLocaleDateString('en-us', options)
+}
+
+// converts raw Date to string date of form "mm/dd/yyyy"
+export const getFullDate = (date: Date): string => {
+    const options = {
+        year: "numeric",
+        month: '2-digit',
+        day: '2-digit'
+    } as const
+    return date.toLocaleDateString('en-us', options)
+}
+
+// converts raw Date to string date of form "yyyy-mm-dd": required format for backend
+export const getFullDateHyphens = (date: Date): string => {
+    const options = {
+        year: "numeric",
+        month: '2-digit',
+        day: '2-digit'
+    } as const
+    const dateString = date.toLocaleDateString('en-us', options).replace(/\//g, '-')
+    const x: string[] = dateString.split("-")
+    console.log(x)
+    const y = x[2] + "-" + x[0] + "-" + x[1]
+    // console.log("before reverse")
+    // console.log(y)
+    // console.log("after reverse")
+    // console.log(date.toLocaleDateString('en-us', options).replace(/\//g, '-').split('/').reverse().join('/'))
+
+    return y
+}
+
+
+// send email when owner accepts/declines a claim
+export const sendEmailOnDecision = (listingData: ListingData, userEmail: string, ownerEmail: string | null, listingAccepted: boolean) => {
+    if(ownerEmail != null) {
+    
+        const dataToSend = {
+            accepted: listingAccepted,
+            key1 : listingData,
+            user_email: userEmail,
+            owner_email: ownerEmail
+        }
+
+        // make POST request to email endpoint
+        fetch('http://localhost:4567/emailUserOnDecision', {
+            // Specify the method
+            method: 'POST',
+            // Specifies that headers should be sent as JSON
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            },
+            // Specify the body of the request
+            body: JSON.stringify({
+                dataToSend
+            })
+        })
+            .then((response) => {
+                // return the response as JSON
+                return response.json();
+            })
+            .catch((error) => {
+                console.log("JSON error while sending email notification");
+            })
+    }
+}
+
+// send email when claimer cancels their claim
+export const sendEmailOnUnclaim = (listingData: ListingData, claimerEmail: string, ownerEmail: string | null) => {
+    if(ownerEmail != null) {
+        const dataToSend = {
+            key1 : listingData,
+            user_email: claimerEmail,
+            owner_email: ownerEmail
+        }
+
+        // make POST request to email endpoint
+        fetch('http://localhost:4567/emailOwnerOnUnclaim', {
+            // Specify the method
+            method: 'POST',
+            // Specifies that headers should be sent as JSON
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            },
+            // Specify the body of the request
+            body: JSON.stringify({
+                dataToSend
+            })
+        })
+            .then((response) => {
+                // return the response as JSON
+                return response.json();
+            })
+            .catch((error) => {
+                console.log("JSON error while sending email notification");
+            })
+    }
 }

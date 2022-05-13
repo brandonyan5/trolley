@@ -31,3 +31,16 @@
     margin: 5px 0;
     font-weight: 500;
 }
+
+/* CLAIMED section */
+.claimer-box {
+    background: pink;
+    width: 300px;
+}
+.claimer-info {
+    background: #4a77a8;
+}
+.accept-decline-wrapper {
+    background: #66e0a4
+}
+

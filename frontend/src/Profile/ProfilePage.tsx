@@ -6,6 +6,7 @@ import { Card, Button, Form, Col, Row} from 'react-bootstrap';
 import { Icon } from '@iconify/react';
 import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/database";
 import {ListingData} from "../SharedComponents/Listing";
+import {addressestoDistance} from "../Haversine/haversine";
 
 
 // Type for the data of a single user
@@ -33,6 +34,7 @@ function ProfilePage(props: ProfilePageProps) {
     const [phone, setPhone] = useState("")
     const [showEmail, setShowEmail] = useState(false)
     const [showPhone, setShowPhone] = useState(false)
+    const [validUpdate, setValidUpdate] = useState(true)
 
     // Firebase consts
     const auth = getAuth()
@@ -40,7 +42,6 @@ function ProfilePage(props: ProfilePageProps) {
     // redirect to login page if user is not already logged in
     let navigateTo = useNavigate()
     onAuthStateChanged(auth, (user) => {
-        console.log('why')
         if (!user) {
             navigateTo("/login")
         } 
@@ -89,21 +90,56 @@ function ProfilePage(props: ProfilePageProps) {
 
     }
 
+    // update email and phone preferences
+    const updateEmail = () => {
+        if(showPhone) {
+            setShowEmail(!showEmail)
+        }
+    }
+
+    const updatePhone = () => {
+        if(showEmail) {
+            setShowPhone(!showPhone)
+            checkValidUpdate()
+        }
+    }
+
+    const checkValidUpdate = () => {
+        if(showPhone) {
+            if(phone.length >= 10) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     /**
      * Update the profile of the user based on changes made
      */
-    function updateProfile() {
+    const updateProfile = async () => {
         // Write the new post's data simultaneously in the posts list and the user's post list.
         
         const updates : {[change : string] : string | boolean}= {};
         const user  = auth.currentUser
 
-        updates['/users/' + user!.uid +'/address'] = address;
-        updates['/users/' + user!.uid +'/phone'] = phone;
-        updates['/users/' + user!.uid +'/show_email'] = showEmail;
-        updates['/users/' + user!.uid +'/show_phone'] = showPhone;
+        await addressestoDistance(address, "69 Brown St").then(dist => {
+            if(dist !== "ERROR") {
+                updates['/users/' + user!.uid +'/address'] = address;
+                updates['/users/' + user!.uid +'/phone'] = phone;
+                updates['/users/' + user!.uid +'/show_email'] = showEmail;
+                updates['/users/' + user!.uid +'/show_phone'] = showPhone;
 
-        update(ref(db), updates);  
+                update(ref(db), updates); 
+
+                navigateTo("/home")
+            } 
+            else {
+                console.log("Invalid address")
+            }
+        })
     }
     return (
         <div>
@@ -129,7 +165,7 @@ function ProfilePage(props: ProfilePageProps) {
                                     Address
                                     </Form.Label>
                                     <Col sm={10}>
-                                    <Form.Control type="text" placeholder="Address" defaultValue  = {address} onChange={(e) => setAddress(e.target.value)}/>
+                                    <Form.Control type="text" placeholder="Address" value  = {address} onChange={(e) => {setAddress(e.target.value); console.log(e.target.value)}}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row} className="mb-3" >
@@ -137,13 +173,13 @@ function ProfilePage(props: ProfilePageProps) {
                                     Phone
                                     </Form.Label>
                                     <Col sm={10}>
-                                    <Form.Control type="text" placeholder="Phone Number" defaultValue  = {phone} onChange={(e) => setPhone(e.target.value)}/>
+                                    <Form.Control type="text" placeholder="Phone Number" value  = {phone} onChange={(e) => {setPhone(e.target.value); console.log("here"); checkValidUpdate()}}/>
                                     </Col>
                                 </Form.Group>
                                 <fieldset>
                                     <Form.Group as={Row} className="mb-3">
                                     <Form.Label as="legend" column sm={2}>
-                                        Radios
+                                        Contact Information
                                     </Form.Label>
                                     <Col sm={10}>
                                         <Form.Check
@@ -151,7 +187,7 @@ function ProfilePage(props: ProfilePageProps) {
                                         label="Share email"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios1"
-                                        onChange={(e) => setShowEmail(!showEmail)}
+                                        onChange={(e) => updateEmail()}
                                         checked={showEmail}
                                         />
                                         <Form.Check
@@ -159,14 +195,14 @@ function ProfilePage(props: ProfilePageProps) {
                                         label="Share phone number"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios2"
-                                        onChange={(e) => setShowPhone(!showPhone)}
+                                        onChange={(e) => updatePhone()}
                                         checked={showPhone}
                                         />
                                     </Col>
                                     </Form.Group>
                                 </fieldset>
                             </Form>
-                            <Button variant="primary" onClick = {() => updateProfile()} >Update Profile</Button>
+                            <Button variant="primary" disabled  = {!checkValidUpdate() || address == ""} onClick = {() => updateProfile()} >Update Profile</Button>
                         </Card.Body>
                     </Card>
                 </Col>
