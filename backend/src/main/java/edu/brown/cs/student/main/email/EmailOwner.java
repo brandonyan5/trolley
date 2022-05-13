@@ -50,7 +50,9 @@ public class EmailOwner {
     } catch (MessagingException e) {
       e.printStackTrace();
       return false;
-    }  
+    }
+
+  }
 
   public static boolean sendEmailToOwnerOnUnclaim(String ownerEmail, String otherEmail,
                                                   String address) throws MessagingException {
@@ -100,15 +102,3 @@ public class EmailOwner {
 //Sources referenced:
 //https://www.baeldung.com/java-email
 //https://stackoverflow.com/questions/31535863/error-when-sending-email-via-java-mail-api
-
-
-
-
-
-
-
-
-
-
-
-

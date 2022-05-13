@@ -23,9 +23,9 @@ import java.util.*;
 
 public final class Main {
 
-    /**
-     * the port that the server is running on.
-      */
+  /**
+   * the port that the server is running on.
+   */
   private static final int DEFAULT_PORT = 4567;
 
   /**
@@ -37,22 +37,22 @@ public final class Main {
     new Main(args).run();
   }
 
-    /**
-     * stores the command line args.
-     */
+  /**
+   * stores the command line args.
+   */
   private String[] args;
 
-    /**
-     * main method.
-     * @param args - the command line args
-     */
+  /**
+   * main method.
+   * @param args - the command line args
+   */
   private Main(String[] args) {
     this.args = args;
   }
 
-    /**
-     * runs the server from the specified port.
-     */
+  /**
+   * runs the server from the specified port.
+   */
   private void run() {
     OptionParser parser = new OptionParser();
     parser.accepts("gui");
@@ -70,37 +70,37 @@ public final class Main {
    * @param port - the port number of the server
    */
   private static void runSparkServer(int port) {
-      Spark.port(port);
-      Spark.externalStaticFileLocation("src/main/resources/static");
-      
-      Spark.options("/*", (request, response) -> {
-          String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
-          if (accessControlRequestHeaders != null) {
-            response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
-          }
+    Spark.port(port);
+    Spark.externalStaticFileLocation("src/main/resources/static");
 
-          String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+    Spark.options("/*", (request, response) -> {
+      String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+      if (accessControlRequestHeaders != null) {
+        response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+      }
 
-          if (accessControlRequestMethod != null) {
-            response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
-          }
+      String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
 
-          return "OK";
-        });
+      if (accessControlRequestMethod != null) {
+        response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+      }
 
-        Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
-        
-        // Put Routes Here
-        Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
-        Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
-        Spark.post("/emailOwnerOnUnclaim", new EmailOwnerOnUnclaim());
-        Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
-        Spark.init();
-    }
+      return "OK";
+    });
 
-    /**
-     * handler class that takes in listings and sends back sorted listings.
-     */
+    Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
+
+    // Put Routes Here
+    Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
+    Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
+    Spark.post("/emailOwnerOnUnclaim", new EmailOwnerOnUnclaim());
+    Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
+    Spark.init();
+  }
+
+  /**
+   * handler class that takes in listings and sends back sorted listings.
+   */
   private static class FilterAndSortProducts implements Route {
     /**
      * takes in a JSON object, sorts the listings based on criteria, and sends back sorted JSON.
@@ -221,9 +221,9 @@ public final class Main {
     }
   }
 
-    /**
-     * class that sends email to the owner of the listing.
-     */
+  /**
+   * class that sends email to the owner of the listing.
+   */
   private static class EmailOwnerOnClaim implements Route {
     /**
      * takes in a JSON object, and sends an email to the appropriate address.
@@ -256,34 +256,12 @@ public final class Main {
       } else {
         return "{\"ERROR\" : \"AN ERROR\"}";
       }
-            if (EmailOwner.sendEmailToOwnerOnDecision(ownerEmail)) {
-                return "{\"200\" : \"OK\"}";
-            } else {
-                return "{\"ERROR\" : \"AN ERROR\"}";
-            }
-        }
-    }
-
-    private static class EmailOwnerOnUnclaim implements Route {
-        @Override
-        public String handle(Request request, Response response) throws Exception {
-            JSONObject reqJSON = new JSONObject(request.body());
-            JSONObject dataToSend = reqJSON.getJSONObject("dataToSend");
-            String ownerEmail = dataToSend.getString("owner_email");
-            String otherEmail = dataToSend.getString("user_email");
-
-            if (EmailOwner.sendEmailToOwnerOnUnclaim(ownerEmail)) {
-                return "{\"200\" : \"OK\"}";
-            } else {
-                return "{\"ERROR\" : \"AN ERROR\"}";
-            }
-        }
     }
   }
 
-    /**
-     * class that sends email to owner if listing is unclaimed.
-     */
+  /**
+   * class that sends email to owner if listing is unclaimed.
+   */
   private static class EmailOwnerOnUnclaim implements Route {
     /**
      * takes in a JSON object, and sends an email to the appropriate address.
@@ -319,9 +297,9 @@ public final class Main {
     }
   }
 
-    /**
-     * class that sends email to user about acceptance or rejection.
-     */
+  /**
+   * class that sends email to user about acceptance or rejection.
+   */
   private static class EmailUserOnDecision implements Route {
     /**
      * takes in a JSON object, and sends an email to the appropriate address.
@@ -368,30 +346,6 @@ public final class Main {
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

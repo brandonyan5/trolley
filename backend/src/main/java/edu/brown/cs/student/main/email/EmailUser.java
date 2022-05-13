@@ -102,8 +102,3 @@ public class EmailUser {
 //Sources referenced:
 //https://www.baeldung.com/java-email
 //https://stackoverflow.com/questions/31535863/error-when-sending-email-via-java-mail-api
-
-
-
-
-
