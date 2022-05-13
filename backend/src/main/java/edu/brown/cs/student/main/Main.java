@@ -318,14 +318,7 @@ public final class Main {
       String otherEmail = dataToSend.getString("owner_email");
 
       //retrieves the address
-      Iterator<String> iterator = dataToSend.keys();
-      iterator.next();
-      String address = "";
-      while (iterator.hasNext()) {
-        String listingName = iterator.next();
-        address = dataToSend.getJSONObject(listingName).getString("address");
-        break;
-      }
+      String address = dataToSend.getJSONObject("key1").getString("address");
 
       //sends a different email based on whether it was accepted or rejected
       if (dataToSend.getString("accepted").equals("true")) {
