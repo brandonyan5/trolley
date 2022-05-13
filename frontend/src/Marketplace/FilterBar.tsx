@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {TwoThumbInputRange} from "react-two-thumb-input-range";
 import "./FilterBar.css";
 import 'react-date-range/dist/styles.css'; // main style file
@@ -51,10 +51,12 @@ function FilterBar(props: FilterBarProps) {
         //TODO: hide dateRange on select after updating state
     }
 
+    const [showDateRangePicker, setShowDateRangePicker] = useState<boolean>(false);
+
     const toggleDateRange = () => {
         console.log("toggling date range")
         // TODO toggle visibility of date range picker
-
+        setShowDateRangePicker(!showDateRangePicker)
     }
 
     const toggleFilterWeights = () => {
@@ -119,13 +121,15 @@ function FilterBar(props: FilterBarProps) {
             </div>
 
             <div className="date-range-wrapper">
-                <DateRange
-                    editableDateInputs={true}
-                    onChange={item => props.setDateFilterRange([item.selection])}
-                    moveRangeOnFirstSelection={false}
-                    ranges={props.dateFilterRange}
-                    minDate={new Date()}
-                />
+                {showDateRangePicker &&
+                    <DateRange
+                        editableDateInputs={true}
+                        onChange={item => props.setDateFilterRange([item.selection])}
+                        moveRangeOnFirstSelection={false}
+                        ranges={props.dateFilterRange}
+                        minDate={new Date()}
+                    />
+                }
             </div>
 
         </div>
