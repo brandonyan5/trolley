@@ -6,6 +6,7 @@ import "./ClaimsPage.css"
 import Listing from "../SharedComponents/Listing";
 import {ListingsData} from "../Marketplace/Marketplace";
 import {getDatabase, onValue, ref} from "firebase/database";
+import {checkUserAddressIsValid} from "../SharedComponents/UtilFunctions";
 
 interface ClaimsPageProps {
 }
@@ -109,6 +110,7 @@ function ClaimsPage(props: ClaimsPageProps) {
     // initially fetch all listings from DB
     useEffect(() => {
         if (claimerID !== "") {
+            checkUserAddressIsValid(claimerID, navigateTo)
             console.log("getting initial listings")
             getAllListingsClaimedByUser()
         }
