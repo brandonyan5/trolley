@@ -26,6 +26,7 @@
     padding-left: 0.5pc;
     padding-top: 1pc;
     padding-bottom: 1pc;
+    padding-right: 2pc;
     
 }
 
@@ -43,6 +44,8 @@
 
     /* darkest */
     color: #031C34;
+    margin-bottom: 2%;
+    margin-left: 2%;
 
 }
 
@@ -83,4 +86,45 @@
     padding-bottom: 1pc;
     align-items: center;
     
+}
+
+.product-info {
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+
+.product-info-text {
+
+    font-size: 23px;
+    color: #123963;
+    font-weight: 400;
+    margin-left: 5%;
+}
+
+.date-text {
+
+    font-size: 23px;
+    color: #123963;
+    font-weight: 400;
+    margin-left: 2%;
+}
+
+.claim-button {
+    background: #031C34;
+    border-color: #031C34;
+    border-radius: 10px;
+}
+
+.claim-button-text {
+    color: white;
+    font-size: 25px;
+    font-weight: 200;
+    
+}
+
+.col-with-margins {
+    margin-top: 2%;
 }

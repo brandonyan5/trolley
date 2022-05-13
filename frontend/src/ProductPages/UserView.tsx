@@ -173,43 +173,51 @@ function UserView() {
                     <div className = "product-content">
                         <div className = "product-info">
                             <Icon  icon="iconoir:profile-circled" className = "dolly" color="dark blue" width='50px'/>
-                            {name}
+                            <div className = "product-info-text">
+                                {name}
+                            </div>
                         </div>
 
                         <div className = "product-info">
                             <Icon  icon="bx:map"  className = "dolly" color="dark blue" width='50px'/>
-                            {listingData.address}
+                            <div className = "product-info-text">
+                                {listingData.address}
+                            </div>
                         </div>
                         <div className = "product-info">
                             <Icon  icon="radix-icons:dimensions" color="dark blue" rotate={2} className = "dolly" width='50px'/>
-                            {listingData.area} sqft
+                            <div className = "product-info-text">
+                                {listingData.area} sqft
+                            </div>
                         </div>
                         <div className = "product-info">
                             <Icon   icon="dashicons:money-alt" color="dark blue" rotate={2} className = "dolly" width='50px'/>
-                            ${listingData.price}/day
+                            <div className = "product-info-text">
+                                ${listingData.price}/day
+                            </div>
                         </div>
                         <div>
                             <div className = "product-descriptors">
-                                Availability
+                                Availability:
                             </div>
-                            <div>
+                            <div className = "date-text">
                                 {listingData.date_start} -- {listingData.date_end}
                             </div>
                         </div>
                         <div>
                             <div className = "product-descriptors">
-                                Contact
+                                Contact:
                             </div>
                             {showPhone &&
-                                <div>
+                                <div className = "product-info">  
                                     <Icon  icon="akar-icons:phone" color="dark blue" className = "dolly" width='40px'/>
-                                    {phone} 
+                                    <div className = "product-info-text">{phone} </div>
                                 </div>
                             }
                             {showEmail &&
-                            <div>
+                            <div className = "product-info">
                                 <Icon  icon="ant-design:mail-outlined" color="dark blue" className = "dolly" width='40px'/>
-                                {email}
+                                <div className = "product-info-text">{email} </div>
                             </div>
                             }   
                         </div>
@@ -226,7 +234,9 @@ function UserView() {
                             && displayClaim && // only display if current user_id for this listing is null (not claimed yet)
                         <div className = "claim-box">
                             
-                                <Button variant="primary" onClick = {() => {updateListing(); sendEmail()}}>Claim</Button>
+                                <Button className= "claim-button" onClick = {() => {updateListing(); sendEmail()}}>
+                                    <div className = "claim-button-text">Claim</div>
+                                </Button>
                         </div>
                     }
                     </Row>

@@ -223,6 +223,7 @@ function OwnerView() {
             setUserName("")
             setUserEmail("")
             setUserPhone("")
+            setUserID("")
         }
 
         update(ref(db), updates)
@@ -302,35 +303,35 @@ function OwnerView() {
                             <Form.Label column sm={2}>
                             <Icon  icon="bx:map"  className = "dolly" color="dark blue" width='50px'/>
                             </Form.Label>
-                            <Col sm={10}>
-                            <Form.Control type="text" placeholder="Address" defaultValue = {address} onChange={(e) => setAddress(e.target.value)} />
+                            <Col sm={10} className = "col-with-margins">
+                            <Form.Control type="text" placeholder="Address" defaultValue = {address} disabled = {userID !== ""} onChange={(e) => setAddress(e.target.value)} />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
                             <Form.Label column sm={2}>
                             <Icon  icon="radix-icons:dimensions" color="dark blue" rotate={2} className = "dolly" width='50px'/>
                             </Form.Label>
-                            <Col sm={10}>   
-                            <Form.Control type="text" placeholder="Area (0 to 200)" value = {area} onChange={(e) => updateArea(e.target.value)}/>
+                            <Col sm={10} className = "col-with-margins">   
+                            <Form.Control type="text" placeholder="Area (0 to 200)" value = {area} disabled = {userID !== ""} onChange={(e) => updateArea(e.target.value)}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
                             <Form.Label column sm={2}>
                             <Icon icon="dashicons:money-alt" color="dark blue" rotate={2} className = "dolly" width='50px'/>
                             </Form.Label>
-                            <Col sm={10}>
-                            <Form.Control type="text" placeholder="Price per day ($0.5 to $10)" value={price} onChange={(e) => updatePrice(e.target.value)}/>
+                            <Col sm={10} className = "col-with-margins">
+                            <Form.Control type="text" placeholder="Price per day ($0.5 to $10)" value={price} disabled = {userID !== ""} onChange={(e) => updatePrice(e.target.value)}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
                             <Form.Label column sm={2}>
                             <Icon icon="bi:calendar-date-fill" color="#031c34" rotate={2} hFlip={true} vFlip={true} className = "dolly" width='50px' />
                             </Form.Label>
-                            <Col xs={5} sm={4}>
-                            <Form.Control type="text" placeholder="Start date" defaultValue={dateStart} onChange={(e) => setDateStart(e.target.value)}/>
-                            </Col> to
-                            <Col xs={5} sm={4}>
-                            <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd} onChange={(e) => setDateEnd(e.target.value)}/>
+                            <Col xs={5} sm={4} className = "col-with-margins">
+                            <Form.Control type="text" placeholder="Start date" defaultValue={dateStart} disabled = {userID !== ""} onChange={(e) => setDateStart(e.target.value)}/>
+                            </Col> 
+                            <Col xs={5} sm={4} className = "col-with-margins">
+                            <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd} disabled = {userID !== ""} onChange={(e) => setDateEnd(e.target.value)}/>
                             </Col>
                         </Form.Group>
                     </Form>
@@ -350,9 +351,13 @@ function OwnerView() {
                         }                   
                     </Row>
                     <Row className = "row g-0">
-                        <div className = "claim-box">
-                            <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="" || !imageSelected)}>{listingText}</Button>
-                        </div>
+                        {userID === "" &&
+                            <div className = "claim-box">
+                                <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="" || !imageSelected)}>
+                                    {listingText}
+                                </Button>
+                            </div>
+                        }
                     </Row>
                     {(userName != "") && 
                     <Row className = "row g-0">
