@@ -58,18 +58,17 @@ function ClaimsPage(props: ClaimsPageProps) {
 
             Object.keys(allDBListings).map(listingID => {
                 const currListing = allDBListings[listingID]
-                console.log("using uid for owner: " + claimerID)
-                console.log("curr listing: ")
-                console.log(currListing)
                 // only get listings owned by user
                 if (currListing.user_id === claimerID) {
                     myListingsClaimed[listingID] = allDBListings[listingID]
                 }
             })
 
-            console.log("ALL fetched data:")
-            console.log(allDBListings)
-            console.log("My listings only:")
+            // console.log("ALL fetched data:")
+            // console.log(allDBListings)
+            // console.log("My listings only:")
+            // console.log(myListingsClaimed)
+            console.log("UPDATING ALL CLAIMED LISTINGS to:")
             console.log(myListingsClaimed)
             setAllListingsData(myListingsClaimed)
         })
@@ -95,11 +94,11 @@ function ClaimsPage(props: ClaimsPageProps) {
             }
         })
 
-        console.log("=========")
-        console.log("claimed")
-        console.log(claimed)
-        console.log("completed")
-        console.log(completed)
+        // console.log("=========")
+        // console.log("claimed")
+        // console.log(claimed)
+        // console.log("completed")
+        // console.log(completed)
 
         // update state
         setClaimedListings(claimed)
@@ -117,10 +116,9 @@ function ClaimsPage(props: ClaimsPageProps) {
 
     // separate the listings into claimed and completed once all listings have been fetched
     useEffect(() => {
-        if (Object.keys(allListingsData).length > 0) {
-            console.log("separating listings")
-            separateListings()
-        }
+        console.log("all listings data changed")
+        console.log("separating listings")
+        separateListings()
     }, [allListingsData]);
 
 
@@ -143,7 +141,8 @@ function ClaimsPage(props: ClaimsPageProps) {
                                         data={claimedListings[listingID]}
                                         showClaimerBox={false}
                                         showAcceptDecline={false}
-                                        ownerEmail={claimerEmail}
+                                        showOwnerBox={true}
+                                        showUnclaim={true}
                                     />
                                 </Link>
                             )
@@ -164,6 +163,8 @@ function ClaimsPage(props: ClaimsPageProps) {
                                         data={completedListings[listingID]}
                                         showClaimerBox={false}
                                         showAcceptDecline={false}
+                                        showOwnerBox={true}
+                                        showUnclaim={false}
                                     />
                                 </Link>
                             )

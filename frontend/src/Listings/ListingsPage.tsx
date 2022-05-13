@@ -94,19 +94,20 @@ function ListingsPage(props: ListingsPageProps) {
 
             Object.keys(allDBListings).map(listingID => {
                 const currListing = allDBListings[listingID]
-                console.log("using uid for owner: " + ownerID)
-                console.log("curr listing: ")
-                console.log(currListing)
+                // console.log("using uid for owner: " + ownerID)
+                // console.log("curr listing: ")
+                // console.log(currListing)
                 // only get listings owned by user
                 if (currListing.owner_id === ownerID) {
                     myListings[listingID] = allDBListings[listingID]
                 }
             })
 
-            console.log("ALL fetched data:")
-            console.log(allDBListings)
-            console.log("My listings only:")
-            console.log(myListings)
+            // console.log("ALL fetched data:")
+            // console.log(allDBListings)
+            // console.log("My listings only:")
+            // console.log(myListings)
+            console.log("UPDATING ALL LISTINGS DATA")
             setAllListingsData(myListings)
         })
     }

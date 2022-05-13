@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {getImageSrc, sendEmailOnDecision} from "./UtilFunctions";
+import {getImageSrc, sendEmailOnDecision, sendEmailOnUnclaim} from "./UtilFunctions";
 import "../SharedComponents/Listing.css"
 import {getDatabase, onValue, ref, update} from "firebase/database";
 import {UserData} from "../Profile/ProfilePage";
@@ -23,6 +23,9 @@ interface ListingProps {
     showClaimerBox: boolean,
     showAcceptDecline: boolean,
     ownerEmail?: string // optionally accept owner email for claimed listings (so that we don't need more listeners)
+    showOwnerBox?: boolean,
+    showUnclaim?: boolean
+
 }
 
 function Listing(props: ListingProps) {
@@ -30,6 +33,9 @@ function Listing(props: ListingProps) {
     const [claimerName, setClaimerName] = useState<string>("");
     const [claimerEmail, setClaimerEmail] = useState<string>("");
     const [claimerPhone, setClaimerPhone] = useState<string>("");
+    const [ownerName, setOwnerName] = useState<string>("");
+    const [ownerEmail, setOwnerEmail] = useState<string>("");
+    const [ownerPhone, setOwnerPhone] = useState<string>("");
 
     const loadImg = async (relativeImgURL: string) => {
         // resolve promise by only updating img AFTER the promise is returned from getImageSrc
@@ -38,19 +44,30 @@ function Listing(props: ListingProps) {
     }
 
     // access profile info of claimer if it exists
-    const getUserClaim = () => {
+    const getClaimerInfo = () => {
         // get database
         const db = getDatabase()
         const userRef = ref(db, 'users/' + props.data.user_id);
         // Get info of the claimer of this listing
         onValue(userRef, (snapshot) => {
+            const data : UserData = snapshot.val();
+            setClaimerName(data.name)
+            setClaimerEmail(data.email)
+            setClaimerPhone(data.phone)
+        })
+    }
+
+    // access profile info of claimer if it exists
+    const getOwnerInfo = () => {
+        // get database
+        const db = getDatabase()
+        const userRef = ref(db, 'users/' + props.data.owner_id);
+        // Get info of the claimer of this listing
+        onValue(userRef, (snapshot) => {
                 const data : UserData = snapshot.val();
-                setClaimerName(data.name)
-                setClaimerEmail(data.email)
-                setClaimerPhone(data.phone)
-            },
-            {
-                onlyOnce: true
+                setOwnerName(data.name)
+                setOwnerEmail(data.email)
+                setOwnerPhone(data.phone)
             })
     }
 
@@ -60,17 +77,20 @@ function Listing(props: ListingProps) {
         loadImg(`${props.listingID}/img1`)
     }, [props.listingID])
 
-    // get detail of claimers (if any)
+    // get detail of listing claimer (if any) and owner
     useEffect(() => {
-        if(props.data.user_id != "") {
-            getUserClaim()
+        if (props.data.user_id != "" && props.showClaimerBox) {
+            getClaimerInfo()
+        }
+        if (props.showOwnerBox) {
+            getOwnerInfo()
         }
     }, [props.data.user_id]);
 
 
     /* Event handlers */
 
-    // sends acceptance email to claimer
+    // sends accepted/declined email to claimer and updates "completed"/"user_id" fields in DB where necessary
     const onClickDecision = (e: React.MouseEvent, ownerAccepted: boolean) => {
         // stop redirection to product page
         e.stopPropagation()
@@ -93,15 +113,29 @@ function Listing(props: ListingProps) {
                 update(ref(db), updates)
             }
         } else {
-            console.log("ERROR sending acceptance email: email undefined")
+            console.log("ERROR sending accept/decline email: email undefined")
         }
     }
 
-
-
+    // sends cancellation email to owner
+    const onClickUnclaim = (e: React.MouseEvent) => {
+        // stop redirection to product page
+        e.stopPropagation()
+        e.preventDefault()
+        if (ownerEmail !== undefined) {
+            const db = getDatabase()
+            console.log("sending unclaim email")
+            sendEmailOnUnclaim(props.data, claimerEmail, ownerEmail)
+            // mark listing as unclaimed
+            const updates : {[key: string] : string|boolean} = {}
+            updates['/products/' + props.listingID + "/user_id"] = "";
+            update(ref(db), updates)
+        } else {
+            console.log("ERROR sending unclaim email: email undefined")
+        }
+    }
 
     // TODO: convert date to Jan 1 - Dec 31 instead of full dates?
-    // TODO: redirect to product page onclick
     // TODO: tags?
     return (
         <div className="listing-wrapper">
@@ -116,8 +150,8 @@ function Listing(props: ListingProps) {
             </div>
 
             { props.data.user_id !== "" && props.showClaimerBox && // only render claimer and accept/decline for claimed listings
-                <div className="claimed-box">
-                    <div className="claiming-user-info">
+                <div className="claimer-box">
+                    <div className="claimer-info">
                         <p>Claimed by</p>
                         <h4>{claimerName}</h4>
                         <p>{claimerEmail}</p>
@@ -128,6 +162,23 @@ function Listing(props: ListingProps) {
                         <div className="accept-decline-wrapper">
                             <div onClick={e => onClickDecision(e, true)}>Accept</div>
                             <div onClick={e => onClickDecision(e, false)}>Decline</div>
+                        </div>
+                    }
+                </div>
+            }
+
+            { props.showOwnerBox &&
+                <div className="owner-box">
+                    <div className="owner-info">
+                        <p>Owned by</p>
+                        <h4>{ownerName}</h4>
+                        <p>{ownerEmail}</p>
+                        <p>{ownerPhone}</p>
+                    </div>
+
+                    { props.showUnclaim &&
+                        <div className="unclaim-wrapper">
+                            <div onClick={e => onClickUnclaim(e)}>Cancel</div>
                         </div>
                     }
                 </div>

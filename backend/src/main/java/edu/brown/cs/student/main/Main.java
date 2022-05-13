@@ -70,33 +70,33 @@ public final class Main {
    * @param port - the port number of the server
    */
   private static void runSparkServer(int port) {
-    Spark.port(port);
-    Spark.externalStaticFileLocation("src/main/resources/static");
+      Spark.port(port);
+      Spark.externalStaticFileLocation("src/main/resources/static");
+      
+      Spark.options("/*", (request, response) -> {
+          String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+          if (accessControlRequestHeaders != null) {
+            response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+          }
 
-    Spark.options("/*", (request, response) -> {
-      String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
-      if (accessControlRequestHeaders != null) {
-        response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
-      }
+          String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
 
-      String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+          if (accessControlRequestMethod != null) {
+            response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+          }
 
-      if (accessControlRequestMethod != null) {
-        response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
-      }
+          return "OK";
+        });
 
-      return "OK";
-    });
-
-    Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
-
-    // Put Routes Here
-    Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
-    Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
-    Spark.post("/emailOwnerOnUnclaim", new EmailOwnerOnUnclaim());
-    Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
-    Spark.init();
-  }
+        Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
+        
+        // Put Routes Here
+        Spark.post("/filterAndSortProducts", new FilterAndSortProducts());
+        Spark.post("/emailOwnerOnClaim", new EmailOwnerOnClaim());
+        Spark.post("/emailOwnerOnUnclaim", new EmailOwnerOnUnclaim());
+        Spark.post("/emailUserOnDecision", new EmailUserOnDecision());
+        Spark.init();
+    }
 
     /**
      * handler class that takes in listings and sends back sorted listings.
@@ -256,6 +256,28 @@ public final class Main {
       } else {
         return "{\"ERROR\" : \"AN ERROR\"}";
       }
+            if (EmailOwner.sendEmailToOwnerOnDecision(ownerEmail)) {
+                return "{\"200\" : \"OK\"}";
+            } else {
+                return "{\"ERROR\" : \"AN ERROR\"}";
+            }
+        }
+    }
+
+    private static class EmailOwnerOnUnclaim implements Route {
+        @Override
+        public String handle(Request request, Response response) throws Exception {
+            JSONObject reqJSON = new JSONObject(request.body());
+            JSONObject dataToSend = reqJSON.getJSONObject("dataToSend");
+            String ownerEmail = dataToSend.getString("owner_email");
+            String otherEmail = dataToSend.getString("user_email");
+
+            if (EmailOwner.sendEmailToOwnerOnUnclaim(ownerEmail)) {
+                return "{\"200\" : \"OK\"}";
+            } else {
+                return "{\"ERROR\" : \"AN ERROR\"}";
+            }
+        }
     }
   }
 

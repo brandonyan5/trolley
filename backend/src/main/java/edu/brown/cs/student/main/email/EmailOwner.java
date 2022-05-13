@@ -50,9 +50,7 @@ public class EmailOwner {
     } catch (MessagingException e) {
       e.printStackTrace();
       return false;
-    }
-
-  }
+    }  
 
   public static boolean sendEmailToOwnerOnUnclaim(String ownerEmail, String otherEmail,
                                                   String address) throws MessagingException {
