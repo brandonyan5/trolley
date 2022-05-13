@@ -34,14 +34,6 @@ function OwnerView() {
 
     const [listingID, setListingID] = useState(state.listingID);
 
-
-
-
-    
-
-
-
-
     // states for editability and keeping track of listing properties
     const [address, setAddress] = useState("")
     const [area, setArea] = useState("")
@@ -75,6 +67,33 @@ function OwnerView() {
         }
     }, [userID]);
 
+    // functions for updating price and area
+    
+    // update price
+    const updatePrice = (newPrice : string ) => {
+        const maxPrice = "10"
+        const minPrice = "0.5"
+        if(parseInt(newPrice) > 10) {
+            newPrice = maxPrice
+        }
+        else if(parseInt(newPrice) < 0.5) {
+            newPrice = minPrice
+        }
+        setPrice(newPrice)
+    }
+
+    // update area
+    const updateArea = (newArea : string ) => {
+        const maxArea = "200"
+        const minArea = "1"
+        if(parseInt(newArea) > 200) {
+            newArea = maxArea
+        }
+        else if(parseInt(newArea) < 1) {
+            newArea = minArea
+        }
+        setArea(newArea)
+    }
 
     // Post updates
     const postListing  = async () => {
@@ -292,7 +311,7 @@ function OwnerView() {
                             <Icon  icon="radix-icons:dimensions" color="dark blue" rotate={2} className = "dolly" width='50px'/>
                             </Form.Label>
                             <Col sm={10}>   
-                            <Form.Control type="text" placeholder="Area" defaultValue = {area} onChange={(e) => setArea(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Area (0 to 200)" value = {area} onChange={(e) => updateArea(e.target.value)}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
@@ -300,7 +319,7 @@ function OwnerView() {
                             <Icon icon="dashicons:money-alt" color="dark blue" rotate={2} className = "dolly" width='50px'/>
                             </Form.Label>
                             <Col sm={10}>
-                            <Form.Control type="text" placeholder="Price per day" defaultValue={price} onChange={(e) => setPrice(e.target.value)}/>
+                            <Form.Control type="text" placeholder="Price per day ($0.5 to $10)" value={price} onChange={(e) => updatePrice(e.target.value)}/>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3" >
