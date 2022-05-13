@@ -6,6 +6,7 @@ import { Card, Button, Form, Col, Row} from 'react-bootstrap';
 import { Icon } from '@iconify/react';
 import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/database";
 import {ListingData} from "../SharedComponents/Listing";
+import {addressestoDistance} from "../Haversine/haversine";
 
 
 // Type for the data of a single user
@@ -118,18 +119,27 @@ function ProfilePage(props: ProfilePageProps) {
     /**
      * Update the profile of the user based on changes made
      */
-    function updateProfile() {
+    const updateProfile = async () => {
         // Write the new post's data simultaneously in the posts list and the user's post list.
         
         const updates : {[change : string] : string | boolean}= {};
         const user  = auth.currentUser
 
-        updates['/users/' + user!.uid +'/address'] = address;
-        updates['/users/' + user!.uid +'/phone'] = phone;
-        updates['/users/' + user!.uid +'/show_email'] = showEmail;
-        updates['/users/' + user!.uid +'/show_phone'] = showPhone;
+        await addressestoDistance(address, "69 Brown St").then(dist => {
+            if(dist !== "ERROR") {
+                updates['/users/' + user!.uid +'/address'] = address;
+                updates['/users/' + user!.uid +'/phone'] = phone;
+                updates['/users/' + user!.uid +'/show_email'] = showEmail;
+                updates['/users/' + user!.uid +'/show_phone'] = showPhone;
 
-        update(ref(db), updates);  
+                update(ref(db), updates); 
+
+                navigateTo("/home")
+            } 
+            else {
+                console.log("Invalid address")
+            }
+        })
     }
     return (
         <div>
@@ -155,7 +165,7 @@ function ProfilePage(props: ProfilePageProps) {
                                     Address
                                     </Form.Label>
                                     <Col sm={10}>
-                                    <Form.Control type="text" placeholder="Address" defaultValue  = {address} onChange={(e) => setAddress(e.target.value)}/>
+                                    <Form.Control type="text" placeholder="Address" value  = {address} onChange={(e) => {setAddress(e.target.value); console.log(e.target.value)}}/>
                                     </Col>
                                 </Form.Group>
                                 <Form.Group as={Row} className="mb-3" >
@@ -163,7 +173,7 @@ function ProfilePage(props: ProfilePageProps) {
                                     Phone
                                     </Form.Label>
                                     <Col sm={10}>
-                                    <Form.Control type="text" placeholder="Phone Number" defaultValue  = {phone} onChange={(e) => {setPhone(e.target.value); console.log("here"); checkValidUpdate()}}/>
+                                    <Form.Control type="text" placeholder="Phone Number" value  = {phone} onChange={(e) => {setPhone(e.target.value); console.log("here"); checkValidUpdate()}}/>
                                     </Col>
                                 </Form.Group>
                                 <fieldset>
@@ -192,7 +202,7 @@ function ProfilePage(props: ProfilePageProps) {
                                     </Form.Group>
                                 </fieldset>
                             </Form>
-                            <Button variant="primary" disabled  = {!checkValidUpdate()} onClick = {() => updateProfile()} >Update Profile</Button>
+                            <Button variant="primary" disabled  = {!checkValidUpdate() || address == ""} onClick = {() => updateProfile()} >Update Profile</Button>
                         </Card.Body>
                     </Card>
                 </Col>

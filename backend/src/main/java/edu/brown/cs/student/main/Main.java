@@ -321,7 +321,7 @@ public final class Main {
       String address = dataToSend.getJSONObject("key1").getString("address");
 
       //sends a different email based on whether it was accepted or rejected
-      if (dataToSend.getString("accepted").equals("true")) {
+      if (dataToSend.getStrin g("accepted").equals("true")) {
         if (EmailUser.sendEmailToUserAccepted(userEmail, otherEmail, address)) {
           return "{\"200\" : \"OK\"}";
         } else {
