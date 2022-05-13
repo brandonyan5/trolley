@@ -39,6 +39,8 @@ function UserView() {
     const [name, setName] = useState("")
     const [phone, setPhone] = useState("")
     const [email, setEmail] = useState("")
+    const [showEmail, setShowEmail] = useState(false)
+    const [showPhone, setShowPhone] = useState(false)
     // Hooks for showing image
     const [img, setImg] = useState("");
 
@@ -115,6 +117,8 @@ function UserView() {
             setEmail(data.email)
             setPhone(data.phone)
             setName(data.name)
+            setShowPhone(data.show_phone)
+            setShowEmail(data.show_email)
         },
         {
             onlyOnce: true
@@ -196,14 +200,18 @@ function UserView() {
                             <div className = "product-descriptors">
                                 Contact
                             </div>
-                            <div>
-                                <Icon  icon="akar-icons:phone" color="dark blue" className = "dolly" width='40px'/>
-                                {phone} 
-                            </div>
+                            {showPhone &&
+                                <div>
+                                    <Icon  icon="akar-icons:phone" color="dark blue" className = "dolly" width='40px'/>
+                                    {phone} 
+                                </div>
+                            }
+                            {showEmail &&
                             <div>
                                 <Icon  icon="ant-design:mail-outlined" color="dark blue" className = "dolly" width='40px'/>
                                 {email}
                             </div>
+                            }   
                         </div>
                     </div>
                 </Col>
@@ -214,12 +222,13 @@ function UserView() {
                         </div>
                     </Row>
                     <Row className = "row g-0">
-                        <div className = "claim-box">
-                            {listingData.owner_id != auth.currentUser?.uid //makes sure owner is not current viewer
+                    {listingData.owner_id != auth.currentUser?.uid //makes sure owner is not current viewer
                             && displayClaim && // only display if current user_id for this listing is null (not claimed yet)
+                        <div className = "claim-box">
+                            
                                 <Button variant="primary" onClick = {() => {updateListing(); sendEmail()}}>Claim</Button>
-                            }
                         </div>
+                    }
                     </Row>
                 </Col>
             </Row>
