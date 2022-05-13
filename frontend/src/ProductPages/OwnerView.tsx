@@ -6,7 +6,7 @@ import { getDatabase, ref, onValue,push, DataSnapshot, update} from "firebase/da
 import { ListingData } from '../SharedComponents/Listing';
 import {Row, Col, Container, Form, Button} from "react-bootstrap"
 import { Icon } from '@iconify/react';
-import {uploadImage} from "../SharedComponents/UtilFunctions";
+import {checkUserAddressIsValid, uploadImage} from "../SharedComponents/UtilFunctions";
 import { UserData }from "../Profile/ProfilePage"
 import {getImageSrc} from "../SharedComponents/UtilFunctions";
 import {sendEmailOnDecision} from "../SharedComponents/UtilFunctions"
@@ -72,11 +72,11 @@ function OwnerView() {
     // update price
     const updatePrice = (newPrice : string ) => {
         const maxPrice = "10"
-        const minPrice = "0.5"
+        const minPrice = "0"
         if(parseInt(newPrice) > 10) {
             newPrice = maxPrice
         }
-        else if(parseInt(newPrice) < 0.5) {
+        else if(parseInt(newPrice) < 0) {
             newPrice = minPrice
         }
         setPrice(newPrice)

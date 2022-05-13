@@ -1,6 +1,8 @@
 import {getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 import React from "react";
 import {ListingData} from "./Listing";
+import {getDatabase, onValue, ref as dbRef} from "firebase/database";
+import {useNavigate} from "react-router-dom";
 
 // returns PROMISE for an image URL string (which can be used as "src" for <img>)
 //  since returns a promise, can be used as follows:
@@ -144,4 +146,22 @@ export const sendEmailOnUnclaim = (listingData: ListingData, claimerEmail: strin
                 console.log("JSON error while sending email notification");
             })
     }
+}
+
+
+export const checkUserAddressIsValid = async (userID: string, navigateTo: any) => {
+    // use UserID to fetch address from DB
+    console.log("checking address validity for user:")
+    console.log(userID)
+    const db = getDatabase()
+    const addressRef = dbRef(db, `users/${userID}/address`)
+    onValue(addressRef, (data) => {
+        const address = data.val()
+        console.log("checking address:")
+        console.log( address)
+        if (address === "") {
+            console.log("NULL ADDRESS")
+            navigateTo("/profile")
+        }
+    })
 }

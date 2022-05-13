@@ -6,7 +6,13 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar'
 import "./Marketplace.css"
 import Listing, {ListingData} from "../SharedComponents/Listing";
-import {getFullDate, getFullDateHyphens, getMonthDate, uploadImage} from "../SharedComponents/UtilFunctions"
+import {
+    checkUserAddressIsValid,
+    getFullDate,
+    getFullDateHyphens,
+    getMonthDate,
+    uploadImage
+} from "../SharedComponents/UtilFunctions"
 import { getDatabase, ref, onValue } from "firebase/database";
 import FilterBar from "./FilterBar";
 import {addressestoDistance} from "../Haversine/haversine";
@@ -81,7 +87,15 @@ function Marketplace(props: MarketplaceProps) {
         const listingsRef = ref(db, "products")
         // fetch and track "products" JSON object
         onValue(listingsRef, (dataSnapshot) => {
-            const newestData = dataSnapshot.val()
+            const allListingsData = dataSnapshot.val()
+            // only keep track of UNCLAIMED listings
+            const unclaimedListingsData: ListingsData = {}
+            Object.keys(allListingsData).map(listingID => {
+                if (allListingsData[listingID].user_id === "") {
+                    unclaimedListingsData[listingID] = allListingsData[listingID]
+                }
+            })
+
             // get user address
             console.log("user ID in onval: " + userID)
             onValue(ref(db, `users/${userID}/address`), (addressSnapshot) => {
@@ -90,9 +104,9 @@ function Marketplace(props: MarketplaceProps) {
                     setUserAddress(addressSnapshot.val())
 
                     // set data to be fed to each listing
-                    console.log("initial data w/out dists:")
-                    console.log(newestData)
-                    setListingsData(newestData)
+                    console.log("unclaimed listings:")
+                    console.log(unclaimedListingsData)
+                    setListingsData(unclaimedListingsData)
                     fetchedDataFromDB.current = true
                 }
             })
@@ -189,9 +203,13 @@ function Marketplace(props: MarketplaceProps) {
         }
     }
 
+
+
     // get all listings data and start db listener once when marketplace is initially rendered AND user ID has been retrieved
     useEffect(() => {
         if (userID !== "") {
+            // check that the user has a valid address (only invalid)
+            checkUserAddressIsValid(userID, navigateTo)
             console.log("getting initial listings")
             getAllListings()
         }

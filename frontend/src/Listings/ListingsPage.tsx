@@ -6,6 +6,7 @@ import Listing, {ListingData} from "../SharedComponents/Listing";
 import {getDatabase, ref, set, push, onValue} from "firebase/database";
 import {ListingsData} from "../Marketplace/Marketplace";
 import './ListingsPage.css'
+import {checkUserAddressIsValid} from "../SharedComponents/UtilFunctions";
 
 interface ListingsPageProps {
 }
@@ -163,6 +164,7 @@ function ListingsPage(props: ListingsPageProps) {
     // initially fetch all listings from DB
     useEffect(() => {
         if (ownerID !== "") {
+            checkUserAddressIsValid(ownerID, navigateTo)
             console.log("getting initial listings")
             getAllListingsOwnedByUser()
         }
@@ -183,6 +185,7 @@ function ListingsPage(props: ListingsPageProps) {
             separateListings()
         }
     }, [allListingsData]);
+
 
 
     return (
