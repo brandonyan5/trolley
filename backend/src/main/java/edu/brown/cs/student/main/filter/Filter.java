@@ -19,8 +19,6 @@ public class Filter {
 
     public Filter(List<String> dates, List<Double> prices, List<Double> areas, Double distance) {
         this.dates = dates;
-
-
         this.areas = areas;
         this.prices = prices;
         this.distance = distance;

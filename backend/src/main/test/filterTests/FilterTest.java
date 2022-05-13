@@ -13,7 +13,7 @@ import java.util.List;
 public class FilterTest {
 
     @Test
-    public void checkDates() throws ParseException {
+    public void isValidandDates() throws ParseException {
         List<Double> priceRange = new ArrayList<>();
         priceRange.add(5.0);
         priceRange.add(20.0);
