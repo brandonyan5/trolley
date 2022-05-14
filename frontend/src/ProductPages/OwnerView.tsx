@@ -421,9 +421,9 @@ function OwnerView() {
                     <Row className = "row g-0">
                         <div className = "accept-decline-box">
                         {(!completed) &&
-                            <div>
+                            <div className = "user-changes-info">
                                 <div className = "user-name-info">  
-                                    <Icon  icon="iconoir:profile-circled" color="#031C34"  width='60px'/>
+                                    <Icon  icon="iconoir:profile-circled" className = "profile-icon" color="#031C34"  width='50px'/>
                                     <div className = "user-name-text">{userName} </div>
                                 </div>
                                 
