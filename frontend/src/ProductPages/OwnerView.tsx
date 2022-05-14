@@ -7,7 +7,7 @@ import { ListingData } from '../SharedComponents/Listing';
 import {Row, Col, Container, Form, Button, Alert} from "react-bootstrap"
 import { Icon } from '@iconify/react';
 import {
-    checkUserAddressIsValid,
+    checkUserAddressIsValid, getFullDate,
     getFullDateHyphens,
     getMonthDate,
     uploadImage
@@ -392,14 +392,28 @@ function OwnerView() {
                         {/*    </Col>*/}
                         {/*</Form.Group>*/}
                         <div className="product-page-date-range-wrapper">
-                            <h3>Select Available Dates:</h3>
-                            <DateRange
-                                editableDateInputs={true}
-                                onChange={item => setDateRange([item.selection])}
-                                moveRangeOnFirstSelection={false}
-                                ranges={dateRange}
-                                minDate={new Date()}
-                            />
+                            { listingData.user_id !== "" ? // only allow date selection if NOT claimed
+                                <div>
+                                    <div className = "product-descriptors">
+                                        Availability:
+                                    </div>
+                                    <div className = "date-text">
+                                        {getFullDate(new Date(listingData.date_start))} — {getFullDate(new Date(listingData.date_end))}
+                                    </div>
+                                </div>
+                                :
+                                <div>
+                                    <h3>Select Available Dates:</h3>
+                                    <DateRange
+                                        editableDateInputs={true}
+                                        onChange={item => setDateRange([item.selection])}
+                                        moveRangeOnFirstSelection={false}
+                                        ranges={dateRange}
+                                        minDate={new Date()}
+                                    />
+                                </div>
+                            }
+
                         </div>
                     </Form>
                     </div>
