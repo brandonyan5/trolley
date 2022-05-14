@@ -71,7 +71,7 @@ export const getFullDateHyphens = (date: Date): string => {
     } as const
     const dateString = date.toLocaleDateString('en-us', options).replace(/\//g, '-')
     const x: string[] = dateString.split("-")
-    console.log(x)
+    // console.log(x)
     const y = x[2] + "-" + x[0] + "-" + x[1]
     // console.log("before reverse")
     // console.log(y)

@@ -392,7 +392,7 @@ function OwnerView() {
                         {/*    </Col>*/}
                         {/*</Form.Group>*/}
                         <div className="product-page-date-range-wrapper">
-                            { listingData.user_id !== "" ? // only allow date selection if NOT claimed
+                            { (userID !== "")? // only allow date selection if NOT claimed
                                 <div>
                                     <div className = "product-descriptors">
                                         Availability:
