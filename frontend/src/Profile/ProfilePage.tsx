@@ -7,6 +7,7 @@ import { Icon } from '@iconify/react';
 import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/database";
 import {ListingData} from "../SharedComponents/Listing";
 import {addressestoDistance} from "../Haversine/haversine";
+import './profile.css'
 
 
 // Type for the data of a single user
@@ -144,13 +145,13 @@ function ProfilePage(props: ProfilePageProps) {
     return (
         <div>
             <NavBar />
-            
+            <div className = "profile-div">
             <Row className="row g-0">
-                <Col xl = {6}>
-                    <Card  >
+                <Col xl = {6} className = "mx-auto mt-5">
+                    <Card  className = "profile-form">
                         <Card.Body>
                             <Card.Title>My Profile</Card.Title>
-                            <Form>
+                            <Form >
                                 <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
                                     <Form.Label column sm={2}>
                                     Email
@@ -207,6 +208,7 @@ function ProfilePage(props: ProfilePageProps) {
                     </Card>
                 </Col>
             </Row> 
+            </div>
         </div>
     );
 }

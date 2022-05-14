@@ -207,23 +207,23 @@ function UserView() {
                                 {listingData.date_start} -- {listingData.date_end}
                             </div>
                         </div>
-                        <div>
-                            <div className = "product-descriptors">
-                                Contact:
-                            </div>
-                            {showPhone &&
-                                <div className = "product-info">  
-                                    <Icon  icon="akar-icons:phone" color="#031C34" className = "dolly" width='40px'/>
-                                    <div className = "product-info-text">{phone} </div>
-                                </div>
-                            }
-                            {showEmail &&
-                            <div className = "product-info">
-                                <Icon  icon="ant-design:mail-outlined" color="#031C34" className = "dolly" width='40px'/>
-                                <div className = "product-info-text">{email} </div>
-                            </div>
-                            }   
+
+                        <div className = "product-descriptors">
+                            Contact:
                         </div>
+                        {showPhone &&
+                            <div className = "product-info">  
+                                <Icon  icon="akar-icons:phone" color="#031C34" className = "dolly" width='40px'/>
+                                <div className = "product-info-text">{phone} </div>
+                            </div>
+                        }
+                        {showEmail &&
+                        <div className = "product-info">
+                            <Icon  icon="ant-design:mail-outlined" color="#031C34" className = "dolly" width='40px'/>
+                            <div className = "product-info-text">{email} </div>
+                        </div>
+                        }   
+
                     </div>
                 </Col>
                 <Col md = {6} xs = {12} className="p-3" >
@@ -238,7 +238,7 @@ function UserView() {
                         <div className = "claim-box">
                             
                                 <Button className= "claim-button" onClick = {() => {updateListing(); sendEmail()}}>
-                                    <div className = "claim-button-text">Claim</div>
+                                    <div className = "claim-button-text">Claim Listing</div>
                                 </Button>
                         </div>
                     }
