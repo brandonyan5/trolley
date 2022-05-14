@@ -128,7 +128,7 @@ function OwnerView() {
         } 
         else {
 
-            await addressestoDistance(address, "69 Brown St").then(dist => {
+            await addressestoDistance(address, "69 Brown St").then(async dist => {
                 if (dist !== "ERROR") {
                     const listingsRef = ref(db, "products")
 
@@ -150,7 +150,7 @@ function OwnerView() {
                     setListingID(newPostRef.key as string)
 
 
-                    uploadImage(imageUploadEvent as React.ChangeEvent<HTMLInputElement>, `${newPostRef.key}/img1`)
+                    await uploadImage(imageUploadEvent as React.ChangeEvent<HTMLInputElement>, `${newPostRef.key}/img1`)
                     navigateTo("/listings")
                 } 
 
