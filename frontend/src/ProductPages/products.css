@@ -163,33 +163,21 @@
 
 .user-name-info {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    width: 200px;
+    justify-content: center;
+    align-items: center;
     margin-top: 1%;
-    margin-left: 5%;
-    font-family: 'Helvetica';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 28px;
     
     
 }
 
 .user-name-text {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    width: 200px;
-    margin-top: 1%;
-    margin-left: 5%;
+    margin-top: 0.5%;
+    margin-left: 3%;
     font-family: 'Helvetica';
     font-style: normal;
     font-weight: 400;
     font-size: 24px;
     line-height: 28px;
-    margin-top: 7%;
     
     
 }
@@ -242,4 +230,10 @@
 .decline-button:hover {
     background-color: rgb(114, 21, 21);
     border-color:rgb(114, 21, 21);
+}
+
+
+
+.user-changes-info {
+    width: 100%;
 }
