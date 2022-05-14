@@ -15,6 +15,7 @@ import {addressestoDistance} from "../Haversine/haversine";
 
 
 import './products.css'
+import {DateRange, Range} from "react-date-range";
 
 function OwnerView() {
 
@@ -39,6 +40,15 @@ function OwnerView() {
     const [area, setArea] = useState("")
     const [dateStart, setDateStart] = useState("")
     const [dateEnd, setDateEnd] = useState("")
+    const [dateFilterRange, setDateFilterRange] = useState([
+        {
+            startDate: new Date(), // NOTE: this state type is required by the date picker component
+            endDate: new Date(),
+            key: 'selection'
+        }
+    ])
+
+
     const [price, setPrice] = useState("")
     const [userName, setUserName] = useState("")
     const [userPhone, setUserPhone] = useState("")
@@ -323,17 +333,28 @@ function OwnerView() {
                             <Form.Control type="text" placeholder="Price per day ($0.5 to $10)" value={price} disabled = {userID !== ""} onChange={(e) => updatePrice(e.target.value)}/>
                             </Col>
                         </Form.Group>
-                        <Form.Group as={Row} className="mb-3" >
-                            <Form.Label column sm={2}>
-                            <Icon icon="bi:calendar-date-fill" color="#031c34" rotate={2} hFlip={true} vFlip={true} className = "dolly" width='50px' />
-                            </Form.Label>
-                            <Col xs={5} sm={4} className = "col-with-margins">
-                            <Form.Control type="text" placeholder="Start date" defaultValue={dateStart} disabled = {userID !== ""} onChange={(e) => setDateStart(e.target.value)}/>
-                            </Col> 
-                            <Col xs={5} sm={4} className = "col-with-margins">
-                            <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd} disabled = {userID !== ""} onChange={(e) => setDateEnd(e.target.value)}/>
-                            </Col>
-                        </Form.Group>
+                        {/*<Form.Group as={Row} className="mb-3" >*/}
+                        {/*    <Form.Label column sm={2}>*/}
+                        {/*    <Icon icon="bi:calendar-date-fill" color="#031c34" rotate={2} hFlip={true} vFlip={true} className = "dolly" width='50px' />*/}
+                        {/*    </Form.Label>*/}
+                        {/*    <Col xs={5} sm={4} className = "col-with-margins">*/}
+                        {/*    <Form.Control type="text" placeholder="Start date" defaultValue={dateStart} disabled = {userID !== ""} onChange={(e) => setDateStart(e.target.value)}/>*/}
+                        {/*    </Col> */}
+                        {/*    <Col xs={5} sm={4} className = "col-with-margins">*/}
+                        {/*    <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd} disabled = {userID !== ""} onChange={(e) => setDateEnd(e.target.value)}/>*/}
+                        {/*    </Col>*/}
+                        {/*</Form.Group>*/}
+                        <div className="date-range-wrapper">
+                            {true &&
+                                <DateRange
+                                    editableDateInputs={true}
+                                    onChange={item => setDateFilterRange([item.selection])}
+                                    moveRangeOnFirstSelection={false}
+                                    ranges={dateFilterRange}
+                                    minDate={new Date()}
+                                />
+                            }
+                        </div>
                     </Form>
                     </div>
                 </Col>
