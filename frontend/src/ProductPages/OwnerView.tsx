@@ -6,7 +6,12 @@ import { getDatabase, ref, onValue,push, DataSnapshot, update} from "firebase/da
 import { ListingData } from '../SharedComponents/Listing';
 import {Row, Col, Container, Form, Button} from "react-bootstrap"
 import { Icon } from '@iconify/react';
-import {checkUserAddressIsValid, uploadImage} from "../SharedComponents/UtilFunctions";
+import {
+    checkUserAddressIsValid,
+    getFullDateHyphens,
+    getMonthDate,
+    uploadImage
+} from "../SharedComponents/UtilFunctions";
 import { UserData }from "../Profile/ProfilePage"
 import {getImageSrc} from "../SharedComponents/UtilFunctions";
 import {sendEmailOnDecision} from "../SharedComponents/UtilFunctions"
@@ -38,9 +43,9 @@ function OwnerView() {
     // states for editability and keeping track of listing properties
     const [address, setAddress] = useState("")
     const [area, setArea] = useState("")
-    const [dateStart, setDateStart] = useState("")
-    const [dateEnd, setDateEnd] = useState("")
-    const [dateFilterRange, setDateFilterRange] = useState([
+    const [dateStart, setDateStart] = useState<string>("")
+    const [dateEnd, setDateEnd] = useState<string>("")
+    const [dateRange, setDateRange] = useState<Range[]>([
         {
             startDate: new Date(), // NOTE: this state type is required by the date picker component
             endDate: new Date(),
@@ -63,7 +68,6 @@ function OwnerView() {
 
     // Check for images
     useEffect(() => {
-        console.log("here1")
         if(address != "") {
             loadImg(`${listingID}/img1`)
             setImageSelected(true)
@@ -76,6 +80,16 @@ function OwnerView() {
             getUserClaim()
         }
     }, [userID]);
+
+    // update start/end states when new date range is picked
+    useEffect(() => {
+        console.log("start: " + getMonthDate(dateRange[0].startDate!))
+        console.log("end: " + getMonthDate(dateRange[0].endDate!))
+        // convert to yyyy-mm-dd and set date
+        setDateStart(getFullDateHyphens(dateRange[0].startDate!))
+        setDateEnd(getFullDateHyphens(dateRange[0].endDate!))
+    }, [dateRange]);
+
 
     // functions for updating price and area
     
@@ -291,7 +305,6 @@ function OwnerView() {
 
 
     // upload image the user selects
-
     const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
         if(listingID != "invalid") {
             uploadImage(e, `${listingID}/img1`)
@@ -300,6 +313,8 @@ function OwnerView() {
         setImageUploadEvent(e)
         setImageSelected(true)
     }
+
+
 
     return (
         <div>
@@ -344,16 +359,15 @@ function OwnerView() {
                         {/*    <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd} disabled = {userID !== ""} onChange={(e) => setDateEnd(e.target.value)}/>*/}
                         {/*    </Col>*/}
                         {/*</Form.Group>*/}
-                        <div className="date-range-wrapper">
-                            {true &&
-                                <DateRange
-                                    editableDateInputs={true}
-                                    onChange={item => setDateFilterRange([item.selection])}
-                                    moveRangeOnFirstSelection={false}
-                                    ranges={dateFilterRange}
-                                    minDate={new Date()}
-                                />
-                            }
+                        <div className="product-page-date-range-wrapper">
+                            <h3>Select Available Dates:</h3>
+                            <DateRange
+                                editableDateInputs={true}
+                                onChange={item => setDateRange([item.selection])}
+                                moveRangeOnFirstSelection={false}
+                                ranges={dateRange}
+                                minDate={new Date()}
+                            />
                         </div>
                     </Form>
                     </div>

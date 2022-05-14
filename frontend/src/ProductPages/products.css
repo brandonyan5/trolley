@@ -112,6 +112,10 @@
     margin-left: 2%;
 }
 
+.product-page-date-range-wrapper .rdrCalendarWrapper {
+    margin: 0 auto;
+}
+
 .claim-button {
     background: #031C34;
     border-color: #031C34;
