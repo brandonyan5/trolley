@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {getImageSrc, getMonthDate, sendEmailOnDecision, sendEmailOnUnclaim} from "./UtilFunctions";
+import {getImageSrc, getMonthDate, onClickUnclaim, sendEmailOnDecision, sendEmailOnUnclaim} from "./UtilFunctions";
 import "../SharedComponents/Listing.css"
 import {getDatabase, onValue, ref, update} from "firebase/database";
 import {UserData} from "../Profile/ProfilePage";
@@ -117,23 +117,7 @@ function Listing(props: ListingProps) {
         }
     }
 
-    // sends cancellation email to owner
-    const onClickUnclaim = (e: React.MouseEvent) => {
-        // stop redirection to product page
-        e.stopPropagation()
-        e.preventDefault()
-        if (ownerEmail !== undefined) {
-            const db = getDatabase()
-            console.log("sending unclaim email")
-            sendEmailOnUnclaim(props.data, claimerEmail, ownerEmail)
-            // mark listing as unclaimed
-            const updates : {[key: string] : string|boolean} = {}
-            updates['/products/' + props.listingID + "/user_id"] = "";
-            update(ref(db), updates)
-        } else {
-            console.log("ERROR sending unclaim email: email undefined")
-        }
-    }
+
 
     // TODO: convert date to Jan 1 - Dec 31 instead of full dates?
     // TODO: tags?
@@ -182,7 +166,7 @@ function Listing(props: ListingProps) {
 
                     { props.showUnclaim &&
                         <div className="unclaim-wrapper">
-                            <div onClick={e => onClickUnclaim(e)}>Cancel</div>
+                            <div onClick={e => onClickUnclaim(e, ownerEmail, claimerEmail, props.listingID, props.data)}>Cancel</div>
                         </div>
                     }
                 </div>
