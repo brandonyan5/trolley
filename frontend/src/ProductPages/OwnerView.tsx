@@ -89,6 +89,7 @@ function OwnerView() {
         }
     }, [userID]);
 
+    // populate calendar with
     // update start/end states when new date range is picked
     useEffect(() => {
         console.log("start: " + getMonthDate(dateRange[0].startDate!))
@@ -277,6 +278,14 @@ function OwnerView() {
                 setCompleted(data.completed)
                 setDateEnd(data.date_end)
                 setDateStart(data.date_start)
+                // populate calendar with existing availability dates
+                const currDateRange: Range[] = [{
+                    startDate: new Date(data.date_start),
+                    endDate: new Date(data.date_end),
+                    key: 'selection'
+                }]
+                setDateRange(currDateRange)
+
                 setPrice(data.price)
                 setUserID(data.user_id as string)
                 setListingData(data)

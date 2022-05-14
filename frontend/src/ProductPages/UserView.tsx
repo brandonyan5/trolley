@@ -3,12 +3,11 @@ import {useNavigate, useLocation} from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
 import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/database";
-import { ListingData } from '../SharedComponents/Listing';
+import listing, { ListingData } from '../SharedComponents/Listing';
 import {Row, Col, Container, Button, Alert} from "react-bootstrap"
 import { Icon } from '@iconify/react';
-import {getImageSrc} from "../SharedComponents/UtilFunctions";
+import {getFullDate, getImageSrc, onClickUnclaim} from "../SharedComponents/UtilFunctions";
 import {UserData} from "../Profile/ProfilePage"
-import OwnerView from "./OwnerView"
 
 
 import './products.css'
@@ -212,7 +211,7 @@ function UserView() {
                                 Availability:
                             </div>
                             <div className = "date-text">
-                                {listingData.date_start} -- {listingData.date_end}
+                                {getFullDate(new Date(listingData.date_start))} — {getFullDate(new Date(listingData.date_end))}
                             </div>
                         </div>
 
@@ -241,23 +240,20 @@ function UserView() {
                         </div>
                     </Row>
                     <Row className = "row g-0">
-                    {listingData.owner_id != auth.currentUser?.uid //makes sure owner is not current viewer
-                            && displayClaim && // only display if current user_id for this listing is null (not claimed yet)
-                        <div className = "claim-box">
-                            
+                        { listingData.owner_id != auth.currentUser?.uid && displayClaim &&
+                            <div className = "claim-box">
                                 <Button className= "claim-button" onClick = {() => {updateListing(); setShowDecisionAlert(true);  sendEmail()}}>
                                     <div className = "claim-button-text">Claim Listing</div>
                                 </Button>
-                        </div>
-                    }
-                    {
-                        listingData.user_id == auth.currentUser?.uid &&
-                        <div className = "claim-box">
+                            </div>
+                        }
+                        { listingData.owner_id != auth.currentUser?.uid &&  !displayClaim && listingData.user_id == auth.currentUser?.uid && !listingData.completed &&
+                            <div className = "claim-box">
                                 <Button className= "claim-button" >
-                                    <div className = "claim-button-text">Cancel Listing</div>
+                                <div className = "claim-button-text" onClick={e => onClickUnclaim(e, email, auth.currentUser!.email as string, listingName, listingData)}>Cancel Listing</div>
                                 </Button>
-                        </div>
-                    }
+                            </div>
+                        }
                     </Row>
                 </Col>
             </Row>

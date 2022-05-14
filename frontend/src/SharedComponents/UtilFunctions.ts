@@ -1,7 +1,7 @@
 import {getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 import React from "react";
 import {ListingData} from "./Listing";
-import {getDatabase, onValue, ref as dbRef} from "firebase/database";
+import {getDatabase, onValue, ref as dbRef, update} from "firebase/database";
 import {useNavigate} from "react-router-dom";
 
 // returns PROMISE for an image URL string (which can be used as "src" for <img>)
@@ -164,4 +164,22 @@ export const checkUserAddressIsValid = async (userID: string, navigateTo: any) =
             navigateTo("/profile")
         }
     })
+}
+
+ // sends cancellation email to owner
+export const onClickUnclaim = (e: React.MouseEvent, ownerEmail: string, claimerEmail: string, listingID: string, listingData: ListingData) => {
+    // stop redirection to product page
+    e.stopPropagation()
+    e.preventDefault()
+    if (ownerEmail !== undefined) {
+        const db = getDatabase()
+        console.log("sending unclaim email")
+        sendEmailOnUnclaim(listingData, claimerEmail, ownerEmail)
+        // mark listing as unclaimed
+        const updates : {[key: string] : string|boolean} = {}
+        updates['/products/' + listingID + "/user_id"] = "";
+        update(dbRef(db), updates)
+    } else {
+        console.log("ERROR sending unclaim email: email undefined")
+    }
 }
