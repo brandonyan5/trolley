@@ -170,6 +170,14 @@ function UserView() {
     return (
         <div className = "product-screen">
             <NavBar />
+            <Alert className = "decision-alert"
+                    show = {showDecisionAlert} 
+                    key={"success"} 
+                    variant={"success"}
+                    onClose={() => setShowDecisionAlert(false)}
+                     dismissible>
+                You have claimed this listing!
+            </Alert>
             <Container fluid={true} >
             <Row  className = "row g-0">
                 <Col md = {6} xs = {12}  className="p-3">
@@ -237,8 +245,16 @@ function UserView() {
                             && displayClaim && // only display if current user_id for this listing is null (not claimed yet)
                         <div className = "claim-box">
                             
-                                <Button className= "claim-button" onClick = {() => {updateListing(); sendEmail()}}>
+                                <Button className= "claim-button" onClick = {() => {updateListing(); setShowDecisionAlert(true);  sendEmail()}}>
                                     <div className = "claim-button-text">Claim Listing</div>
+                                </Button>
+                        </div>
+                    }
+                    {
+                        listingData.user_id == auth.currentUser?.uid &&
+                        <div className = "claim-box">
+                                <Button className= "claim-button" >
+                                    <div className = "claim-button-text">Cancel Listing</div>
                                 </Button>
                         </div>
                     }
