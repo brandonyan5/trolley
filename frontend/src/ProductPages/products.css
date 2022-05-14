@@ -65,7 +65,6 @@
     display: flex;
     height: 230px;
     border-radius: 20px;
-    background-color: #F4EDF9;
     justify-content: center;
     align-items: center;
     padding-top: 1pc;
@@ -100,8 +99,11 @@
 
     font-size: 23px;
     color: #123963;
-    font-weight: 400;
+    font-weight: 300;
     margin-left: 5%;
+    background-color: rgb(211, 227, 241);
+    padding: 2%;
+    border-radius: 10px;
 }
 
 .date-text {
@@ -121,10 +123,14 @@
 .claim-button-text {
     color: white;
     font-size: 25px;
-    font-weight: 200;
+    font-weight: 300;
     
 }
 
 .col-with-margins {
     margin-top: 2%;
+}
+
+.decision-alert {
+    text-align: center;
 }

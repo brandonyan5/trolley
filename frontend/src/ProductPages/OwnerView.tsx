@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
 import { getDatabase, ref, onValue,push, DataSnapshot, update} from "firebase/database";
 import { ListingData } from '../SharedComponents/Listing';
-import {Row, Col, Container, Form, Button} from "react-bootstrap"
+import {Row, Col, Container, Form, Button, Alert} from "react-bootstrap"
 import { Icon } from '@iconify/react';
 import {checkUserAddressIsValid, uploadImage} from "../SharedComponents/UtilFunctions";
 import { UserData }from "../Profile/ProfilePage"
@@ -50,6 +50,10 @@ function OwnerView() {
 
     const [listingText, setListingText] = useState("Post Listing")
     const [imageUploadEvent, setImageUploadEvent] = useState<React.ChangeEvent<HTMLInputElement>>()
+
+
+    // states for alerts
+    const [showDecisionAlert, setShowDecisionAlert] = useState(false)
 
     // Check for images
     useEffect(() => {
@@ -226,6 +230,8 @@ function OwnerView() {
             setUserID("")
         }
 
+        setShowDecisionAlert(true)
+
         update(ref(db), updates)
 
     }
@@ -294,6 +300,14 @@ function OwnerView() {
     return (
         <div>
             <NavBar />
+            <Alert className = "decision-alert"
+                    show = {showDecisionAlert} 
+                    key={"success"} 
+                    variant={"success"}
+                    onClose={() => setShowDecisionAlert(false)}
+                     dismissible>
+                 Your decision has been sent!
+            </Alert>
             <Container fluid={true} >
                 <Row  className = "row g-0">
                 <Col md = {6} xs = {12}  className="p-3">
@@ -367,8 +381,8 @@ function OwnerView() {
                                 <div>{userName}</div>
                                 {(!completed) &&
                                 <div>
-                                    <Button variant="primary" onClick = {() => sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, true)}>Accept</Button>
-                                    <Button variant="danger" onClick = {() => sendEmail(false)}>Decline</Button>
+                                    <Button variant="primary" onClick = {() => {sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, true); markListingAsComplete(true)}}>Accept</Button>
+                                    <Button variant="danger" onClick = {() => {sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, false); markListingAsComplete(false)}}>Decline</Button>
                                 </div>
                                 }
                             </div>

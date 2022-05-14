@@ -4,7 +4,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
 import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/database";
 import { ListingData } from '../SharedComponents/Listing';
-import {Row, Col, Container, Button} from "react-bootstrap"
+import {Row, Col, Container, Button, Alert} from "react-bootstrap"
 import { Icon } from '@iconify/react';
 import {getImageSrc} from "../SharedComponents/UtilFunctions";
 import {UserData} from "../Profile/ProfilePage"
@@ -43,6 +43,9 @@ function UserView() {
     const [showPhone, setShowPhone] = useState(false)
     // Hooks for showing image
     const [img, setImg] = useState("");
+
+    // states for alerts
+    const [showDecisionAlert, setShowDecisionAlert] = useState(false)
 
     const [displayClaim, setDisplayClaim] = useState(listingData.user_id === "");
 
@@ -172,26 +175,26 @@ function UserView() {
                 <Col md = {6} xs = {12}  className="p-3">
                     <div className = "product-content">
                         <div className = "product-info">
-                            <Icon  icon="iconoir:profile-circled" className = "dolly" color="dark blue" width='50px'/>
+                            <Icon  icon="iconoir:profile-circled" className = "dolly" color="#031C34" width='50px'/>
                             <div className = "product-info-text">
                                 {name}
                             </div>
                         </div>
 
                         <div className = "product-info">
-                            <Icon  icon="bx:map"  className = "dolly" color="dark blue" width='50px'/>
+                            <Icon  icon="bx:map"  className = "dolly" color="#031C34" width='50px'/>
                             <div className = "product-info-text">
                                 {listingData.address}
                             </div>
                         </div>
                         <div className = "product-info">
-                            <Icon  icon="radix-icons:dimensions" color="dark blue" rotate={2} className = "dolly" width='50px'/>
+                            <Icon  icon="radix-icons:dimensions" color="#031C34" rotate={2} className = "dolly" width='50px'/>
                             <div className = "product-info-text">
                                 {listingData.area} sqft
                             </div>
                         </div>
                         <div className = "product-info">
-                            <Icon   icon="dashicons:money-alt" color="dark blue" rotate={2} className = "dolly" width='50px'/>
+                            <Icon   icon="dashicons:money-alt" color="#031C34" rotate={2} className = "dolly" width='50px'/>
                             <div className = "product-info-text">
                                 ${listingData.price}/day
                             </div>
@@ -210,13 +213,13 @@ function UserView() {
                             </div>
                             {showPhone &&
                                 <div className = "product-info">  
-                                    <Icon  icon="akar-icons:phone" color="dark blue" className = "dolly" width='40px'/>
+                                    <Icon  icon="akar-icons:phone" color="#031C34" className = "dolly" width='40px'/>
                                     <div className = "product-info-text">{phone} </div>
                                 </div>
                             }
                             {showEmail &&
                             <div className = "product-info">
-                                <Icon  icon="ant-design:mail-outlined" color="dark blue" className = "dolly" width='40px'/>
+                                <Icon  icon="ant-design:mail-outlined" color="#031C34" className = "dolly" width='40px'/>
                                 <div className = "product-info-text">{email} </div>
                             </div>
                             }   
