@@ -18,18 +18,15 @@
 }
 
 .listing-image {
+    flex-basis: 37%;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    flex-basis: 30%;
-
+    overflow: hidden
 }
 
 .listing-image img {
-    flex-shrink: 0;
-    min-width: 100%;
-    min-height: 100%
+    min-height:100%; min-width: 100%; object-fit: cover;
 }
 .listing-info {
     flex-basis: 60%;
@@ -45,7 +42,7 @@
     text-transform: capitalize;
 }
 
-/* CLAIMED section */
+/* CLAIMED section on listings page*/
 .claimer-box {
     background: pink;
     width: 500px;
@@ -95,3 +92,31 @@
     font-weight: 400;
 }
 
+/* CLAIMED section (for claims page) */
+.owner-box {
+    background: pink;
+    width: 500px;
+}
+.owner-info {
+    color: #e0eeff;
+    background: #4a77a8;
+    height: 75%;
+    padding: 12px 30px;
+}
+
+.owner-info h4 {
+    margin: 5px 0;
+    font-weight: 400 !important;
+}
+.owner-info p {
+    margin: 0;
+    font-weight: 200;
+    font-size: 15px !important;
+}
+.unclaim-wrapper {
+    background: #A62700;
+    height: 25%;
+    text-align: center;
+    padding: 7px;
+    color: white
+}

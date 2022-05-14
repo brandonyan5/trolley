@@ -128,7 +128,7 @@ function ClaimsPage(props: ClaimsPageProps) {
         <div>
             <NavBar />
             <div className="claims-page">
-                <h2>My Claims</h2>
+                <h1 id="my-claims-title">My Claimed Listings</h1>
 
                 <div className="my-listings-wrapper claimed-listings-wrapper">
                     <h3>Claimed Listings</h3>

@@ -164,9 +164,13 @@ function Listing(props: ListingProps) {
                         <p>{ownerPhone}</p>
                     </div>
 
-                    { props.showUnclaim &&
+                    { props.showUnclaim ?
                         <div className="unclaim-wrapper">
                             <div onClick={e => onClickUnclaim(e, ownerEmail, claimerEmail, props.listingID, props.data)}>Cancel</div>
+                        </div>
+                        :
+                        <div className="claim-accepted-box">
+                            Accepted by Owner
                         </div>
                     }
                 </div>
