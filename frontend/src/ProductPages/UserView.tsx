@@ -6,9 +6,8 @@ import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/databas
 import { ListingData } from '../SharedComponents/Listing';
 import {Row, Col, Container, Button, Alert} from "react-bootstrap"
 import { Icon } from '@iconify/react';
-import {getImageSrc} from "../SharedComponents/UtilFunctions";
+import {getFullDate, getImageSrc} from "../SharedComponents/UtilFunctions";
 import {UserData} from "../Profile/ProfilePage"
-import OwnerView from "./OwnerView"
 
 
 import './products.css'
@@ -204,7 +203,7 @@ function UserView() {
                                 Availability:
                             </div>
                             <div className = "date-text">
-                                {listingData.date_start} -- {listingData.date_end}
+                                {getFullDate(new Date(listingData.date_start))} — {getFullDate(new Date(listingData.date_end))}
                             </div>
                         </div>
                         <div>

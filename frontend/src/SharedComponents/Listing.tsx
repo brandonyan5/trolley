@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {getImageSrc, sendEmailOnDecision, sendEmailOnUnclaim} from "./UtilFunctions";
+import {getImageSrc, getMonthDate, sendEmailOnDecision, sendEmailOnUnclaim} from "./UtilFunctions";
 import "../SharedComponents/Listing.css"
 import {getDatabase, onValue, ref, update} from "firebase/database";
 import {UserData} from "../Profile/ProfilePage";
@@ -144,7 +144,7 @@ function Listing(props: ListingProps) {
             </div>
             <div className="listing-info">
                 <h4 id="address">{props.data.address}</h4>
-                <p>Available {props.data.date_start} to {props.data.date_end}</p>
+                <p>Available {getMonthDate(new Date(props.data.date_start))} to {getMonthDate(new Date(props.data.date_end))}</p>
                 <p>{props.data.area} sqft.</p>
                 <p>${props.data.price}/day</p>
             </div>
@@ -158,10 +158,14 @@ function Listing(props: ListingProps) {
                         <p>{claimerPhone}</p>
                     </div>
 
-                    { props.showAcceptDecline &&
+                    { props.showAcceptDecline ?
                         <div className="accept-decline-wrapper">
-                            <div onClick={e => onClickDecision(e, true)}>Accept</div>
-                            <div onClick={e => onClickDecision(e, false)}>Decline</div>
+                            <div id="accept-btn" onClick={e => onClickDecision(e, true)}>Accept</div>
+                            <div id="decline-btn" onClick={e => onClickDecision(e, false)}>Decline</div>
+                        </div>
+                        :
+                        <div className="claim-accepted-box">
+                            Notified Claimer
                         </div>
                     }
                 </div>
