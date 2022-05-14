@@ -169,6 +169,14 @@ function UserView() {
     return (
         <div className = "product-screen">
             <NavBar />
+            <Alert className = "decision-alert"
+                    show = {showDecisionAlert} 
+                    key={"success"} 
+                    variant={"success"}
+                    onClose={() => setShowDecisionAlert(false)}
+                     dismissible>
+                You have claimed this listing!
+            </Alert>
             <Container fluid={true} >
             <Row  className = "row g-0">
                 <Col md = {6} xs = {12}  className="p-3">
@@ -206,23 +214,23 @@ function UserView() {
                                 {getFullDate(new Date(listingData.date_start))} — {getFullDate(new Date(listingData.date_end))}
                             </div>
                         </div>
-                        <div>
-                            <div className = "product-descriptors">
-                                Contact:
-                            </div>
-                            {showPhone &&
-                                <div className = "product-info">  
-                                    <Icon  icon="akar-icons:phone" color="#031C34" className = "dolly" width='40px'/>
-                                    <div className = "product-info-text">{phone} </div>
-                                </div>
-                            }
-                            {showEmail &&
-                            <div className = "product-info">
-                                <Icon  icon="ant-design:mail-outlined" color="#031C34" className = "dolly" width='40px'/>
-                                <div className = "product-info-text">{email} </div>
-                            </div>
-                            }   
+
+                        <div className = "product-descriptors">
+                            Contact:
                         </div>
+                        {showPhone &&
+                            <div className = "product-info">  
+                                <Icon  icon="akar-icons:phone" color="#031C34" className = "dolly" width='40px'/>
+                                <div className = "product-info-text">{phone} </div>
+                            </div>
+                        }
+                        {showEmail &&
+                        <div className = "product-info">
+                            <Icon  icon="ant-design:mail-outlined" color="#031C34" className = "dolly" width='40px'/>
+                            <div className = "product-info-text">{email} </div>
+                        </div>
+                        }   
+
                     </div>
                 </Col>
                 <Col md = {6} xs = {12} className="p-3" >
@@ -236,8 +244,16 @@ function UserView() {
                             && displayClaim && // only display if current user_id for this listing is null (not claimed yet)
                         <div className = "claim-box">
                             
-                                <Button className= "claim-button" onClick = {() => {updateListing(); sendEmail()}}>
-                                    <div className = "claim-button-text">Claim</div>
+                                <Button className= "claim-button" onClick = {() => {updateListing(); setShowDecisionAlert(true);  sendEmail()}}>
+                                    <div className = "claim-button-text">Claim Listing</div>
+                                </Button>
+                        </div>
+                    }
+                    {
+                        listingData.user_id == auth.currentUser?.uid &&
+                        <div className = "claim-box">
+                                <Button className= "claim-button" >
+                                    <div className = "claim-button-text">Cancel Listing</div>
                                 </Button>
                         </div>
                     }

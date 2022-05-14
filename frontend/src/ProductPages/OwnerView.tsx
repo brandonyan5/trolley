@@ -62,10 +62,14 @@ function OwnerView() {
     const [completed, setCompleted] = useState<boolean>(false)
     const [listingData, setListingData] = useState({} as ListingData);
     const [imageSelected, setImageSelected] = useState(false)
-
+    
     const [listingText, setListingText] = useState("Post Listing")
     const [imageUploadEvent, setImageUploadEvent] = useState<React.ChangeEvent<HTMLInputElement>>()
 
+
+    // showing contact info for claimer
+    const [showUserEmail, setShowUserEmail] = useState(false)
+    const [showUserPhone, setShowUserPhone] = useState(false)
 
     // states for alerts
     const [showDecisionAlert, setShowDecisionAlert] = useState(false)
@@ -253,6 +257,7 @@ function OwnerView() {
             setUserEmail("")
             setUserPhone("")
             setUserID("")
+            
         }
 
         setShowDecisionAlert(true)
@@ -285,6 +290,7 @@ function OwnerView() {
                 setUserID(data.user_id as string)
                 setListingData(data)
                 setListingText("Update Listing")
+                
             }
         })
     }
@@ -310,6 +316,8 @@ function OwnerView() {
                 setUserName(data.name)
                 setUserEmail(data.email)
                 setUserPhone(data.phone)
+                setShowUserEmail(data.show_email)
+                setShowUserPhone(data.show_phone)
                 
             },
             {
@@ -331,6 +339,7 @@ function OwnerView() {
 
 
 
+    
     return (
         <div>
             <NavBar />
@@ -411,26 +420,30 @@ function OwnerView() {
                     <Row className = "row g-0">
                         {userID === "" &&
                             <div className = "claim-box">
-                                <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="" || !imageSelected)}>
-                                    {listingText}
+                                <Button className = "claim-button" onClick={postListing} disabled = {(price=="" || area =="" || !imageSelected)}>
+                                    <div className = "claim-button-text">{listingText}</div>
                                 </Button>
                             </div>
                         }
                     </Row>
                     {(userName != "") && 
                     <Row className = "row g-0">
-                        <div className = "claim-box">
-                            
+                        <div className = "accept-decline-box">
+                        {(!completed) &&
                             <div>
-                                <div>{userName}</div>
-                                {(!completed) &&
-                                <div>
-                                    <Button variant="primary" onClick = {() => {sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, true); markListingAsComplete(true)}}>Accept</Button>
-                                    <Button variant="danger" onClick = {() => {sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, false); markListingAsComplete(false)}}>Decline</Button>
+                                <div className = "user-name-info">  
+                                    <Icon  icon="iconoir:profile-circled" color="#031C34"  width='60px'/>
+                                    <div className = "user-name-text">{userName} </div>
                                 </div>
-                                }
+                                
+                                
+                                <div className  = "accept-decline-button-box">
+                                    <Button className = "accept-button" onClick = {() => {sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, true); markListingAsComplete(true)}}>Accept</Button>
+                                    <Button className = "decline-button" onClick = {() => {sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, false); markListingAsComplete(false)}}>Decline</Button>
+                                </div>
+                                
                             </div>
-
+                            }
                         </div>
                     </Row>}
                 </Col>

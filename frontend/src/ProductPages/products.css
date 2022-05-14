@@ -92,6 +92,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    
 
 }
 
@@ -119,10 +120,22 @@
 }
 
 .claim-button {
-    background: #031C34;
-    border-color: #031C34;
+    background: #123963;
+    border-color: #123963;
     border-radius: 10px;
+    transition: 500ms;
 }
+
+
+
+.claim-button:disabled {
+    background: #588ec0;
+    border-color: #588ec0;
+    border-radius: 10px;
+    transition: 500ms;
+}
+
+
 
 .claim-button-text {
     color: white;
@@ -137,4 +150,96 @@
 
 .decision-alert {
     text-align: center;
+}
+
+.user-claim-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: normal;
+    margin-top: 1%;
+    
+}
+
+.user-name-info {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 200px;
+    margin-top: 1%;
+    margin-left: 5%;
+    font-family: 'Helvetica';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 28px;
+    
+    
+}
+
+.user-name-text {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 200px;
+    margin-top: 1%;
+    margin-left: 5%;
+    font-family: 'Helvetica';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 28px;
+    margin-top: 7%;
+    
+    
+}
+
+.user-info-icons {
+    width: 100px;
+    margin-top: 2%;
+    margin-left: 5%;
+}
+
+.accept-decline-box {
+
+    display: flex;
+    height: 230px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    padding-top: 0.4pc;
+    padding-bottom: 0.4pc;
+    margin-top: 0.5pc;
+    background-color: aliceblue;
+}
+
+.accept-decline-button-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5%;
+}
+
+.accept-button {
+    background-color: rgb(46, 156, 110);
+    border-color: rgb(46, 156, 110);
+    margin-right: 2%;
+    transition: 500ms;
+}
+
+.decline-button {
+    background-color: rgb(156, 46, 46);
+    border-color: rgb(156, 46, 46);
+    margin-left: 2%;
+    transition: 500ms;
+}
+
+.accept-button:hover {
+    background-color: rgb(37, 94, 70);
+    border-color:  rgb(37, 94, 70);
+}
+
+.decline-button:hover {
+    background-color: rgb(114, 21, 21);
+    border-color:rgb(114, 21, 21);
 }
