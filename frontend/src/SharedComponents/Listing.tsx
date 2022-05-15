@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {getImageSrc, sendEmailOnDecision, sendEmailOnUnclaim} from "./UtilFunctions";
+import {getImageSrc, getMonthDate, onClickUnclaim, sendEmailOnDecision, sendEmailOnUnclaim} from "./UtilFunctions";
 import "../SharedComponents/Listing.css"
 import {getDatabase, onValue, ref, update} from "firebase/database";
 import {UserData} from "../Profile/ProfilePage";
@@ -117,23 +117,7 @@ function Listing(props: ListingProps) {
         }
     }
 
-    // sends cancellation email to owner
-    const onClickUnclaim = (e: React.MouseEvent) => {
-        // stop redirection to product page
-        e.stopPropagation()
-        e.preventDefault()
-        if (ownerEmail !== undefined) {
-            const db = getDatabase()
-            console.log("sending unclaim email")
-            sendEmailOnUnclaim(props.data, claimerEmail, ownerEmail)
-            // mark listing as unclaimed
-            const updates : {[key: string] : string|boolean} = {}
-            updates['/products/' + props.listingID + "/user_id"] = "";
-            update(ref(db), updates)
-        } else {
-            console.log("ERROR sending unclaim email: email undefined")
-        }
-    }
+
 
     // TODO: convert date to Jan 1 - Dec 31 instead of full dates?
     // TODO: tags?
@@ -144,7 +128,7 @@ function Listing(props: ListingProps) {
             </div>
             <div className="listing-info">
                 <h4 id="address">{props.data.address}</h4>
-                <p>Available {props.data.date_start} to {props.data.date_end}</p>
+                <p>Available {getMonthDate(new Date(props.data.date_start))} to {getMonthDate(new Date(props.data.date_end))}</p>
                 <p>{props.data.area} sqft.</p>
                 <p>${props.data.price}/day</p>
             </div>
@@ -158,10 +142,14 @@ function Listing(props: ListingProps) {
                         <p>{claimerPhone}</p>
                     </div>
 
-                    { props.showAcceptDecline &&
+                    { props.showAcceptDecline ?
                         <div className="accept-decline-wrapper">
-                            <div onClick={e => onClickDecision(e, true)}>Accept</div>
-                            <div onClick={e => onClickDecision(e, false)}>Decline</div>
+                            <div id="accept-btn" onClick={e => onClickDecision(e, true)}>Accept</div>
+                            <div id="decline-btn" onClick={e => onClickDecision(e, false)}>Decline</div>
+                        </div>
+                        :
+                        <div className="claim-accepted-box">
+                            Notified Claimer
                         </div>
                     }
                 </div>
@@ -176,9 +164,13 @@ function Listing(props: ListingProps) {
                         <p>{ownerPhone}</p>
                     </div>
 
-                    { props.showUnclaim &&
+                    { props.showUnclaim ?
                         <div className="unclaim-wrapper">
-                            <div onClick={e => onClickUnclaim(e)}>Cancel</div>
+                            <div onClick={e => onClickUnclaim(e, ownerEmail, claimerEmail, props.listingID, props.data)}>Cancel</div>
+                        </div>
+                        :
+                        <div className="claim-accepted-box">
+                            Accepted by Owner
                         </div>
                     }
                 </div>

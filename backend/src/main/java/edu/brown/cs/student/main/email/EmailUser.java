@@ -5,9 +5,19 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 
-
+/**
+ * class that handles emailing the user who books a listing.
+ */
 public class EmailUser {
 
+  /**
+   * emails the user who books the listing.
+   * @param userEmail - the user's email address
+   * @param otherEmail - the email address of the owner of the listing
+   * @param address - the address of the listing
+   * @return - whether or not email was sent successfully
+   * @throws MessagingException - if email sending errored somewhere
+   */
   public static boolean sendEmailToUserAccepted(String userEmail, String otherEmail,
                                                 String address) throws MessagingException {
     Properties prop = new Properties();
@@ -53,8 +63,13 @@ public class EmailUser {
 
   }
 
-
-
+  /**
+   * emails the user who books the listing.
+   * @param userEmail - the user's email address
+   * @param address - the address of the listing
+   * @return - whether or not email was sent successfully
+   * @throws MessagingException - if email sending errored somewhere
+   */
   public static boolean sendEmailToUserRejected(String userEmail,
                                                 String address) throws MessagingException {
     Properties prop = new Properties();
