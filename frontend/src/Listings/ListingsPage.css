@@ -43,6 +43,10 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
+.my-listings-wrapper .listing-info {
+    padding-left: 50px;
+}
+
 #my-listings-title {
     width: 80%;
     margin: 50px auto;
@@ -55,9 +59,12 @@
 .my-listings-wrapper h4 {
     font-weight: 200;
 }
+.my-listings-wrapper p {
+    font-size: 18px
+}
 
 .listings-page > div a {
-    flex-basis: 40%;
+    flex-basis: 100%;
     width: 100%;
     text-decoration: none;
     color: black;

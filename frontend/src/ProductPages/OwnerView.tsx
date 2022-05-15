@@ -4,9 +4,14 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
 import { getDatabase, ref, onValue,push, DataSnapshot, update} from "firebase/database";
 import { ListingData } from '../SharedComponents/Listing';
-import {Row, Col, Container, Form, Button} from "react-bootstrap"
+import {Row, Col, Container, Form, Button, Alert} from "react-bootstrap"
 import { Icon } from '@iconify/react';
-import {checkUserAddressIsValid, uploadImage} from "../SharedComponents/UtilFunctions";
+import {
+    checkUserAddressIsValid, getFullDate,
+    getFullDateHyphens,
+    getMonthDate,
+    uploadImage
+} from "../SharedComponents/UtilFunctions";
 import { UserData }from "../Profile/ProfilePage"
 import {getImageSrc} from "../SharedComponents/UtilFunctions";
 import {sendEmailOnDecision} from "../SharedComponents/UtilFunctions"
@@ -15,6 +20,8 @@ import {addressestoDistance} from "../Haversine/haversine";
 
 
 import './products.css'
+import {DateRange, Range} from "react-date-range";
+import { truncateSync } from 'fs';
 
 function OwnerView() {
 
@@ -37,8 +44,17 @@ function OwnerView() {
     // states for editability and keeping track of listing properties
     const [address, setAddress] = useState("")
     const [area, setArea] = useState("")
-    const [dateStart, setDateStart] = useState("")
-    const [dateEnd, setDateEnd] = useState("")
+    const [dateStart, setDateStart] = useState<string>("")
+    const [dateEnd, setDateEnd] = useState<string>("")
+    const [dateRange, setDateRange] = useState<Range[]>([
+        {
+            startDate: new Date(), // NOTE: this state type is required by the date picker component
+            endDate: new Date(),
+            key: 'selection'
+        }
+    ])
+
+
     const [price, setPrice] = useState("")
     const [userName, setUserName] = useState("")
     const [userPhone, setUserPhone] = useState("")
@@ -47,13 +63,21 @@ function OwnerView() {
     const [completed, setCompleted] = useState<boolean>(false)
     const [listingData, setListingData] = useState({} as ListingData);
     const [imageSelected, setImageSelected] = useState(false)
-
+    
     const [listingText, setListingText] = useState("Post Listing")
     const [imageUploadEvent, setImageUploadEvent] = useState<React.ChangeEvent<HTMLInputElement>>()
 
+
+    // showing contact info for claimer
+    const [showUserEmail, setShowUserEmail] = useState(false)
+    const [showUserPhone, setShowUserPhone] = useState(false)
+
+    // states for alerts
+    const [showDecisionAlert, setShowDecisionAlert] = useState(false)
+    const [showAddressAlert, setShowAddressAlert] = useState(false)
+
     // Check for images
     useEffect(() => {
-        console.log("here1")
         if(address != "") {
             loadImg(`${listingID}/img1`)
             setImageSelected(true)
@@ -66,6 +90,17 @@ function OwnerView() {
             getUserClaim()
         }
     }, [userID]);
+
+    // populate calendar with
+    // update start/end states when new date range is picked
+    useEffect(() => {
+        console.log("start: " + getMonthDate(dateRange[0].startDate!))
+        console.log("end: " + getMonthDate(dateRange[0].endDate!))
+        // convert to yyyy-mm-dd and set date
+        setDateStart(getFullDateHyphens(dateRange[0].startDate!))
+        setDateEnd(getFullDateHyphens(dateRange[0].endDate!))
+    }, [dateRange]);
+
 
     // functions for updating price and area
     
@@ -122,13 +157,14 @@ function OwnerView() {
                     
                 } else {
                     console.log("invalid entry")
+                    setShowAddressAlert(true)
                 }   
 
             })
         } 
         else {
 
-            await addressestoDistance(address, "69 Brown St").then(dist => {
+            await addressestoDistance(address, "69 Brown St").then(async dist => {
                 if (dist !== "ERROR") {
                     const listingsRef = ref(db, "products")
 
@@ -150,12 +186,13 @@ function OwnerView() {
                     setListingID(newPostRef.key as string)
 
 
-                    uploadImage(imageUploadEvent as React.ChangeEvent<HTMLInputElement>, `${newPostRef.key}/img1`)
+                    await uploadImage(imageUploadEvent as React.ChangeEvent<HTMLInputElement>, `${newPostRef.key}/img1`)
                     navigateTo("/listings")
                 } 
 
                 else {
                     console.log("invalid entry")
+                    setShowAddressAlert(true)
                 }   
     
             })
@@ -224,7 +261,10 @@ function OwnerView() {
             setUserEmail("")
             setUserPhone("")
             setUserID("")
+            
         }
+
+        setShowDecisionAlert(true)
 
         update(ref(db), updates)
 
@@ -242,10 +282,19 @@ function OwnerView() {
                 setCompleted(data.completed)
                 setDateEnd(data.date_end)
                 setDateStart(data.date_start)
+                // populate calendar with existing availability dates
+                const currDateRange: Range[] = [{
+                    startDate: new Date(data.date_start),
+                    endDate: new Date(data.date_end),
+                    key: 'selection'
+                }]
+                setDateRange(currDateRange)
+
                 setPrice(data.price)
                 setUserID(data.user_id as string)
                 setListingData(data)
                 setListingText("Update Listing")
+                
             }
         })
     }
@@ -271,6 +320,8 @@ function OwnerView() {
                 setUserName(data.name)
                 setUserEmail(data.email)
                 setUserPhone(data.phone)
+                setShowUserEmail(data.show_email)
+                setShowUserPhone(data.show_phone)
                 
             },
             {
@@ -281,7 +332,6 @@ function OwnerView() {
 
 
     // upload image the user selects
-
     const uploadImg = (e: React.ChangeEvent<HTMLInputElement>) => {
         if(listingID != "invalid") {
             uploadImage(e, `${listingID}/img1`)
@@ -291,9 +341,28 @@ function OwnerView() {
         setImageSelected(true)
     }
 
+
+
+    
     return (
         <div>
             <NavBar />
+            <Alert className = "decision-alert"
+                    show = {showDecisionAlert} 
+                    key={"success"} 
+                    variant={"success"}
+                    onClose={() => setShowDecisionAlert(false)}
+                     dismissible>
+                 Your decision has been sent!
+            </Alert>
+            <Alert className = "decision-alert"
+                    show = {showAddressAlert} 
+                    key={"danger"} 
+                    variant={"danger"}
+                    onClose={() => setShowAddressAlert(false)}
+                     dismissible>
+                 Invalid address entered
+            </Alert>
             <Container fluid={true} >
                 <Row  className = "row g-0">
                 <Col md = {6} xs = {12}  className="p-3">
@@ -323,17 +392,41 @@ function OwnerView() {
                             <Form.Control type="text" placeholder="Price per day ($0.5 to $10)" value={price} disabled = {userID !== ""} onChange={(e) => updatePrice(e.target.value)}/>
                             </Col>
                         </Form.Group>
-                        <Form.Group as={Row} className="mb-3" >
-                            <Form.Label column sm={2}>
-                            <Icon icon="bi:calendar-date-fill" color="#031c34" rotate={2} hFlip={true} vFlip={true} className = "dolly" width='50px' />
-                            </Form.Label>
-                            <Col xs={5} sm={4} className = "col-with-margins">
-                            <Form.Control type="text" placeholder="Start date" defaultValue={dateStart} disabled = {userID !== ""} onChange={(e) => setDateStart(e.target.value)}/>
-                            </Col> 
-                            <Col xs={5} sm={4} className = "col-with-margins">
-                            <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd} disabled = {userID !== ""} onChange={(e) => setDateEnd(e.target.value)}/>
-                            </Col>
-                        </Form.Group>
+                        {/*<Form.Group as={Row} className="mb-3" >*/}
+                        {/*    <Form.Label column sm={2}>*/}
+                        {/*    <Icon icon="bi:calendar-date-fill" color="#031c34" rotate={2} hFlip={true} vFlip={true} className = "dolly" width='50px' />*/}
+                        {/*    </Form.Label>*/}
+                        {/*    <Col xs={5} sm={4} className = "col-with-margins">*/}
+                        {/*    <Form.Control type="text" placeholder="Start date" defaultValue={dateStart} disabled = {userID !== ""} onChange={(e) => setDateStart(e.target.value)}/>*/}
+                        {/*    </Col> */}
+                        {/*    <Col xs={5} sm={4} className = "col-with-margins">*/}
+                        {/*    <Form.Control type="text" placeholder="End date" defaultValue  = {dateEnd} disabled = {userID !== ""} onChange={(e) => setDateEnd(e.target.value)}/>*/}
+                        {/*    </Col>*/}
+                        {/*</Form.Group>*/}
+                        <div className="product-page-date-range-wrapper">
+                            { (userID !== "")? // only allow date selection if NOT claimed
+                                <div>
+                                    <div className = "product-descriptors">
+                                        Availability:
+                                    </div>
+                                    <div className = "date-text">
+                                        {getFullDate(new Date(listingData.date_start))} — {getFullDate(new Date(listingData.date_end))}
+                                    </div>
+                                </div>
+                                :
+                                <div>
+                                    <h3>Select Available Dates:</h3>
+                                    <DateRange
+                                        editableDateInputs={true}
+                                        onChange={item => setDateRange([item.selection])}
+                                        moveRangeOnFirstSelection={false}
+                                        ranges={dateRange}
+                                        minDate={new Date()}
+                                    />
+                                </div>
+                            }
+
+                        </div>
                     </Form>
                     </div>
                 </Col>
@@ -353,26 +446,30 @@ function OwnerView() {
                     <Row className = "row g-0">
                         {userID === "" &&
                             <div className = "claim-box">
-                                <Button variant="primary" onClick={postListing} disabled = {(price=="" || area =="" || !imageSelected)}>
-                                    {listingText}
+                                <Button className = "claim-button" onClick={postListing} disabled = {(price=="" || area =="" || !imageSelected)}>
+                                    <div className = "claim-button-text">{listingText}</div>
                                 </Button>
                             </div>
                         }
                     </Row>
                     {(userName != "") && 
                     <Row className = "row g-0">
-                        <div className = "claim-box">
-                            
-                            <div>
-                                <div>{userName}</div>
-                                {(!completed) &&
-                                <div>
-                                    <Button variant="primary" onClick = {() => sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, true)}>Accept</Button>
-                                    <Button variant="danger" onClick = {() => sendEmail(false)}>Decline</Button>
+                        <div className = "accept-decline-box">
+                        {(!completed) &&
+                            <div className = "user-changes-info">
+                                <div className = "user-name-info">  
+                                    <Icon  icon="iconoir:profile-circled" className = "profile-icon" color="#031C34"  width='50px'/>
+                                    <div className = "user-name-text">{userName} </div>
                                 </div>
-                                }
+                                
+                                
+                                <div className  = "accept-decline-button-box">
+                                    <Button className = "accept-button" onClick = {() => {sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, true); markListingAsComplete(true)}}>Accept</Button>
+                                    <Button className = "decline-button" onClick = {() => {sendEmailOnDecision(listingData, userEmail, auth.currentUser!.email, false); markListingAsComplete(false)}}>Decline</Button>
+                                </div>
+                                
                             </div>
-
+                            }
                         </div>
                     </Row>}
                 </Col>

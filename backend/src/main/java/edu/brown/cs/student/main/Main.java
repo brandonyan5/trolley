@@ -14,7 +14,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.Spark;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * The Main class of our project. This is where execution begins.
@@ -199,8 +203,8 @@ public final class Main {
         Double distanceListing = eachListing.getDistance();
         Double price = eachListing.getPrice();
         Double area = eachListing.getArea();
-        String dateStart = eachListing.getDate_start();
-        String dateEnd = eachListing.getDate_end();
+        String dateStart = eachListing.getDateStart();
+        String dateEnd = eachListing.getDateEnd();
         String ownerID = eachListing.getOwnerID();
         String userID = eachListing.getUserID();
         String listingName = eachListing.getListingName();
@@ -334,15 +338,6 @@ public final class Main {
           return "{\"ERROR\" : \"AN ERROR\"}";
         }
       }
-
     }
   }
-
 }
-
-
-
-
-
-
-

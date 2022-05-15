@@ -52,7 +52,6 @@ function FilterBar(props: FilterBarProps) {
     }
 
     const [showDateRangePicker, setShowDateRangePicker] = useState<boolean>(false);
-
     const toggleDateRange = () => {
         console.log("toggling date range")
         // TODO toggle visibility of date range picker
@@ -100,7 +99,7 @@ function FilterBar(props: FilterBarProps) {
 
             <div className="date-range-preview" onClick={toggleDateRange}>
                 <p>{getMonthDate(props.dateFilterRange[0].startDate)}</p>
-                <div className="date-range-preview-midbar">|</div>
+                <div className="date-range-preview-midbar"></div>
                 <p>{getMonthDate(props.dateFilterRange[0].endDate)}</p>
             </div>
 

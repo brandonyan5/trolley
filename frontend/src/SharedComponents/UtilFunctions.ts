@@ -1,7 +1,7 @@
 import {getDownloadURL, getStorage, ref, uploadBytes} from "firebase/storage";
 import React from "react";
 import {ListingData} from "./Listing";
-import {getDatabase, onValue, ref as dbRef} from "firebase/database";
+import {getDatabase, onValue, ref as dbRef, update} from "firebase/database";
 import {useNavigate} from "react-router-dom";
 
 // returns PROMISE for an image URL string (which can be used as "src" for <img>)
@@ -21,7 +21,7 @@ export const getImageSrc = async (relativeURL: string) => {
 
 // TODO: change first argument if necessary, but ensure that e has e.target.files
 // example save path: "product5/img1", "product5/img2", ...
-export const uploadImage = (e: React.ChangeEvent<HTMLInputElement>, relativeSavePath: string) => {
+export const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>, relativeSavePath: string) => {
     console.log("uploading")
 
     // get array of files (should only be size 1 because <input type="file"> gives popup that only accepts 1 file
@@ -35,7 +35,7 @@ export const uploadImage = (e: React.ChangeEvent<HTMLInputElement>, relativeSave
         // Create a reference to the listing's image location (will create if doesn't already exist)
         const listingRef = ref(storage, relativeSavePath)
         // 'file' comes from the Blob or File API
-        uploadBytes(listingRef, files[0]).then((snapshot) => {
+        await uploadBytes(listingRef, files[0]).then((snapshot) => {
             console.log('Uploaded file!');
         });
     } else {
@@ -71,7 +71,7 @@ export const getFullDateHyphens = (date: Date): string => {
     } as const
     const dateString = date.toLocaleDateString('en-us', options).replace(/\//g, '-')
     const x: string[] = dateString.split("-")
-    console.log(x)
+    // console.log(x)
     const y = x[2] + "-" + x[0] + "-" + x[1]
     // console.log("before reverse")
     // console.log(y)
@@ -164,4 +164,22 @@ export const checkUserAddressIsValid = async (userID: string, navigateTo: any) =
             navigateTo("/profile")
         }
     })
+}
+
+ // sends cancellation email to owner
+export const onClickUnclaim = (e: React.MouseEvent, ownerEmail: string, claimerEmail: string, listingID: string, listingData: ListingData) => {
+    // stop redirection to product page
+    e.stopPropagation()
+    e.preventDefault()
+    if (ownerEmail !== undefined) {
+        const db = getDatabase()
+        console.log("sending unclaim email")
+        sendEmailOnUnclaim(listingData, claimerEmail, ownerEmail)
+        // mark listing as unclaimed
+        const updates : {[key: string] : string|boolean} = {}
+        updates['/products/' + listingID + "/user_id"] = "";
+        update(dbRef(db), updates)
+    } else {
+        console.log("ERROR sending unclaim email: email undefined")
+    }
 }

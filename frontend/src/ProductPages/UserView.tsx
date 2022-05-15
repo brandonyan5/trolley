@@ -3,12 +3,11 @@ import {useNavigate, useLocation} from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
 import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/database";
-import { ListingData } from '../SharedComponents/Listing';
-import {Row, Col, Container, Button} from "react-bootstrap"
+import listing, { ListingData } from '../SharedComponents/Listing';
+import {Row, Col, Container, Button, Alert} from "react-bootstrap"
 import { Icon } from '@iconify/react';
-import {getImageSrc} from "../SharedComponents/UtilFunctions";
+import {getFullDate, getImageSrc, onClickUnclaim} from "../SharedComponents/UtilFunctions";
 import {UserData} from "../Profile/ProfilePage"
-import OwnerView from "./OwnerView"
 
 
 import './products.css'
@@ -43,6 +42,9 @@ function UserView() {
     const [showPhone, setShowPhone] = useState(false)
     // Hooks for showing image
     const [img, setImg] = useState("");
+
+    // states for alerts
+    const [showDecisionAlert, setShowDecisionAlert] = useState(false)
 
     const [displayClaim, setDisplayClaim] = useState(listingData.user_id === "");
 
@@ -167,31 +169,39 @@ function UserView() {
     return (
         <div className = "product-screen">
             <NavBar />
+            <Alert className = "decision-alert"
+                    show = {showDecisionAlert} 
+                    key={"success"} 
+                    variant={"success"}
+                    onClose={() => setShowDecisionAlert(false)}
+                     dismissible>
+                You have claimed this listing!
+            </Alert>
             <Container fluid={true} >
             <Row  className = "row g-0">
                 <Col md = {6} xs = {12}  className="p-3">
                     <div className = "product-content">
                         <div className = "product-info">
-                            <Icon  icon="iconoir:profile-circled" className = "dolly" color="dark blue" width='50px'/>
+                            <Icon  icon="iconoir:profile-circled" className = "dolly" color="#031C34" width='50px'/>
                             <div className = "product-info-text">
                                 {name}
                             </div>
                         </div>
 
                         <div className = "product-info">
-                            <Icon  icon="bx:map"  className = "dolly" color="dark blue" width='50px'/>
+                            <Icon  icon="bx:map"  className = "dolly" color="#031C34" width='50px'/>
                             <div className = "product-info-text">
                                 {listingData.address}
                             </div>
                         </div>
                         <div className = "product-info">
-                            <Icon  icon="radix-icons:dimensions" color="dark blue" rotate={2} className = "dolly" width='50px'/>
+                            <Icon  icon="radix-icons:dimensions" color="#031C34" rotate={2} className = "dolly" width='50px'/>
                             <div className = "product-info-text">
                                 {listingData.area} sqft
                             </div>
                         </div>
                         <div className = "product-info">
-                            <Icon   icon="dashicons:money-alt" color="dark blue" rotate={2} className = "dolly" width='50px'/>
+                            <Icon   icon="dashicons:money-alt" color="#031C34" rotate={2} className = "dolly" width='50px'/>
                             <div className = "product-info-text">
                                 ${listingData.price}/day
                             </div>
@@ -201,26 +211,26 @@ function UserView() {
                                 Availability:
                             </div>
                             <div className = "date-text">
-                                {listingData.date_start} -- {listingData.date_end}
+                                {getFullDate(new Date(listingData.date_start))} — {getFullDate(new Date(listingData.date_end))}
                             </div>
                         </div>
-                        <div>
-                            <div className = "product-descriptors">
-                                Contact:
-                            </div>
-                            {showPhone &&
-                                <div className = "product-info">  
-                                    <Icon  icon="akar-icons:phone" color="dark blue" className = "dolly" width='40px'/>
-                                    <div className = "product-info-text">{phone} </div>
-                                </div>
-                            }
-                            {showEmail &&
-                            <div className = "product-info">
-                                <Icon  icon="ant-design:mail-outlined" color="dark blue" className = "dolly" width='40px'/>
-                                <div className = "product-info-text">{email} </div>
-                            </div>
-                            }   
+
+                        <div className = "product-descriptors">
+                            Contact:
                         </div>
+                        {showPhone &&
+                            <div className = "product-info">  
+                                <Icon  icon="akar-icons:phone" color="#031C34" className = "dolly" width='40px'/>
+                                <div className = "product-info-text">{phone} </div>
+                            </div>
+                        }
+                        {showEmail &&
+                        <div className = "product-info">
+                            <Icon  icon="ant-design:mail-outlined" color="#031C34" className = "dolly" width='40px'/>
+                            <div className = "product-info-text">{email} </div>
+                        </div>
+                        }   
+
                     </div>
                 </Col>
                 <Col md = {6} xs = {12} className="p-3" >
@@ -230,15 +240,20 @@ function UserView() {
                         </div>
                     </Row>
                     <Row className = "row g-0">
-                    {listingData.owner_id != auth.currentUser?.uid //makes sure owner is not current viewer
-                            && displayClaim && // only display if current user_id for this listing is null (not claimed yet)
-                        <div className = "claim-box">
-                            
-                                <Button className= "claim-button" onClick = {() => {updateListing(); sendEmail()}}>
-                                    <div className = "claim-button-text">Claim</div>
+                        { listingData.owner_id != auth.currentUser?.uid && displayClaim &&
+                            <div className = "claim-box">
+                                <Button className= "claim-button" onClick = {() => {updateListing(); setShowDecisionAlert(true);  sendEmail()}}>
+                                    <div className = "claim-button-text">Claim Listing</div>
                                 </Button>
-                        </div>
-                    }
+                            </div>
+                        }
+                        { listingData.owner_id != auth.currentUser?.uid &&  !displayClaim && listingData.user_id == auth.currentUser?.uid && !listingData.completed &&
+                            <div className = "claim-box">
+                                <Button className= "claim-button" >
+                                <div className = "claim-button-text" onClick={e => onClickUnclaim(e, email, auth.currentUser!.email as string, listingName, listingData)}>Cancel Listing</div>
+                                </Button>
+                            </div>
+                        }
                     </Row>
                 </Col>
             </Row>

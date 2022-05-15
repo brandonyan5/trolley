@@ -1,7 +1,11 @@
 .claims-page {
     /*background: wheat;*/
 }
-
+#my-claims-title {
+    width: 80%;
+    margin: 50px auto;
+    font-weight: 500;
+}
 
 .claims-page h3 {
     text-align: left;

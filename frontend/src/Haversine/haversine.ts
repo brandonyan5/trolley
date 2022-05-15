@@ -14,6 +14,10 @@ type location = {
     type: string
 }
 
+
+
+
+
 // Takes two addresses of the format "69 Brown St" and then outputs the haversine distance between them. Assumes they are both in Providence.
 
 export async function addressestoDistance(address1: string, address2: string): Promise<string> {
