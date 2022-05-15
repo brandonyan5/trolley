@@ -2,141 +2,110 @@ package edu.brown.cs.student.main.listing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-  
+
 public class Listing {
-    public String getAddress() {
-        return address;
-    }
+  public String getAddress() {
+    return address;
+  }
 
-    public Double getPrice() {
-        return price;
-    }
+  public Double getPrice() {
+    return price;
+  }
 
-    public Double getArea() {
-        return area;
-    }
+  public Double getArea() {
+    return area;
+  }
 
-    public String getDate_start() {
-        return date_start;
-    }
+  public String getDateStart() {
+    return dateStart;
+  }
 
-    public String getDate_end() {
-        return date_end;
-    }
+  public String getDateEnd() {
+    return dateEnd;
+  }
 
-    public Double getDistance() {
-        return distance;
-    }
+  public Double getDistance() {
+    return distance;
+  }
 
-    private String address;
-    private Double price;
-    private Double area;
-    private String date_start;
-    private String date_end;
-    private Double distance;
-    private String ownerID;
-    private String userID;
-    private String listingName;
-    private List<Double> numeric;
-    private List<Double> normalizedNumeric;
-    private Double euclideanDistance;
+  private String address;
+  private Double price;
+  private Double area;
+  private String dateStart;
+  private String dateEnd;
+  private Double distance;
+  private String ownerID;
+  private String userID;
+  private String listingName;
+  private List<Double> numeric;
+  private List<Double> normalizedNumeric;
+  private Double euclideanDistance;
 
-    public String getListingName() {
-        return listingName;
-    }
+  public String getListingName() {
+    return listingName;
+  }
 
-    public String getOwnerID() {
-        return ownerID;
-    }
+  public String getOwnerID() {
+    return ownerID;
+  }
 
-    public String getUserID() {
-        return userID;
-    }
+  public String getUserID() {
+    return userID;
+  }
 
-    public Listing(String address, Double distance, Double price, Double area, String date_start, String date_end, String ownerID, String userID, String listingName) {
-        this.address = address;
-        this.distance = distance;
-        this.price = price;
-        this.area = area;
-        this.date_start = date_start;
-        this.date_end = date_end;
-        this.ownerID = ownerID;
-        this.userID = userID;
-        this.listingName = listingName;
-    }
+  /**
+   * constructor to create a listing.
+   * @param address - address of the listing.
+   * @param distance - how far listing is from user
+   * @param price - price of listing
+   * @param area - area of listing
+   * @param dateStart - start date of listing
+   * @param dateEnd - end date of listing
+   * @param ownerID - id of the owner
+   * @param userID - id of the user
+   * @param listingName - name of the listing
+   */
+  public Listing(String address, Double distance, Double price, Double area, String dateStart,
+                  String dateEnd, String ownerID, String userID, String listingName) {
+    this.address = address;
+    this.distance = distance;
+    this.price = price;
+    this.area = area;
+    this.dateStart = dateStart;
+    this.dateEnd = dateEnd;
+    this.ownerID = ownerID;
+    this.userID = userID;
+    this.listingName = listingName;
+  }
 
-    public List<Double> getNumeric() {
-        return this.numeric;
-    }
+  public List<Double> getNumeric() {
+    return this.numeric;
+  }
 
-    public Double geteuclideanDistance() {
-        return this.euclideanDistance;
-    }
+  public Double getEuclideanDistance() {
+    return this.euclideanDistance;
+  }
 
-    public void seteuclideanDistance(Double dist) {
-        this.euclideanDistance = dist;
-    }
+  public void setEuclideanDistance(Double dist) {
+    this.euclideanDistance = dist;
+  }
 
-    public List<Double> getNormalizedNumeric() {
-        return this.normalizedNumeric;
-    }
+  public List<Double> getNormalizedNumeric() {
+    return this.normalizedNumeric;
+  }
 
-    public void setNormalizedNumeric(List<Double> ls) {
-        this.normalizedNumeric = ls;
-    }
+  public void setNormalizedNumeric(List<Double> ls) {
+    this.normalizedNumeric = ls;
+  }
 
-    public void setDistance(Double dist) {
-        this.distance = dist;
-    }
-
-    public void setNumeric() {
-        List<Double> x = new ArrayList<>();
-        x.add(price);
-        x.add(area);
-        x.add(distance); // make sure to call setDistance before doing this
-        this.numeric = x;
-    }
-
-    //public void setDistanceGoogleMaps(String userAddress) {
-      //  Random rand = new Random();
-       // Double randomDouble = rand.nextDouble() * 10;
-        //this.distance = randomDouble;
-    //}
+  /**
+   * sets the list of numeric data.
+   */
+  public void setNumeric() {
+    List<Double> x = new ArrayList<>();
+    x.add(price);
+    x.add(area);
+    x.add(distance); // make sure to call setDistance before doing this
+    this.numeric = x;
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
