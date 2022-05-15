@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NavBar from '../SharedComponents/NavBar' 
-import { Card, Button, Form, Col, Row} from 'react-bootstrap';
+import { Card, Button, Form, Col, Row, Alert} from 'react-bootstrap';
 import { Icon } from '@iconify/react';
 import { getDatabase, ref, onValue, DataSnapshot, update} from "firebase/database";
 import {ListingData} from "../SharedComponents/Listing";
@@ -36,6 +36,9 @@ function ProfilePage(props: ProfilePageProps) {
     const [showEmail, setShowEmail] = useState(false)
     const [showPhone, setShowPhone] = useState(false)
     const [validUpdate, setValidUpdate] = useState(true)
+
+     // states for alerts
+     const [showDecisionAlert, setShowDecisionAlert] = useState(false)
 
     // Firebase consts
     const auth = getAuth()
@@ -139,12 +142,21 @@ function ProfilePage(props: ProfilePageProps) {
             } 
             else {
                 console.log("Invalid address")
+                setShowDecisionAlert(true)
             }
         })
     }
     return (
         <div>
             <NavBar />
+            <Alert className = "decision-alert"
+                    show = {showDecisionAlert} 
+                    key={"success"} 
+                    variant={"danger"}
+                    onClose={() => setShowDecisionAlert(false)}
+                     dismissible>
+                Invalid Address Entered
+            </Alert>
             <div className = "profile-div">
             <Row className="row g-0">
                 <Col xl = {6} className = "mx-auto mt-5">

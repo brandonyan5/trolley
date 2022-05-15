@@ -21,6 +21,7 @@ import {addressestoDistance} from "../Haversine/haversine";
 
 import './products.css'
 import {DateRange, Range} from "react-date-range";
+import { truncateSync } from 'fs';
 
 function OwnerView() {
 
@@ -73,6 +74,7 @@ function OwnerView() {
 
     // states for alerts
     const [showDecisionAlert, setShowDecisionAlert] = useState(false)
+    const [showAddressAlert, setShowAddressAlert] = useState(false)
 
     // Check for images
     useEffect(() => {
@@ -155,6 +157,7 @@ function OwnerView() {
                     
                 } else {
                     console.log("invalid entry")
+                    setShowAddressAlert(true)
                 }   
 
             })
@@ -189,6 +192,7 @@ function OwnerView() {
 
                 else {
                     console.log("invalid entry")
+                    setShowAddressAlert(true)
                 }   
     
             })
@@ -350,6 +354,14 @@ function OwnerView() {
                     onClose={() => setShowDecisionAlert(false)}
                      dismissible>
                  Your decision has been sent!
+            </Alert>
+            <Alert className = "decision-alert"
+                    show = {showAddressAlert} 
+                    key={"danger"} 
+                    variant={"danger"}
+                    onClose={() => setShowAddressAlert(false)}
+                     dismissible>
+                 Invalid address entered
             </Alert>
             <Container fluid={true} >
                 <Row  className = "row g-0">
